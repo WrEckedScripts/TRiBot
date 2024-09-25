@@ -1,9 +1,6 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
-import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
-import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
@@ -31,13 +28,6 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { tripStateManager.isCurrentState("COLLECT_BARS") == true }
         sequence {
-            // this isn't optimal, cuz when the ores are being smelted, the dispenser doesn't hold any bars yet..
-//            selector {
-//                condition { !barManager.dispenserHoldsBars() }
-//                perform {
-//                    tripStateManager.resetCycle("COLLECT_ORES")
-//                }
-//            }
             collectBarsNode(logger, barManager, tripStateManager)
         }
     }

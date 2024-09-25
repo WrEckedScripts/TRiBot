@@ -30,8 +30,6 @@ class UpkeepManager(val logger: Logger) {
 
         val randAdd = TribotRandom.normal(400,55)
         val nextTimeInMillis = 60 * (9_000 + randAdd) // 9 minutes in miliseconds + some random
-
-        logger.error("foreman timer state: ${(currentTimestamp - lastPaidAt) <= nextTimeInMillis}")
         // if the difference, between the current timestamp, minus the last paid at
         // is lower than 10 minutes, we don't need to pay the foreman
         return (currentTimestamp - lastPaidAt) <= nextTimeInMillis
@@ -40,8 +38,6 @@ class UpkeepManager(val logger: Logger) {
     fun haveFilledCoffer(): Boolean {
         //todo don't wait until it's fully empty. randomly set new topup moments
         val cofferValue = GameState.getVarbit(5357)
-
-        logger.error("doubletake: ${nextCofferTopupAmount} | this.${this.nextCofferTopupAmount}")
 
         //todo, we don't want to wait until the coffer fully depleted,
         // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount
@@ -64,7 +60,7 @@ class UpkeepManager(val logger: Logger) {
 
     fun setNextCofferTopup(): Unit {
         this.nextCofferTopupAmount = TribotRandom.uniform(10000, 200000)
-        Waiting.waitNormal(400,45) // todo ight fix resulting in 0 value in withdrawNode
+        Waiting.waitNormal(400,45) // todo might fix resulting in 0 value in withdrawNode
     }
 
     fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {

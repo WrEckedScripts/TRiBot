@@ -17,8 +17,6 @@ class TripStateManager(val logger: Logger) {
     }
 
     fun getCurrentKey(): String {
-        val currentKey = this.bronzeStates.entries.first { !it.value }.key;
-        logger.debug("[TripStateManager] - getCurrentKey: $currentKey")
         return this.bronzeStates.entries.first { !it.value }.key
     }
 

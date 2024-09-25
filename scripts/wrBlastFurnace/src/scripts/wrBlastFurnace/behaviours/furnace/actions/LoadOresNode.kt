@@ -39,8 +39,7 @@ fun IParentNode.loadOresNode(
                 }
             }
 
-            //todo untested
-            // Cycle from FILL_CONVEYOR to COLLECT_BARS
+            logger.debug("[OreLoading - loaded ores, cycling state to COLLECT_BARS!]")
             tripStateManager.cycleStateFrom(
                 "FILL_CONVEYOR"
             )

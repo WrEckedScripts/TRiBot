@@ -23,7 +23,7 @@ class EnsurePlayerHasRequirements(val logger: Logger) {
 
         if (!this.hasMissingRequirement) {
             this.hasMissingRequirement = Quest.THE_GIANT_DWARF.state == Quest.State.NOT_STARTED
-            logger.info("Player QuestState for the giant dwarf = ${Quest.THE_GIANT_DWARF.state}")
+            logger.info("The giant dwarf = ${Quest.THE_GIANT_DWARF.state}")
         }
 
         return this.hasMissingRequirement;

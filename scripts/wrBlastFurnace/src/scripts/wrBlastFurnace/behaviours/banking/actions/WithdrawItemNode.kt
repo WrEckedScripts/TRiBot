@@ -22,12 +22,8 @@ fun IParentNode.withdrawItemNode(
     // we start moving to the G.E. and re-supply our player
     // if we're at a buy-limit, we could take a break.
 
-    //TODO withdrawing can fail, if the inventory is still full, and coins didn't got withdrawn
-    // - so this requires a failsafe checking
     selector {
         condition {
-            logger.debug("Withdrawing ${itemName} x ${quantity}")
-
             // Either we need the exact item count
             val hasItemCount = Query.inventory()
                 .nameEquals(itemName)
@@ -50,14 +46,12 @@ fun IParentNode.withdrawItemNode(
             }
 
             if (status && closeBankWindow) {
-                Waiting.waitUntil {
+                status = Waiting.waitUntil {
                     Bank.close()
                 }
             }
 
             // Slight hack to ensure we return true/false
-            // after the if statement if we didn't want to close the window
-            logger.debug("what's the status? ${status}");
             status
         }
     }

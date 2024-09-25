@@ -17,15 +17,13 @@ fun IParentNode.collectBarsNode(
     tripStateManager: TripStateManager
 ) = sequence {
     perform {
-
-        // TODO UNTESTED, add failsafe, that we don't wait if we have bars in our inventory
-        //  - but cycle to the next state.
         val inventoryContainsBars = Query.inventory()
             .nameContains("bar")
             .count() > 0
 
         if (inventoryContainsBars) {
-            logger.debug("We've collected the bars, cycling state now.")
+            // TODO, didn't happen anymore, but let's keep this for now
+            logger.error("We've collected the bars, cycling state now.")
             tripStateManager.cycleStateFrom(
                 tripStateManager.getCurrentKey()
             )

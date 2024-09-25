@@ -18,7 +18,6 @@ class MoveToFurnaceValidation(val logger: Logger) {
     fun randomTrapdoorTile(): WorldTile {
         val pick = TribotRandom.uniform(0, trapDoorSurroundingTiles.size - 1)
         val picked = trapDoorSurroundingTiles.get(pick)
-        logger.debug("Picked tile: ${picked}")
         return picked
     }
 
@@ -27,7 +26,6 @@ class MoveToFurnaceValidation(val logger: Logger) {
         val radius = 4
         val trapdoorArea = Area.fromRadius(trapdoorTile, radius)
 
-        logger.debug("isNearTrapdoor ${trapdoorArea.containsMyPlayer()}")
         return trapdoorArea.containsMyPlayer()
     }
 
@@ -36,7 +34,6 @@ class MoveToFurnaceValidation(val logger: Logger) {
         val radius = 1
         val keldagrimArea = Area.fromRadius(keldagrimTile, radius)
 
-        logger.debug("isWithinKeldagrim ${keldagrimArea.containsMyPlayer()}")
         Waiting.wait(3000) // this check is triggered way to fast, due to usage in conditions
         return keldagrimArea.containsMyPlayer()
     }
@@ -44,7 +41,6 @@ class MoveToFurnaceValidation(val logger: Logger) {
     fun isNearBlastFurnaceEntrance(): Boolean {
         val entranceArea = Area.fromRadius(this.entranceStairsTile, 1)
 
-        logger.debug("isNearBFEntrance ${entranceArea.containsMyPlayer()}")
         return entranceArea.containsMyPlayer()
     }
 
@@ -52,7 +48,6 @@ class MoveToFurnaceValidation(val logger: Logger) {
         val furnaceTile = WorldTile(1940, 4958,0)
         val furnaceArea = Area.fromRadius(furnaceTile, 400)
 
-//        logger.debug("WithinBlastFurnace: ${furnaceArea.containsMyPlayer()}")
         return furnaceArea.containsMyPlayer()
     }
 }

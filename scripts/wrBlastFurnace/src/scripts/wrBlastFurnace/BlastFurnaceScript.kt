@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace
 
 import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
@@ -21,10 +22,12 @@ import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
 import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.PlayerRunManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
 import java.awt.Color
 import java.awt.Font
+import java.util.Locale
 import kotlin.jvm.optionals.getOrNull
 
 @TribotScriptManifest(
@@ -107,6 +110,9 @@ class BlastFurnaceScript : TribotScript {
 
         val tripStateManager = TripStateManager(logger)
 
+        val playerRunManager = PlayerRunManager(logger)
+        playerRunManager.setNextRunEnablingThreshold()
+
         /**
          * Initialise the basic paint
          */
@@ -116,7 +122,8 @@ class BlastFurnaceScript : TribotScript {
             logger = logger,
             upkeepManager = upkeepManager,
             barManager = barManager,
-            tripStateManager = tripStateManager
+            tripStateManager = tripStateManager,
+            playerRunManager = playerRunManager
         )
 
         /**
@@ -130,7 +137,8 @@ class BlastFurnaceScript : TribotScript {
         logger: Logger,
         upkeepManager: UpkeepManager,
         barManager: BarManager,
-        tripStateManager: TripStateManager
+        tripStateManager: TripStateManager,
+        playerRunManager: PlayerRunManager
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             sequence {
@@ -143,8 +151,14 @@ class BlastFurnaceScript : TribotScript {
                  */
 
                 /**
+                 * @TODO include support for stopping script when no more resources in bank
+                 * - IF re-stocking is disabled OR failed due to no GP
+                 * - But for now, without re-stocking, it should gracefully stop.
+                 */
+
+                /**
                  * @TODO implement playerState checkups
-                 * - Re-enable run
+                 * - Re-enable run (DONE)
                  * - sip stamina on next bank trip (to add in bankNode)
                  * - other stuff?
                  */
@@ -155,6 +169,16 @@ class BlastFurnaceScript : TribotScript {
                 selector {
                     condition { MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
                     moveToFurnaceNode(logger)
+                }
+
+                selector {
+                    condition { playerRunManager.shouldHaveRunEnabled() && playerRunManager.hasRunEnabled() }
+                    condition {
+                        logger.debug("BFS - enablingRun")
+                        Waiting.waitUntil {
+                            playerRunManager.enableRun()
+                        }
+                    }
                 }
 
                 /**
@@ -185,7 +209,7 @@ class BlastFurnaceScript : TribotScript {
                         bankNode(logger, true)
                     }
                 }
-//
+
                 selector {
                     condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
                     condition { !upkeepManager.haveFilledCoffer() }
@@ -274,8 +298,8 @@ class BlastFurnaceScript : TribotScript {
     fun formatCoins(coins: Int): String {
         return when {
             coins < 1000 -> coins.toString()
-            coins in 1000..9999 -> String.format("%.2fk", coins / 1000.0)
-            coins in 10000..9999999 -> String.format("%.2fM", coins / 1000000.0)
+            coins in 1000..9999 -> String.format(Locale.US,"%.2fk", coins / 1000.0)
+            coins in 10000..9999999 -> String.format(Locale.US,"%.2fM", coins / 1000000.0)
             else -> coins.toString() // For values 10 million and above, you can adjust as needed
         }
     }

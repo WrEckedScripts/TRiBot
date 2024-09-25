@@ -19,7 +19,7 @@ fun IParentNode.topupCofferNode(
     // keep track of this, and whenever we top-up the coffer, let's pick a next at random number
     // as well as the amount per topup.
     perform {
-        logger.debug("Performing topupCofferNode")
+        logger.info("[UpkeepManagement] - Time to fill-up the 'Coffer'")
         Query.gameObjects()
             .nameEquals("Coffer")
             .findFirst()

@@ -2,6 +2,7 @@ package scripts.wrBlastFurnace.behaviours.banking.actions
 
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
@@ -24,30 +25,31 @@ fun IParentNode.bankNode(
     selector {
         // If the bank is not open
         condition {
-            logger.info("selector:bankNode | ensuring open state")
             Bank.isOpen()
         }
         // Walk to the nearest bank, when there's a bank nearby
         sequence {
             selector {
                 condition {
-                    logger.info("selector:bankNode | ensuring nearby")
                     Bank.isNearby()
                 }
                 condition {
-                    logger.info("selector:bankNode | walkToTheBank")
                     GlobalWalking.walkToBank()
                 }
             }
             condition {
-                logger.info("selector:bankNode | ensure open")
                 Bank.ensureOpen()
             }
-            //TODO, change this to a condition, to prevent trying to take bars with full inv of ores for example.
             perform {
                 if (depositInventory) {
-                    logger.error("- -selector:bankNode | deposit whole inventory")
                     Bank.depositInventory()
+
+                    Waiting.waitNormal(300, 30)
+
+                    if (!Inventory.isEmpty()) {
+                        logger.error("[Banking] - Failed to deposit inventory, re-trying")
+                        return@perform
+                    }
                 }
 
                 if (close) {

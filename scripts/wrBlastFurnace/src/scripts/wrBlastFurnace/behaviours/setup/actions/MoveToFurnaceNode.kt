@@ -25,7 +25,6 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
     selector {
         condition { !MoveToFurnaceValidation(logger).isNearTrapdoor() || !MoveToFurnaceValidation(logger).isWithinKeldagrim() }
         condition {
-//            logger.info("Navigating to trapdoor")
             Waiting.waitUntil {
                 GlobalWalking.walkTo(MoveToFurnaceValidation(logger).randomTrapdoorTile())
                 MoveToFurnaceValidation(logger).isNearTrapdoor()
@@ -45,14 +44,11 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
                 }
                 .orElse(false)
 
-//            logger.debug("Trapdoor: ${trapdoor}")
             if (trapdoor) {
-//                logger.debug("Trapdoor: ${trapdoor}")
-//                logger.info("Traveling to Keldagrim")
                 Waiting.waitUntil {
                     MoveToFurnaceValidation(logger).isWithinKeldagrim()
                 }
-                Waiting.wait(5000)
+                Waiting.waitNormal(4000, 130)
             }
 
             trapdoor
@@ -62,9 +58,7 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
     selector {
         condition { MoveToFurnaceValidation(logger).isWithinKeldagrim() && MoveToFurnaceValidation(logger).isNearBlastFurnaceEntrance() }
         condition {
-//            logger.info("Navigating to Blast Furnace Stairs")
             Waiting.waitUntil {
-//                logger.info("We are going down!")
                 GlobalWalking.walkTo(MoveToFurnaceValidation(logger).entranceStairsTile)
             }
         }
@@ -73,18 +67,13 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
     selector {
         condition { !MoveToFurnaceValidation(logger).isNearBlastFurnaceEntrance()}
         condition {
-            logger.info("Standing besides the stairs, let's head on down.")
-
             Waiting.waitUntil {
-                val climbDown = Query.gameObjects()
+                Query.gameObjects()
                     .idEquals(9084)
                     .isReachable()
                     .findBestInteractable()
                     .map { it.interact("Climb-down") }
                     .orElse(false)
-
-                logger.debug("Climbing down state: ${climbDown}")
-                climbDown
             }
         }
     }
