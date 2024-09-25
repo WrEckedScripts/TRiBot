@@ -54,11 +54,11 @@ fun IParentNode.topupCofferNode(
                 Waiting.waitNormal(900, 120)
 
                 // Ensure we reset our cycle after we've done upkeep-ing with the coffer
-                if (dispenserManager.holdsBars()) {
-                    tripStateManager.resetCycle("COLLECT_BARS")
-                } else {
+//                if (dispenserManager.holdsBars()) {
+//                    tripStateManager.resetCycle("COLLECT_BARS")
+//                } else {
                     tripStateManager.resetCycle(tripStateManager.getCurrentKey())
-                }
+//                }
             }
     }
 

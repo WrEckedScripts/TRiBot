@@ -9,7 +9,6 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
-import scripts.utils.progress.DiscordNotifier
 
 /**
  * Node that should be called upon when we are within either one of the following area's
@@ -37,12 +36,8 @@ fun IParentNode.bankNode(
                 deposited
             }
 
-            //todo temp
-            DiscordNotifier.initLogger(logger)
-            DiscordNotifier.screenshot()
-
             Lottery.execute(0.1) {
-                MiniBreak.miniLeave()
+                MiniBreak.leave()
             }
 
             // If somehow our inventory is still full, let's fail the condition.

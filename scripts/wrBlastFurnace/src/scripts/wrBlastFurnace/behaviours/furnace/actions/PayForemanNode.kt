@@ -38,12 +38,11 @@ fun IParentNode.payForemanNode(
 
                     upkeepManager.setLastPaidForemanAt(System.currentTimeMillis())
 
-                    logger.info("[Foreman] - dispenser: ${dispenserManager.holdsBars()}")
-                    if (dispenserManager.holdsBars()) {
-                        tripStateManager.resetCycle("COLLECT_BARS")
-                    } else {
-                        tripStateManager.resetCycle("PROCESS_COAL")
-                    }
+//                    if (dispenserManager.holdsBars()) {
+//                        tripStateManager.resetCycle("COLLECT_BARS")
+//                    } else {
+                    tripStateManager.resetCycle(tripStateManager.getCurrentKey())
+//                    }
                 }
         }
     }
