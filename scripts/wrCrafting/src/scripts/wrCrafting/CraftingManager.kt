@@ -5,23 +5,21 @@ import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import java.util.*
-import java.util.function.BooleanSupplier
-import kotlin.random.Random
+import scripts.wrCrafting.models.TaskConfiguration
 
 interface CraftingManagerInterface {
     val logger: Logger
-    val craftableName: String
+    val taskConfiguration: TaskConfiguration
 
     fun initCrafting(): Boolean
 }
 
 class CraftingManager(
     override val logger: Logger,
-    override val craftableName: String
+    override val taskConfiguration: TaskConfiguration
+
 ) : CraftingManagerInterface {
     // Marker to indicate we're processing a batch.
-    var isProcessing: Boolean = false
 
     override fun initCrafting(): Boolean {
         logger.debug("[INIT] - start func")
@@ -31,7 +29,7 @@ class CraftingManager(
             .findFirst()
 
         val craftableItem = Query.inventory()
-            .nameEquals(craftableName)
+            .nameEquals(taskConfiguration.craftableName)
             .findFirst()
 
         Waiting.waitUntil {
@@ -40,16 +38,16 @@ class CraftingManager(
 
         Waiting.waitUntil {
             MakeScreen.isOpen()
-            MakeScreen.makeAll(craftableName)
+            MakeScreen.makeAll(taskConfiguration.craftableName)
         }
 
         Waiting.waitUntil {
             MyPlayer.isAnimating()
         }
 
-        isProcessing = true
+        taskConfiguration.isProcessing = true
 
-        logger.debug("[INIT] - end of func")
+        logger.debug("[INIT] - SET isProcessing to TRUE")
 
         return true
     }
@@ -60,27 +58,27 @@ class CraftingManager(
     /**
      * Returns true if a break condition is successfully met, false otherwise.
      */
-    fun idleWhileAnimating(
-        vararg breakConditions: BooleanSupplier,
-        timeout: Int = Random.nextInt(2500, 3500)
-    ): Boolean {
-        var lastAnimation = System.currentTimeMillis()
-        var rollingTime = System.currentTimeMillis()
-
-        while ((rollingTime - lastAnimation) < timeout) {
-            if (Arrays.stream(breakConditions).anyMatch { it.asBoolean }) {
-                return true
-            }
-
-            if (MyPlayer.isAnimating() or MyPlayer.isMoving()) {
-                lastAnimation = System.currentTimeMillis()
-            }
-
-            rollingTime = System.currentTimeMillis()
-
-            Waiting.waitNormal(50, 10)
-        }
-
-        return false
-    }
+//    fun idleWhileAnimating(
+//        vararg breakConditions: BooleanSupplier,
+//        timeout: Int = Random.nextInt(2500, 3500)
+//    ): Boolean {
+//        var lastAnimation = System.currentTimeMillis()
+//        var rollingTime = System.currentTimeMillis()
+//
+//        while ((rollingTime - lastAnimation) < timeout) {
+//            if (Arrays.stream(breakConditions).anyMatch { it.asBoolean }) {
+//                return true
+//            }
+//
+//            if (MyPlayer.isAnimating() or MyPlayer.isMoving()) {
+//                lastAnimation = System.currentTimeMillis()
+//            }
+//
+//            rollingTime = System.currentTimeMillis()
+//
+//            Waiting.waitNormal(50, 10)
+//        }
+//
+//        return false
+//    }
 }
