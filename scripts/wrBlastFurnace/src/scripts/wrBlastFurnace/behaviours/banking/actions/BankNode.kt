@@ -40,7 +40,7 @@ fun IParentNode.bankNode(
             condition {
                 Bank.ensureOpen()
             }
-            perform {
+            condition {
                 if (depositInventory) {
                     Bank.depositInventory()
 
@@ -48,13 +48,16 @@ fun IParentNode.bankNode(
 
                     if (!Inventory.isEmpty()) {
                         logger.error("[Banking] - Failed to deposit inventory, re-trying")
-                        return@perform
+                        return@condition false
                     }
                 }
 
                 if (close) {
                     Bank.close()
+                    return@condition true
                 }
+
+                return@condition true
             }
         }
     }

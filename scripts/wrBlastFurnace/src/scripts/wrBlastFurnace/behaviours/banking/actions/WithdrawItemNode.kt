@@ -51,11 +51,7 @@ fun IParentNode.withdrawItemNode(
                 }
             }
 
-            //todo can be removed, now that we wait for the inv to has the ores?
-            Waiting.waitNormal(750, 23) // Wait for inventory to update, hopefully prevents double banks
-            // Slight hack to ensure we return true/false
             Waiting.waitUntil {
-                logger.error("WAITING FOR INVENTORY TO CONTAIN ITEM: ${itemName} x ${quantity}")
                 inventoryHasItem
             }
         }

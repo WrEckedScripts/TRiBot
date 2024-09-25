@@ -39,7 +39,7 @@ fun IParentNode.collectBarsNode(
 
             Waiting.waitUntil {
                 Waiting.waitNormal(800, 45)
-                dispenser.interact("Take") || dispenser.interact("Check")
+                dispenser.interact("Take")
             }
 
             Waiting.waitUntil {

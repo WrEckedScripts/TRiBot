@@ -20,7 +20,6 @@ fun IParentNode.smeltBarsNode(
         sequence {
             bankNode(logger, depositInventory = true, close = false)
             condition {
-                logger.debug("inv contains no bars: ${!Inventory.contains(tripStateManager.bar)}")
                 !Inventory.contains(tripStateManager.bar)
             }
             condition {
@@ -36,15 +35,6 @@ fun IParentNode.smeltBarsNode(
         condition { tripStateManager.isCurrentState("COLLECT_BARS") == true }
         sequence {
             collectBarsNode(logger, barManager, tripStateManager)
-        }
-    }
-
-    selector {
-        condition { tripStateManager.isCurrentState("PROCESS_BASE") == true || tripStateManager.isCurrentState("PROCESS_COAL") == true}
-        condition { !barManager.dispenserHoldsBars() }
-        perform {
-            //todo, we should now collect if dispenser holds bars..
-            logger.error("CYCLE from ${tripStateManager.getCurrentKey()} as dispenser returns ${barManager.dispenserHoldsBars()}")
         }
     }
 
