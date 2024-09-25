@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
 import org.tribot.script.sdk.MakeScreen
+import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
@@ -37,33 +38,69 @@ fun IParentNode.collectBarsNode(
 
             // Wait until the bars are ready
             Waiting.waitUntil {
-                Waiting.waitNormal(400, 55)
+                logger.debug("waiting until dispenser holds bars!")
+                Waiting.waitNormal(2262, 254)
                 barManager.dispenserHoldsBars()
             }
 
             Waiting.waitUntil {
-                Waiting.waitNormal(800, 45)
-                dispenser.interact("Take")
+                logger.debug("Waiting until we can interact 'TAKE' on the dispenser")
+                val interacted = dispenser.interact("Take")
+
+                if (!interacted) {
+                    logger.error("Failed to interact with dispenser")
+                }
+
+                // Wait until game updates moving state
+                if (interacted) {
+                    Waiting.waitUntil { MyPlayer.isMoving() }
+                }
+
+                // Have some patience on the player moving to the dispenser.
+                if (interacted && MyPlayer.isMoving()) {
+                    Waiting.waitUntil {
+                        logger.debug("Waiting on done moving")
+                        Waiting.waitNormal(500, 50)
+                        !MyPlayer.isMoving()
+                    }
+                }
+
+                logger.debug("Done moving, wait until makeScreen is open.")
+                interacted && MakeScreen.isOpen()
             }
 
             Waiting.waitUntil {
-                MakeScreen.isOpen()
-                Waiting.waitNormal(300, 86)
-
                 // What about a random/player pref space bar spam
                 // needs to ensure we got make-all set.
                 MakeScreen.makeAll(tripStateManager.bar)
 
-                Query.inventory()
+                val barsInInventoryCount = Query.inventory()
                     .nameContains("bar")
-                    .count() > 0
+                    .count()
+
+                val succeeded = barsInInventoryCount > 0
+
+                // Account for a slight delay, the query won't return this instantly.
+                Waiting.waitNormal(600, 50)
+
+                if (!succeeded) {
+                    logger.debug("Mini sleep before we retry again..")
+                    Waiting.waitNormal(174, 28)
+                }
+
+                succeeded
             }
 
             val invCount = Query.inventory()
                 .nameContains("bar")
                 .count()
 
-            logger.debug("collecting bars x ${invCount}")
+            if (invCount == 0) {
+                logger.debug("collecting bars x ${invCount}")
+                logger.error("Failed to make bars?!")
+
+                return@condition false
+            }
 
             tripStateManager.cycleStateFrom(
                 tripStateManager.getCurrentKey()

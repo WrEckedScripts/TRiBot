@@ -24,8 +24,8 @@ import java.util.*
 import kotlin.math.roundToInt
 
 @TribotScriptManifest(
-    name = "wrBlastFurnace 1.1.0",
-    description = "Performs the Blast Furnace Activity",
+    name = "WrBlastFurnace Lite 1.2.0",
+    description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
 )

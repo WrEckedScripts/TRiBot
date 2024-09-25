@@ -15,8 +15,8 @@ fun IParentNode.loadOresNode(
     logger: Logger,
 ) = sequence {
     condition {
-        Waiting.waitUntil {
-            Waiting.waitNormal(675, 60)
+        Waiting.waitUntil(TribotRandom.normal(875, 60)) {
+            logger.debug("waiting until inv is empty")
             !Inventory.isEmpty()
         }
 
@@ -25,24 +25,29 @@ fun IParentNode.loadOresNode(
             .findBestInteractable()
             .get()
 
-        val res = Waiting.waitUntil {
-            Waiting.waitNormal(2000, 55)
+        //TODO increase the TribotRandom.normal, as this is a timeout + add step?
+        val res = Waiting.waitUntil(TribotRandom.normal(750, 55)) {
+            logger.debug("waiting until put-ore-on action")
             val interacted = conveyor.interact("Put-ore-on")
 
             //todo refactor to Antibanmanager class..
-            Lottery(logger).execute(0.2) {
+            Lottery(logger).execute(0.1) {
                 val miniLeave = TribotRandom.normal(5000, 2340)
-                logger.info("[Antiban] - Leaving screen for ${miniLeave}ms, we'll be right back.")
+                logger.info("[Antiban] - Leaving screen for ${miniLeave}ms, we'll be right back!")
                 Mouse.leaveScreen()
                 Waiting.wait(miniLeave)
             }
+
             interacted
         }
 
         val inv = Waiting.waitUntil {
+            logger.debug("Checking if inv is now empty.")
+            Waiting.waitNormal(1200, 120)
             Inventory.isEmpty()
         }
 
+        logger.info("Yeah it's empty!")
         logger.info("[Conveyor] - Interacted: ${res} - Inventory cleared - ${inv}")
 
         res && inv

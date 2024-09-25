@@ -29,7 +29,7 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun havePaidForeman(): Boolean {
-        if (! this.shouldPayForeman()) {
+        if (!this.shouldPayForeman()) {
             lastPaidForemanAt = null
             return true
         }
@@ -52,7 +52,7 @@ class UpkeepManager(val logger: Logger) {
         //todo, we don't want to wait until the coffer fully depleted,
         // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount
         if (cofferValue <= 0) {
-            setNextCofferTopup() //todo get rid of this? to prevent duplicate calls
+            getCofferTopupAmount()
             return false
         }
 
