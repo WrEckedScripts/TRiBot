@@ -17,6 +17,10 @@ class PlayerRunManager(val logger: Logger) {
         return Options.isRunEnabled()
     }
 
+    fun getNextEnableAtValue(): Int? {
+        return this.enableAt
+    }
+
     fun setNextRunEnablingThreshold() {
         val antiBanValues = AntibanProperties.getPropsForCurrentChar()
         this.enableAt = TribotRandom.normal(antiBanValues.runEnergyMean, antiBanValues.runEnergyStd)

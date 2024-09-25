@@ -3,6 +3,7 @@ package scripts.wrBlastFurnace
 import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Camera
+import org.tribot.script.sdk.GameTab
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
@@ -116,14 +117,13 @@ class BlastFurnaceScript : TribotScript {
         val playerRunManager = PlayerRunManager(logger)
         playerRunManager.setNextRunEnablingThreshold()
 
+        val cameraManager = CameraManager(logger)
+        cameraManager.initialize()
+
         /**
          * INITIALIZATION
          * - will setup our player / world controls, options and preferences
          */
-        //TODO randomize and define actual values
-        Camera.setZoomPercent(6.25)
-        Camera.setAngle(92)
-        Camera.setRotation(284)
         // does not re-open the inventory tab
 
         logger.info("[Initialization] - Camera set")
@@ -138,7 +138,8 @@ class BlastFurnaceScript : TribotScript {
             upkeepManager = upkeepManager,
             barManager = barManager,
             tripStateManager = tripStateManager,
-            playerRunManager = playerRunManager
+            playerRunManager = playerRunManager,
+            cameraManager = cameraManager
         )
 
         /**
@@ -153,7 +154,8 @@ class BlastFurnaceScript : TribotScript {
         upkeepManager: UpkeepManager,
         barManager: BarManager,
         tripStateManager: TripStateManager,
-        playerRunManager: PlayerRunManager
+        playerRunManager: PlayerRunManager,
+        cameraManager: CameraManager
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             sequence {
@@ -221,7 +223,7 @@ class BlastFurnaceScript : TribotScript {
                     condition { !upkeepManager.haveFilledCoffer() }
                     condition { !upkeepManager.havePaidForeman() }
                     sequence {
-                        smeltBarsNode(logger, barManager, tripStateManager)
+                        smeltBarsNode(logger, barManager, tripStateManager, cameraManager)
                     }
                 }
             }

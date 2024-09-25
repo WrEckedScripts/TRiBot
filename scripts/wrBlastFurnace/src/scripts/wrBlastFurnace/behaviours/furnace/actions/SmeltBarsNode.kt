@@ -1,18 +1,20 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
 import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
+import scripts.utils.antiban.Lottery
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.CameraManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 
 fun IParentNode.smeltBarsNode(
     logger: Logger,
     barManager: BarManager,
-    tripStateManager: TripStateManager
+    tripStateManager: TripStateManager,
+    cameraManager: CameraManager
 ) = sequence {
 
     selector {
@@ -28,6 +30,11 @@ fun IParentNode.smeltBarsNode(
                     tripStateManager.getCurrentKey()
                 )
             }
+            perform {
+                Lottery(logger).execute(0.3) {
+                    cameraManager.randomize(zoom = false)
+                }
+            }
         }
     }
 
@@ -35,6 +42,11 @@ fun IParentNode.smeltBarsNode(
         condition { tripStateManager.isCurrentState("COLLECT_BARS") == true }
         sequence {
             collectBarsNode(logger, barManager, tripStateManager)
+            perform {
+                Lottery(logger).execute(0.3) {
+                    cameraManager.randomize(zoom = false)
+                }
+            }
         }
     }
 
@@ -78,6 +90,11 @@ fun IParentNode.smeltBarsNode(
                     tripStateManager.getCurrentKey()
                 )
             }
+            perform {
+                Lottery(logger).execute(0.3) {
+                    cameraManager.randomize(zoom = false)
+                }
+            }
         }
     }
 
@@ -120,6 +137,11 @@ fun IParentNode.smeltBarsNode(
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
+            }
+            perform {
+                Lottery(logger).execute(0.3) {
+                    cameraManager.randomize(zoom = false)
+                }
             }
         }
     }
