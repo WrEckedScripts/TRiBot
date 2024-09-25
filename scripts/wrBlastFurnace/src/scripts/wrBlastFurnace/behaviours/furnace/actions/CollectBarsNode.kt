@@ -4,13 +4,9 @@ import org.tribot.script.sdk.MakeScreen
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
-import org.tribot.script.sdk.frameworks.behaviortree.perform
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
-import org.tribot.script.sdk.input.Mouse
 import org.tribot.script.sdk.query.Query
-import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
-import scripts.utils.antiban.Lottery
 import scripts.wrBlastFurnace.managers.BarManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 
@@ -70,7 +66,7 @@ fun IParentNode.collectBarsNode(
             logger.debug("collecting bars x ${invCount}")
 
             tripStateManager.cycleStateFrom(
-                "COLLECT_BARS"
+                tripStateManager.getCurrentKey()
             )
         }
     }

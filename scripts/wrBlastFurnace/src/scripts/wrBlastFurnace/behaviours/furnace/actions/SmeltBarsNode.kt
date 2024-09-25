@@ -6,26 +6,22 @@ import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
-import scripts.wrBlastFurnace.managers.BarManager
-import scripts.wrBlastFurnace.managers.CameraManager
-import scripts.wrBlastFurnace.managers.StaminaManager
-import scripts.wrBlastFurnace.managers.TripStateManager
+import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
+import scripts.wrBlastFurnace.managers.*
 
 fun IParentNode.smeltBarsNode(
     logger: Logger,
     barManager: BarManager,
     tripStateManager: TripStateManager,
     cameraManager: CameraManager,
-    staminaManager: StaminaManager
+    staminaManager: StaminaManager,
+    playerRunManager: PlayerRunManager
 ) = sequence {
-
     selector {
         condition { tripStateManager.isCurrentState("BANK_BARS") == true }
         sequence {
-            condition {
-                !Inventory.contains(tripStateManager.bar)
-            }
-            bankNode(logger, staminaManager,true, false)
+            bankNode(logger, true, false)
+            sipStaminaPotion(logger, staminaManager, playerRunManager)
             condition {
                 logger.debug("Cycling state:")
                 tripStateManager.cycleStateFrom(
@@ -64,7 +60,7 @@ fun IParentNode.smeltBarsNode(
         condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isFull() }
         sequence {
-            bankNode(logger, staminaManager, true)
+            bankNode(logger, true, false)
             withdrawItemNode(
                 logger,
                 tripStateManager.baseOre.name,
@@ -117,7 +113,7 @@ fun IParentNode.smeltBarsNode(
         condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isFull() }
         sequence {
-            bankNode(logger, staminaManager, true)
+            bankNode(logger, true, false)
             withdrawItemNode(
                 logger,
                 tripStateManager.coalOre.name,

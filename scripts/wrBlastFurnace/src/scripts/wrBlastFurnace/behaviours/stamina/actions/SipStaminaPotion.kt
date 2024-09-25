@@ -2,10 +2,9 @@ package scripts.wrBlastFurnace.behaviours.stamina.actions
 
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
-import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
+import scripts.wrBlastFurnace.managers.PlayerRunManager
 import scripts.wrBlastFurnace.managers.StaminaManager
 
 /**
@@ -13,7 +12,8 @@ import scripts.wrBlastFurnace.managers.StaminaManager
  */
 fun IParentNode.sipStaminaPotion(
     logger: Logger,
-    staminaManager: StaminaManager
+    staminaManager: StaminaManager,
+    playerRunManager: PlayerRunManager
 ) = sequence {
     selector {
         condition { staminaManager.satisfiesStaminaState() }
@@ -25,6 +25,7 @@ fun IParentNode.sipStaminaPotion(
                 Waiting.waitUntil {
                     Waiting.waitNormal(500, 24)
                     staminaManager.sipStamina()
+                    playerRunManager.enableRun()
                 }
             }
         }

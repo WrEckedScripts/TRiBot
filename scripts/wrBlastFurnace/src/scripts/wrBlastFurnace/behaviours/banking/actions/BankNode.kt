@@ -3,13 +3,12 @@ package scripts.wrBlastFurnace.behaviours.banking.actions
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.frameworks.behaviortree.*
-import org.tribot.script.sdk.query.Query
+import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
+import org.tribot.script.sdk.frameworks.behaviortree.condition
+import org.tribot.script.sdk.frameworks.behaviortree.selector
+import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
-import scripts.wrBlastFurnace.managers.StaminaManager
-import kotlin.jvm.optionals.getOrNull
 
 /**
  * Node that should be called upon when we are within either one of the following area's
@@ -23,7 +22,6 @@ import kotlin.jvm.optionals.getOrNull
  */
 fun IParentNode.bankNode(
     logger: Logger,
-    staminaManager: StaminaManager,
     depositInventory: Boolean = false,
     close: Boolean = false
 ) = sequence {
@@ -62,9 +60,6 @@ fun IParentNode.bankNode(
 
                 logger.debug("deposit condition to true")
                 return@condition true
-            }
-            sequence {
-                sipStaminaPotion(logger, staminaManager)
             }
             condition {
                 if (close) {

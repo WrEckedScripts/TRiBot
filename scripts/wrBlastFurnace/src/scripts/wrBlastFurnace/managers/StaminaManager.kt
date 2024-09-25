@@ -1,10 +1,7 @@
 package scripts.wrBlastFurnace.managers
 
-import org.tribot.script.sdk.Bank
-import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.input.Keyboard
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 

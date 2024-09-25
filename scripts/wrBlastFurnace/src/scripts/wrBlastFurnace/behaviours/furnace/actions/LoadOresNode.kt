@@ -1,19 +1,15 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
 import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Tribot
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.antiban.Antiban
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.input.Mouse
-import org.tribot.script.sdk.pricing.Pricing
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
-import scripts.wrBlastFurnace.managers.TripStateManager
 
 fun IParentNode.loadOresNode(
     logger: Logger,

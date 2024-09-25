@@ -1,13 +1,5 @@
 package scripts.wrBlastFurnace
 
-import org.tribot.api.input.Mouse
-import org.tribot.script.sdk.Bank
-import org.tribot.script.sdk.Camera
-import org.tribot.script.sdk.GameTab
-import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Skill
-import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.antiban.PlayerPreferences
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -15,7 +7,6 @@ import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
-import org.tribot.script.sdk.types.Widget
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
@@ -29,7 +20,7 @@ import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidatio
 import scripts.wrBlastFurnace.managers.*
 import java.awt.Color
 import java.awt.Font
-import java.util.Locale
+import java.util.*
 import kotlin.math.roundToInt
 
 @TribotScriptManifest(
@@ -198,7 +189,7 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.havePaidForeman() }
                     condition { upkeepManager.playerHoldsEnoughCoins() }
                     sequence {
-                        bankNode(logger, staminaManager, true)
+                        bankNode(logger, true, false)
                         withdrawItemNode(logger, "Coins", 2500, true)
                         payForemanNode(logger, upkeepManager, tripStateManager, barManager)
                     }
@@ -212,10 +203,10 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.haveFilledCoffer() }
                     condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.getCofferTopupAmount()) }
                     sequence {
-                        bankNode(logger, staminaManager, true)
+                        bankNode(logger, true, false)
                         withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
                         topupCofferNode(logger, upkeepManager, tripStateManager, barManager)
-                        bankNode(logger, staminaManager, true)
+                        bankNode(logger, true, false)
                     }
                 }
 
@@ -224,7 +215,14 @@ class BlastFurnaceScript : TribotScript {
                     condition { !upkeepManager.haveFilledCoffer() }
                     condition { !upkeepManager.havePaidForeman() }
                     sequence {
-                        smeltBarsNode(logger, barManager, tripStateManager, cameraManager, staminaManager)
+                        smeltBarsNode(
+                            logger,
+                            barManager,
+                            tripStateManager,
+                            cameraManager,
+                            staminaManager,
+                            playerRunManager
+                        )
                     }
                 }
             }
@@ -309,14 +307,12 @@ class BlastFurnaceScript : TribotScript {
             )
         }
 
-        if (!staminaManager.notOutOfPotions()) {
-            mainPaint.row(
-                paintTemplate.toBuilder()
-                    .label("Sip Stamina")
-                    .value { if(staminaManager.satisfiesStaminaState()) "No" else "Yes" }
-                    .build()
-            )
-        }
+        mainPaint.row(
+            paintTemplate.toBuilder()
+                .label("Sip Stamina")
+                .value { if (staminaManager.satisfiesStaminaState()) "No" else "Yes" }
+                .build()
+        )
 
         Painting.addPaint { mainPaint.build().render(it) }
     }
