@@ -28,14 +28,13 @@ class UpkeepManager(val logger: Logger) {
         val lastPaidAt = lastPaidForemanAt ?: return false // if null, we should pay them now.
         val currentTimestamp = System.currentTimeMillis()
 
-        //todo change back to 9_000
-        // todo randomize this to sometime pay early
-        val tenMinutesInMillis = 60 * 1_000 // 9 minutes in miliseconds
+        val randAdd = TribotRandom.normal(400,55)
+        val nextTimeInMillis = 60 * (9_000 + randAdd) // 9 minutes in miliseconds + some random
 
-        logger.error("foreman timer state: ${(currentTimestamp - lastPaidAt) <= tenMinutesInMillis}")
+        logger.error("foreman timer state: ${(currentTimestamp - lastPaidAt) <= nextTimeInMillis}")
         // if the difference, between the current timestamp, minus the last paid at
         // is lower than 10 minutes, we don't need to pay the foreman
-        return (currentTimestamp - lastPaidAt) <= tenMinutesInMillis
+        return (currentTimestamp - lastPaidAt) <= nextTimeInMillis
     }
 
     fun haveFilledCoffer(): Boolean {

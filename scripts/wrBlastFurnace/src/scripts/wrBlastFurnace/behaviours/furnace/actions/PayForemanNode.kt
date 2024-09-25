@@ -32,12 +32,10 @@ fun IParentNode.payForemanNode(
                     ChatScreen.handle("Yes")
                     upkeepManager.totalSpent += 2500
 
-                    //todo, in theory, this could fail, so we need to wait until the message
-                    // that mentions payment succeeded and we're good for 10 more minutes
                     upkeepManager.setLastPaidForemanAt(System.currentTimeMillis())
 
-                    //todo, not tested, but this could be a viable solution.
-//                    tripStateManager.resetCycle("COLLECT_ORES")
+                    // Ensure we reset our cycle after we've done upkeeing with the foreman
+                    tripStateManager.resetCycle("COLLECT_ORES")
                 }
         }
     }

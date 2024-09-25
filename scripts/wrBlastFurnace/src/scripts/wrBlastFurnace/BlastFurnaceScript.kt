@@ -181,7 +181,7 @@ class BlastFurnaceScript : TribotScript {
                     sequence {
                         bankNode(logger, true)
                         withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
-                        topupCofferNode(logger, upkeepManager)
+                        topupCofferNode(logger, upkeepManager, tripStateManager)
                         bankNode(logger, true)
                     }
                 }
@@ -213,31 +213,32 @@ class BlastFurnaceScript : TribotScript {
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Ores")
-                    .value { tripStateManager.isCurrentState("COLLECT_ORES") == false }
+                    .value { if(tripStateManager.isCurrentState("COLLECT_ORES") == false) "<---" else ""}
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Fill Conveyor")
-                    .value { tripStateManager.isCurrentState("FILL_CONVEYOR") == false }
+                    .value { if(tripStateManager.isCurrentState("FILL_CONVEYOR") == false) "<---" else ""}
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Bars")
-                    .value { tripStateManager.isCurrentState("COLLECT_BARS") == false }
+                    .value { if(tripStateManager.isCurrentState("COLLECT_BARS") == false) "<---" else ""}
+
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Bank Bars")
-                    .value { tripStateManager.isCurrentState("BANK_BARS") == false }
+                    .value { if(tripStateManager.isCurrentState("BANK_BARS") == false) "<---" else ""}
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Trips")
-                    .value { tripStateManager.tripCount.toString().plus(" bars (${tripStateManager.tripCount * 14})") }
+                    .value { tripStateManager.tripCount.toString().plus("| Bars (${tripStateManager.tripCount * 14})") }
                     .build()
             )
             .row(
