@@ -31,9 +31,6 @@ fun IParentNode.loadOresNode(
             Inventory.isEmpty()
         }
 
-        logger.debug("LoadOres interaction - ${res} - ${inv}")
-
-        //upon failure, we now re-bank.. this isn't necessary
         res && inv
     }
 }

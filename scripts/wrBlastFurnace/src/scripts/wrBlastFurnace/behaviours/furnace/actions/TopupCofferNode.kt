@@ -53,6 +53,7 @@ fun IParentNode.topupCofferNode(
                 Waiting.waitNormal(900, 120)
 
                 // Ensure we reset our cycle after we've done upkeeing with the coffer
+                //todo, i think we can remove this, now we separated banking and loading better.
                 tripStateManager.resetCycle("PROCESS_COAL")
             }
     }

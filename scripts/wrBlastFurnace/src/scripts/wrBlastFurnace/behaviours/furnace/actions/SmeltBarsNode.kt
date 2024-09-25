@@ -57,7 +57,6 @@ fun IParentNode.smeltBarsNode(
         sequence {
             loadOresNode(logger)
             condition {
-                logger.debug("cycleState BASE - executed")
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
@@ -85,7 +84,6 @@ fun IParentNode.smeltBarsNode(
         sequence {
             loadOresNode(logger)
             condition {
-                logger.debug("cycleState COAL - executed")
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )

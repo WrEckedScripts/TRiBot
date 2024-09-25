@@ -25,7 +25,9 @@ class PlayerRunManager(val logger: Logger) {
     }
 
     fun shouldHaveRunEnabled(): Boolean {
-        return this.enableAt != null && this.enableAt!! >= this.getCurrentRunEnery() || this.getCurrentRunEnery() == 100
+        return this.enableAt != null
+                && this.enableAt!! >= this.getCurrentRunEnery()
+                || this.getCurrentRunEnery() == 100
     }
 
     fun enableRun(): Boolean {

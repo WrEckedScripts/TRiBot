@@ -169,8 +169,8 @@ class BlastFurnaceScript : TribotScript {
                 }
 
                 selector {
-                    condition { playerRunManager.shouldHaveRunEnabled() }
-                    condition { !Bank.isOpen() }
+                    condition { !playerRunManager.shouldHaveRunEnabled() }
+                    condition { Bank.isOpen() }
                     condition {
                         Waiting.waitUntil {
                             playerRunManager.enableRun()

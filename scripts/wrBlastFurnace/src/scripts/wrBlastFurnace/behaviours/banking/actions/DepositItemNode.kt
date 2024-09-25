@@ -39,11 +39,9 @@ fun IParentNode.depositItemNode(
 
         //todo, what happens if we have less items than the quantity?
         if (!status && quantity != null) {
-            logger.info("[depositItemNode] - Going to deposit ${itemName.toString()} x ${quantity}")
             status = Bank.deposit(itemName.toString(), quantity)
         }
 
-        logger.info("[depositItemNode] - depositAll ${itemName.toString()}")
         if (!status && quantity.toString() != "null") {
             status = Bank.depositAll(itemName.toString())
         }

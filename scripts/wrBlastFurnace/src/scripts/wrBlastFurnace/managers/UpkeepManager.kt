@@ -64,7 +64,6 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {
-        logger.error("Checking if holding: '${amount}' coins")
         val coins = Query.inventory()
             .nameEquals("Coins")
             .minStack(amount)

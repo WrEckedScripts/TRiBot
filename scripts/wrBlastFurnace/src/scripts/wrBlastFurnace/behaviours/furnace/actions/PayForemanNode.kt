@@ -35,6 +35,7 @@ fun IParentNode.payForemanNode(
                     upkeepManager.setLastPaidForemanAt(System.currentTimeMillis())
 
                     // Ensure we reset our cycle after we've done upkeeing with the foreman
+                    //todo, i think we can remove this, now we separated banking and loading better.
                     tripStateManager.resetCycle("PROCESS_COAL")
                 }
         }
