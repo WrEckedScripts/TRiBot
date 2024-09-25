@@ -1,9 +1,12 @@
 rootProject.name = "tribot-script-template"
 
-include("libraries:my-library")
+// Own code
+include("libraries:framework")
 
-include("scripts:my-script")
 include("scripts:wrCombat")
+include("scripts:wrCrafting")
+
+// Boilerplate
 include("scripts")
 
 pluginManagement {
