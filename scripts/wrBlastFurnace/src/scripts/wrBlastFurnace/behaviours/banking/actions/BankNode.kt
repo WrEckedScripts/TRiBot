@@ -5,9 +5,7 @@ import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
-import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
-import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
 
 /**
@@ -25,49 +23,26 @@ fun IParentNode.bankNode(
     depositInventory: Boolean = false,
     close: Boolean = false
 ) = sequence {
-    selector {
-        // If the bank is not open
-        condition {
-            Bank.isOpen()
-        }
-        // Walk to the nearest bank, when there's a bank nearby
-        sequence {
-            selector {
-                condition {
-                    Bank.isNearby()
-                }
-                condition {
-                    GlobalWalking.walkToBank()
-                }
-            }
-            condition {
-                Bank.ensureOpen()
-            }
-            condition {
-                if (depositInventory) {
-                    logger.error("depositing")
-                    Bank.depositInventory()
+    condition {
+        logger.error("Inside bank conditions")
+        if (depositInventory) {
+            Bank.depositInventory()
 
-                    Waiting.waitNormal(300, 30)
+            Waiting.waitNormal(300, 30)
 
-                    if (!Inventory.isEmpty()) {
-                        //TODO, happend once, didn't fix itself, didn't even retry?!
-                        // could try to fail it, by mouse moving and try to replicate..
-                        logger.error("[Banking] - Failed to deposit inventory, re-trying")
-                        return@condition false
-                    }
-                }
-
-                logger.debug("deposit condition to true")
-                return@condition true
-            }
-            condition {
-                if (close) {
-                    Bank.close()
-                }
-
-                return@condition true
+            if (!Inventory.isEmpty()) {
+                logger.error("[Banking] - Failed to deposit inventory, re-trying")
+                return@condition false
             }
         }
+
+        return@condition true
+    }
+    condition {
+        if (close) {
+            Bank.close()
+        }
+
+        return@condition true
     }
 }

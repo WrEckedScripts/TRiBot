@@ -7,6 +7,7 @@ import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
+import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
 import scripts.wrBlastFurnace.managers.*
@@ -22,10 +23,10 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { tripStateManager.isCurrentState("BANK_BARS") == true }
         sequence {
+            ensureIsOpenNode(logger)
             bankNode(logger, true, false)
             sipStaminaPotion(logger, staminaManager, playerRunManager)
             condition {
-                logger.debug("Cycling state:")
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
@@ -62,6 +63,7 @@ fun IParentNode.smeltBarsNode(
         condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isFull() }
         sequence {
+            ensureIsOpenNode(logger)
             bankNode(logger, true, false)
             withdrawItemNode(
                 logger,
@@ -120,6 +122,7 @@ fun IParentNode.smeltBarsNode(
         condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isFull() }
         sequence {
+            ensureIsOpenNode(logger)
             bankNode(logger, true, false)
             withdrawItemNode(
                 logger,
@@ -143,7 +146,7 @@ fun IParentNode.smeltBarsNode(
      * We will load our ores to the conveyor
      */
     selector {
-        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true}
+        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
         condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isEmpty() }
         sequence {
