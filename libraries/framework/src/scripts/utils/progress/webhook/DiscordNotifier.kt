@@ -48,7 +48,7 @@ object DiscordNotifier {
         }
 
         val currentTime = System.currentTimeMillis()
-        val nextTime = 60 * 2_000 // 15 minutes in milliseconds
+        val nextTime = 60 * 15_000 // 15 minutes in milliseconds
 
         return (currentTime - lastSent!!) >= nextTime
     }
