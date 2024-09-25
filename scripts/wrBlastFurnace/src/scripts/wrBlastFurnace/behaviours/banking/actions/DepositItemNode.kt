@@ -10,7 +10,12 @@ import scripts.utils.Logger
  * Node responsible for depositing a specific item and a quantity
  * useful for banking bars made, any other random items or other items we might want to bank.
  */
-fun IParentNode.depositItemNode(logger: Logger, itemName: String, quantity: Int? = null) = sequence {
+fun IParentNode.depositItemNode(
+    logger: Logger,
+    itemName: String,
+    quantity: Int? = null,
+    closeBankWindow: Boolean = true
+) = sequence {
     condition {
         //todo, what happens if we have less items than the quantity?
         if (quantity != null){
@@ -18,6 +23,11 @@ fun IParentNode.depositItemNode(logger: Logger, itemName: String, quantity: Int?
         }
 
         Bank.depositAll(itemName)
-        Bank.close()
+
+        if (closeBankWindow) {
+            Bank.close()
+        }
+
+        true
     }
 }

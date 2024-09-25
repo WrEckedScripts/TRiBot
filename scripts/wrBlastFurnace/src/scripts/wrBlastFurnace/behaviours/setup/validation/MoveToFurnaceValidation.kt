@@ -47,4 +47,12 @@ class MoveToFurnaceValidation(val logger: Logger) {
         logger.debug("isNearBFEntrance ${entranceArea.containsMyPlayer()}")
         return entranceArea.containsMyPlayer()
     }
+
+    fun isWithinBlastFurnaceArea(): Boolean {
+        val furnaceTile = WorldTile(1940, 4958,0)
+        val furnaceArea = Area.fromRadius(furnaceTile, 400)
+
+//        logger.debug("WithinBlastFurnace: ${furnaceArea.containsMyPlayer()}")
+        return furnaceArea.containsMyPlayer()
+    }
 }

@@ -1,16 +1,26 @@
 package scripts.wrBlastFurnace
 
+import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
+import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
+import scripts.wrBlastFurnace.behaviours.furnace.actions.payForemanNode
+import scripts.wrBlastFurnace.behaviours.furnace.actions.smeltBarsNode
+import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
-import scripts.wrBlastFurnace.behaviours.setup.getStartupTree
+import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
+import scripts.wrBlastFurnace.managers.UpkeepManager
+import kotlin.jvm.optionals.getOrNull
 
 @TribotScriptManifest(
-    name = "wrBlastFurnace 1.0.5",
+    name = "wrBlastFurnace 1.0.6",
     description = "Performs the Blast Furnace Activity",
     category = "Smithing",
     author = "WrEcked"
@@ -88,9 +98,11 @@ class BlastFurnaceScript : TribotScript {
         // - Determine if we need ores
         // -    based on the level for now?
 
+        val upkeepManager = UpkeepManager(logger)
 
         val blastFurnaceTree = getBlastTree(
-            logger = logger
+            logger = logger,
+            upkeepManager = upkeepManager
         )
 
         /**
@@ -101,14 +113,54 @@ class BlastFurnaceScript : TribotScript {
     }
 
     private fun getBlastTree(
-        logger: Logger
+        logger: Logger,
+        upkeepManager: UpkeepManager
     ) = behaviorTree {
-        repeatUntil(BehaviorTreeStatus.SUCCESS) { //todo swap to .KILL to keep looping
-            selector {
-                moveToFurnaceNode(logger)
+        repeatUntil(BehaviorTreeStatus.KILL) {
+            sequence {
                 perform {
-                    logger.info("After move")
+                    logger.debug(
+                        "lastPaidAt: ${upkeepManager.lastPaidForemanAt}" +
+                        "holdEnfCoins: ${upkeepManager.playerHoldsEnoughCoins()}"
+                    )
                 }
+                selector {
+                    condition { MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
+                    moveToFurnaceNode(logger)
+                }
+
+                selector {
+                    condition { upkeepManager.havePaidForeman() }
+                    condition { upkeepManager.playerHoldsEnoughCoins() }
+                    sequence {
+                        bankNode(logger)
+                        //todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
+                        withdrawItemNode(logger, "Coins", 2500)
+                        payForemanNode(logger, upkeepManager)
+                    }
+                }
+
+//                selector {
+//                    condition { !upkeepManager.playerHoldsEnoughCoins(logger) }
+//                    payForemanNode(logger)
+//                }
+
+
+//                selector {
+//                    condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() && !upkeepManager.shouldTopupCoffer() }
+//                    perform {
+//                        logger.error("COFFERTOPUP")
+//                    }
+//                    topupCofferNode(logger) //todo add upkeepManager for both coffer and foreman (below 60 smith)
+//                }
+//
+//                selector {
+//                    condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
+//                    perform {
+//                        logger.error("SMELTBARS")
+//                    }
+////                    smeltBarsNode(logger) //todo add BarManager
+//                }
             }
         }
     }
