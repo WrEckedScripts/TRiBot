@@ -132,7 +132,6 @@ class BlastFurnaceScript : TribotScript {
          */
         initPaint(
             progressionManager,
-            tripStateManager,
             upkeepManager,
             staminaManager,
             playerRunManager
@@ -266,7 +265,6 @@ class BlastFurnaceScript : TribotScript {
 
     private fun initPaint(
         progressionManager: ProgressionManager,
-        tripStateManager: TripStateManager,
         upkeepManager: UpkeepManager,
         staminaManager: StaminaManager,
         playerRunManager: PlayerRunManager
