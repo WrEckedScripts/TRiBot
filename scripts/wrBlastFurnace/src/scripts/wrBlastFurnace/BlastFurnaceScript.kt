@@ -173,13 +173,13 @@ class BlastFurnaceScript : TribotScript {
 
                 selector {
                     //todo, seems to interfere with banking, make sure we don't do it whilst banking
-                    condition { playerRunManager.shouldHaveRunEnabled()}
+                    condition { playerRunManager.shouldHaveRunEnabled() }
                     condition {
                         logger.debug("BFS - enablingRun")
                         // Fake happy flow, to not execute whilst a bank screen is opened.
                         // Untested, should prevent wrong inventory states
                         // (half bars / half ores)
-                        if(Bank.isOpen()){
+                        if (Bank.isOpen()) {
                             return@condition true
                         }
 
@@ -276,7 +276,10 @@ class BlastFurnaceScript : TribotScript {
             .row(
                 paintTemplate.toBuilder()
                     .label("Per hr")
-                    .value { "Trips: ".plus(perHour(0, tripStateManager.tripCount)).plus("| Bars: ".plus(perHour(0, tripStateManager.tripCount * 14))) }
+                    .value {
+                        "Trips: ".plus(perHour(0, tripStateManager.tripCount))
+                            .plus("| Bars: ".plus(perHour(0, tripStateManager.tripCount * 14)))
+                    }
                     .build()
             )
             .row(
