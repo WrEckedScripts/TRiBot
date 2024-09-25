@@ -1,5 +1,6 @@
 package scripts.wrBlastFurnace
 
+import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -206,8 +207,18 @@ class BlastFurnaceScript : TribotScript {
                 selector {
                     condition { tripStateManager.isCurrentState("COLLECT_BARS") == false }
                     condition { !barManager.dispenserHoldsBars() }
-                    perform {
-                        tripStateManager.resetCycle("COLLECT_BARS")
+                    sequence {
+                        selector {
+                            condition { Inventory.isEmpty() }
+                            sequence {
+                                ensureIsOpenNode(logger)
+                                bankNode(logger, true, true)
+                            }
+                        }
+                        condition {
+                            tripStateManager.resetCycle("COLLECT_BARS")
+                            tripStateManager.isCurrentState("COLLECT_BARS") == false
+                        }
                     }
                 }
 
