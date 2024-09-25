@@ -10,7 +10,6 @@ import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.managers.BarManager
 import scripts.wrBlastFurnace.managers.TripStateManager
-import kotlin.math.log
 
 fun IParentNode.loadOresNode(
     logger: Logger,

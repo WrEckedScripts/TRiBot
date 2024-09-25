@@ -14,8 +14,8 @@ import kotlin.jvm.optionals.getOrNull
  * - above lv 60, the foreman isn't needed anymore, so we should not need to load all this stuff in?
  */
 class UpkeepManager(val logger: Logger) {
+    private var nextCofferTopupAmount: Int = 0
     var lastPaidForemanAt: Long? = null
-    var nextCofferTopupAmount: Int = 0
 
     var totalSpent = 0
 

@@ -13,10 +13,6 @@ class PlayerRunManager(val logger: Logger) {
         return MyPlayer.getRunEnergy()
     }
 
-    fun hasRunEnabled(): Boolean {
-        return Options.isRunEnabled()
-    }
-
     fun setNextRunEnablingThreshold(): Unit {
         //todo extract to AntiBan like manager?
         val antiBanValues = AntibanProperties.getPropsForCurrentChar()
@@ -25,14 +21,13 @@ class PlayerRunManager(val logger: Logger) {
     }
 
     fun shouldHaveRunEnabled(): Boolean {
-        logger.debug("shouldHaveRunEnabled: ${this.enableAt >= this.getCurrentRunEnery()}")
         return this.enableAt >= this.getCurrentRunEnery()
     }
 
     fun enableRun(): Boolean {
-        logger.debug("[PlayerRun] - ${this.enableAt} <= ${this.getCurrentRunEnery()}")
-
+        val beforeRunEnable = this.enableAt
         this.setNextRunEnablingThreshold()
+        logger.debug("[PlayerRun] - Enabled run at ${beforeRunEnable}, next re-enabling at ${this.enableAt}")
         return Options.setRunEnabled(true)
     }
 }

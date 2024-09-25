@@ -1,6 +1,5 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
-import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.MakeScreen
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode

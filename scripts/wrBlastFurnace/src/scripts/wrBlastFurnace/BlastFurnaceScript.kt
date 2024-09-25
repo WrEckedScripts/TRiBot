@@ -1,14 +1,11 @@
 package scripts.wrBlastFurnace
 
-import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
-import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.nexus.sdk.mouse.*
@@ -28,10 +25,9 @@ import scripts.wrBlastFurnace.managers.UpkeepManager
 import java.awt.Color
 import java.awt.Font
 import java.util.Locale
-import kotlin.jvm.optionals.getOrNull
 
 @TribotScriptManifest(
-    name = "wrBlastFurnace 1.0.6",
+    name = "wrBlastFurnace 1.1.0",
     description = "Performs the Blast Furnace Activity",
     category = "Smithing",
     author = "WrEcked"
@@ -172,7 +168,7 @@ class BlastFurnaceScript : TribotScript {
                 }
 
                 selector {
-                    condition { playerRunManager.shouldHaveRunEnabled() && playerRunManager.hasRunEnabled() }
+                    condition { playerRunManager.shouldHaveRunEnabled() }
                     condition {
                         logger.debug("BFS - enablingRun")
                         Waiting.waitUntil {
@@ -237,26 +233,26 @@ class BlastFurnaceScript : TribotScript {
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Ores")
-                    .value { if(tripStateManager.isCurrentState("COLLECT_ORES") == false) "<---" else ""}
+                    .value { if (tripStateManager.isCurrentState("COLLECT_ORES") == false) "<---" else "" }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Fill Conveyor")
-                    .value { if(tripStateManager.isCurrentState("FILL_CONVEYOR") == false) "<---" else ""}
+                    .value { if (tripStateManager.isCurrentState("FILL_CONVEYOR") == false) "<---" else "" }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Bars")
-                    .value { if(tripStateManager.isCurrentState("COLLECT_BARS") == false) "<---" else ""}
+                    .value { if (tripStateManager.isCurrentState("COLLECT_BARS") == false) "<---" else "" }
 
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Bank Bars")
-                    .value { if(tripStateManager.isCurrentState("BANK_BARS") == false) "<---" else ""}
+                    .value { if (tripStateManager.isCurrentState("BANK_BARS") == false) "<---" else "" }
                     .build()
             )
             .row(
@@ -268,7 +264,7 @@ class BlastFurnaceScript : TribotScript {
             .row(
                 paintTemplate.toBuilder()
                     .label("Total upkeep spent")
-                    .value { formatCoins(upkeepManager.totalSpent)  }
+                    .value { formatCoins(upkeepManager.totalSpent) }
                     .build()
             )
             .row(
@@ -298,8 +294,8 @@ class BlastFurnaceScript : TribotScript {
     fun formatCoins(coins: Int): String {
         return when {
             coins < 1000 -> coins.toString()
-            coins in 1000..9999 -> String.format(Locale.US,"%.2fk", coins / 1000.0)
-            coins in 10000..9999999 -> String.format(Locale.US,"%.2fM", coins / 1000000.0)
+            coins in 1000..9999 -> String.format(Locale.US, "%.2fk", coins / 1000.0)
+            coins in 10000..9999999 -> String.format(Locale.US, "%.2fM", coins / 1000000.0)
             else -> coins.toString() // For values 10 million and above, you can adjust as needed
         }
     }

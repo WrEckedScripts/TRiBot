@@ -1,8 +1,6 @@
 package scripts.wrBlastFurnace.managers
 
 import org.tribot.script.sdk.GameState
-import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Waiting
 import scripts.utils.Logger
 
 class BarManager(val logger: Logger) {
