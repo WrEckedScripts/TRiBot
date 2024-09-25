@@ -3,6 +3,7 @@ package scripts.wrBlastFurnace.behaviours.banking.actions
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 
 /**
@@ -25,24 +26,39 @@ fun IParentNode.withdrawItemNode(
     // - so this requires a failsafe checking
     selector {
         condition {
-            Waiting.waitUntil {
-                logger.debug("Withdrawing ${itemName} x ${quantity}")
+            logger.debug("Withdrawing ${itemName} x ${quantity}")
 
-                val status = Waiting.waitUntil {
+            // Either we need the exact item count
+            val hasItemCount = Query.inventory()
+                .nameEquals(itemName)
+                .count() == quantity
+
+            // Or, we need at least the quantity as a stack
+            val hasItemStack = Query.inventory()
+                .nameEquals(itemName)
+                .sumStacks() >= quantity
+
+            val inventoryHasItem = hasItemCount || hasItemStack
+
+            var status = false
+
+            // Might ensure we have withdrawn before we close the bank.
+            if (!inventoryHasItem) {
+                status = Waiting.waitUntil {
                     Bank.withdraw(itemName, quantity)
                 }
-
-                if (closeBankWindow) {
-                    Waiting.waitUntil {
-                        Bank.close()
-                    }
-                }
-
-                // Slight hack to ensure we return true/false
-                // after the if statement if we didn't want to close the window
-                logger.debug("what's the status? ${status}");
-                status
             }
+
+            if (status && closeBankWindow) {
+                Waiting.waitUntil {
+                    Bank.close()
+                }
+            }
+
+            // Slight hack to ensure we return true/false
+            // after the if statement if we didn't want to close the window
+            logger.debug("what's the status? ${status}");
+            status
         }
     }
 }

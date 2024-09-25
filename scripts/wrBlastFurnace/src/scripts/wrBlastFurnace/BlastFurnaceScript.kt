@@ -134,6 +134,21 @@ class BlastFurnaceScript : TribotScript {
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             sequence {
+
+                /**
+                 * @TODO implement a cycleFailSafeNode
+                 * - That, based on a set of conditionals, resets the cycle back to a specific case
+                 * - This should be taken the highest priority of the tree, by doing this at the top here
+                 * - I believe it should do so.
+                 */
+
+                /**
+                 * @TODO implement playerState checkups
+                 * - Re-enable run
+                 * - sip stamina on next bank trip (to add in bankNode)
+                 * - other stuff?
+                 */
+
                 /**
                  * Make sure we're at the Blast Furnace Area
                  */
@@ -152,7 +167,7 @@ class BlastFurnaceScript : TribotScript {
                     sequence {
                         bankNode(logger, true)
                         withdrawItemNode(logger, "Coins", 2500, true)
-                        payForemanNode(logger, upkeepManager)
+                        payForemanNode(logger, upkeepManager, tripStateManager)
                     }
                 }
 
@@ -162,10 +177,10 @@ class BlastFurnaceScript : TribotScript {
                  */
                 selector {
                     condition { upkeepManager.haveFilledCoffer() }
-                    condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.nextCofferTopupAmount) }
+                    condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.getCofferTopupAmount()) }
                     sequence {
                         bankNode(logger, true)
-                        withdrawItemNode(logger, "Coins", upkeepManager.nextCofferTopupAmount, true)
+                        withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
                         topupCofferNode(logger, upkeepManager)
                         bankNode(logger, true)
                     }
@@ -233,8 +248,8 @@ class BlastFurnaceScript : TribotScript {
             )
             .row(
                 paintTemplate.toBuilder()
-                    .label("Next foreman payment in")
-                    .value { formatMillisToCountdown(upkeepManager.lastPaidForemanAt ?: 0L) }
+                    .label("Last foreman payment")
+                    .value { formatMillisToCountdown(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
                     .build()
             )
             .build()
@@ -244,7 +259,8 @@ class BlastFurnaceScript : TribotScript {
 
     fun formatMillisToCountdown(milliseconds: Long): String {
         // Calculate total seconds
-        val totalSeconds = (milliseconds / 1000).toInt()
+        val nextPayTime = (System.currentTimeMillis() - milliseconds)
+        val totalSeconds = (nextPayTime / 1000).toInt()
 
         // Calculate minutes and seconds
         val minutes = totalSeconds / 60
@@ -257,8 +273,8 @@ class BlastFurnaceScript : TribotScript {
     fun formatCoins(coins: Int): String {
         return when {
             coins < 1000 -> coins.toString()
-            coins in 1000..9999 -> String.format("%.0fk", coins / 1000.0)
-            coins in 10000..9999999 -> String.format("%.1fM", coins / 1000000.0)
+            coins in 1000..9999 -> String.format("%.2fk", coins / 1000.0)
+            coins in 10000..9999999 -> String.format("%.2fM", coins / 1000000.0)
             else -> coins.toString() // For values 10 million and above, you can adjust as needed
         }
     }

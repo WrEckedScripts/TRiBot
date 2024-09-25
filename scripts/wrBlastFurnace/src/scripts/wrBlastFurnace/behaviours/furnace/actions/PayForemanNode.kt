@@ -5,9 +5,14 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
 
-fun IParentNode.payForemanNode(logger: Logger, upkeepManager: UpkeepManager) = sequence {
+fun IParentNode.payForemanNode(
+    logger: Logger,
+    upkeepManager: UpkeepManager,
+    tripStateManager: TripStateManager
+) = sequence {
     selector {
 //        condition { Skill.SMITHING.actualLevel < 60 } //determine if we even need to pay the foreman
         perform {
@@ -30,6 +35,9 @@ fun IParentNode.payForemanNode(logger: Logger, upkeepManager: UpkeepManager) = s
                     //todo, in theory, this could fail, so we need to wait until the message
                     // that mentions payment succeeded and we're good for 10 more minutes
                     upkeepManager.setLastPaidForemanAt(System.currentTimeMillis())
+
+                    //todo, not tested, but this could be a viable solution.
+//                    tripStateManager.resetCycle("COLLECT_ORES")
                 }
         }
     }

@@ -1,5 +1,6 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
+import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.MakeScreen
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
@@ -16,32 +17,53 @@ fun IParentNode.collectBarsNode(
     tripStateManager: TripStateManager
 ) = sequence {
     perform {
-        val dispenser = Query.gameObjects()
-            .nameEquals("Bar dispenser")
-            .findBestInteractable()
-            .get()
 
-        // Wait until the bars are ready
-        Waiting.waitUntil {
-            !barManager.dispenserHoldsBars()
+        // TODO UNTESTED, add failsafe, that we don't wait if we have bars in our inventory
+        //  - but cycle to the next state.
+        val inventoryContainsBars = Query.inventory()
+            .nameContains("bar")
+            .count() > 0
+
+        if (inventoryContainsBars) {
+            logger.debug("We've collected the bars, cycling state now.")
+            tripStateManager.cycleStateFrom(
+                tripStateManager.getCurrentKey()
+            )
+        } else {
+            val dispenser = Query.gameObjects()
+                .nameEquals("Bar dispenser")
+                .findBestInteractable()
+                .get()
+
+            // Wait until the bars are ready
+            Waiting.waitUntil {
+                Waiting.waitNormal(600, 55)
+                !barManager.dispenserHoldsBars()
+            }
+
+            Waiting.waitUntil {
+                Waiting.waitNormal(800, 45)
+                dispenser.interact("Take")
+            }
+
+            Waiting.waitUntil {
+                MakeScreen.isOpen()
+            }
+
+            Waiting.waitUntil {
+                Waiting.waitNormal(700, 86)
+                MakeScreen.makeAll("Bronze bar")
+            }
+
+            Waiting.waitUntil {
+                Query.inventory()
+                    .nameContains("bar")
+                    .count() > 0
+            }
+
+            tripStateManager.cycleStateFrom(
+                "COLLECT_BARS"
+            )
         }
-
-        Waiting.waitUntil {
-            logger.error("taking the bars!")
-            Waiting.waitNormal(1200,45)
-            dispenser.interact("Take")
-        }
-
-        Waiting.waitUntil {
-            MakeScreen.isOpen()
-        }
-
-        Waiting.waitUntil {
-            MakeScreen.makeAll("Bronze bar")
-        }
-
-        tripStateManager.cycleStateFrom(
-            tripStateManager.getCurrentKey()
-        )
     }
 }

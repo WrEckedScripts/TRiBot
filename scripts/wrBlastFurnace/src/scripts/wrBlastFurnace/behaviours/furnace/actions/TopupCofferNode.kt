@@ -46,9 +46,9 @@ fun IParentNode.topupCofferNode(
                     ChatScreen.isClickContinueOpen()
                 }
 
-                Waiting.waitNormal(2000, 120)
+                Waiting.waitNormal(1100, 120)
                 ChatScreen.clickContinue()
-                Waiting.waitNormal(1200, 120)
+                Waiting.waitNormal(900, 120)
             }
     }
 

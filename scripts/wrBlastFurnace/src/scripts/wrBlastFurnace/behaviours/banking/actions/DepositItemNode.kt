@@ -5,6 +5,7 @@ import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
+import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 
 /**
@@ -18,25 +19,43 @@ fun IParentNode.depositItemNode(
     closeBankWindow: Boolean = true
 ) = sequence {
     condition {
+        var status = false
+
+        val inventoryIsBanked = Query.inventory()
+            .nameContains(itemName)
+            .count() == 0
+
+        if (inventoryIsBanked) {
+            status = true
+        }
+
         // Allow full inventory depositing
-        if (itemName == "" && !Inventory.isEmpty()) {
-            Bank.depositInventory()
+        if (!status &&
+            itemName == "" &&
+            !Inventory.isEmpty()
+        ) {
+            status = Bank.depositInventory()
         }
 
         //todo, what happens if we have less items than the quantity?
-        if (quantity != null) {
+        if (!status && quantity != null) {
             logger.info("[depositItemNode] - Going to deposit ${itemName.toString()} x ${quantity}")
-            Bank.deposit(itemName.toString(), quantity)
+            status = Bank.deposit(itemName.toString(), quantity)
         }
 
         logger.info("[depositItemNode] - depositAll ${itemName.toString()}")
-        Bank.depositAll(itemName.toString())
+        if (!status && quantity.toString() != "null") {
+            status = Bank.depositAll(itemName.toString())
+        }
 
-        if (closeBankWindow) {
+        if (status &&
+            inventoryIsBanked &&
+            closeBankWindow
+        ) {
             logger.info("[depositItemNode] - closing bankInterface")
             Bank.close()
         }
 
-        true //todo, either properly populate a interacted variable or simply change to a perform()?
+        status && inventoryIsBanked
     }
 }

@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.managers
 
 import org.tribot.script.sdk.GameState
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
@@ -27,8 +28,11 @@ class UpkeepManager(val logger: Logger) {
         val lastPaidAt = lastPaidForemanAt ?: return false // if null, we should pay them now.
         val currentTimestamp = System.currentTimeMillis()
 
-        val tenMinutesInMillis = 10 * 60 * 1000 // 10 minutes in miliseconds
+        //todo change back to 9_000
+        // todo randomize this to sometime pay early
+        val tenMinutesInMillis = 60 * 1_000 // 9 minutes in miliseconds
 
+        logger.error("foreman timer state: ${(currentTimestamp - lastPaidAt) <= tenMinutesInMillis}")
         // if the difference, between the current timestamp, minus the last paid at
         // is lower than 10 minutes, we don't need to pay the foreman
         return (currentTimestamp - lastPaidAt) <= tenMinutesInMillis
@@ -37,6 +41,8 @@ class UpkeepManager(val logger: Logger) {
     fun haveFilledCoffer(): Boolean {
         //todo don't wait until it's fully empty. randomly set new topup moments
         val cofferValue = GameState.getVarbit(5357)
+
+        logger.error("doubletake: ${nextCofferTopupAmount} | this.${this.nextCofferTopupAmount}")
 
         //todo, we don't want to wait until the coffer fully depleted,
         // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount
@@ -50,15 +56,16 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun getCofferTopupAmount(): Int {
-        if (0 == nextCofferTopupAmount) {
+        if (0 == this.nextCofferTopupAmount) {
             setNextCofferTopup()
         }
 
-        return nextCofferTopupAmount
+        return this.nextCofferTopupAmount
     }
 
     fun setNextCofferTopup(): Unit {
-        nextCofferTopupAmount = TribotRandom.uniform(10000, 200000)
+        this.nextCofferTopupAmount = TribotRandom.uniform(10000, 200000)
+        Waiting.waitNormal(400,45) // todo ight fix resulting in 0 value in withdrawNode
     }
 
     fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {
