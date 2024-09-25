@@ -91,6 +91,10 @@ class SuppliesManager(
 //        }
 
         Waiting.waitUntil {
+            // DO NOT DO THE FOLLOWING, EVERYTIME:
+            // - state based sleeping is more antiban than every iteration
+            // - how about fatique, duration based delay in actions
+            // - in short, doing a sleep after every craft cycle, is highly bannable
             /**
              * Something like (Antiban name is taken)
              * Antiban.executeAndWait(600, 9000) {
