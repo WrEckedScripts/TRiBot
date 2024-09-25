@@ -2,7 +2,7 @@ package scripts.utils.calculators
 
 import kotlin.math.roundToInt
 
-class TripCalculator(val startedAt: Long) {
+class CachedPerHourCalculator(val startedAt: Long) {
     private var lastComputedValue: String? = null
     private var lastComputedTime: Long = 0
     private val computationIntervalMillis: Long = 60 * 500 // 0.5 minute

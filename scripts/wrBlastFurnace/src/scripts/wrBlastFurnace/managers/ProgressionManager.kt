@@ -1,7 +1,7 @@
 package scripts.wrBlastFurnace.managers
 
 import scripts.utils.Logger
-import scripts.utils.calculators.TripCalculator
+import scripts.utils.calculators.CachedPerHourCalculator
 
 /**
  * Manager class that keeps track of various progression related aspects
@@ -16,8 +16,8 @@ class ProgressionManager(
     private val tripStateManager: TripStateManager,
     private val barManager: BarManager
 ) {
-    private val tripCalculator = TripCalculator(this.startedAt)
-    private val barCalculator = TripCalculator(this.startedAt)
+    private val tripCalculator = CachedPerHourCalculator(this.startedAt)
+    private val barCalculator = CachedPerHourCalculator(this.startedAt)
 
     fun indicateState(stateName: String): String {
         if (tripStateManager.isCurrentState(stateName) == false) {
