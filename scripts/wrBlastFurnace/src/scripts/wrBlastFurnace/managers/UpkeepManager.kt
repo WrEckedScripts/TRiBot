@@ -16,8 +16,8 @@ import kotlin.jvm.optionals.getOrNull
  */
 class UpkeepManager(val logger: Logger) {
     private var nextCofferTopupAmount: Int = 0
-    var lastPaidForemanAt: Long? = null
 
+    var lastPaidForemanAt: Long? = null
     var totalSpent = 0
 
     fun setLastPaidForemanAt(timestamp: Long) {
@@ -45,9 +45,13 @@ class UpkeepManager(val logger: Logger) {
         return (currentTimestamp - lastPaidAt) <= nextTimeInMillis
     }
 
+    fun getCofferValue(): Int {
+        return GameState.getVarbit(5357)
+    }
+
     fun haveFilledCoffer(): Boolean {
         //todo don't wait until it's fully empty. randomly set new topup moments
-        val cofferValue = GameState.getVarbit(5357)
+        val cofferValue = this.getCofferValue()
 
         //todo, we don't want to wait until the coffer fully depleted,
         // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount

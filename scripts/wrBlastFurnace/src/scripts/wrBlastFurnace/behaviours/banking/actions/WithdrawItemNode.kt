@@ -2,7 +2,10 @@ package scripts.wrBlastFurnace.behaviours.banking.actions
 
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
+import org.tribot.script.sdk.frameworks.behaviortree.condition
+import org.tribot.script.sdk.frameworks.behaviortree.selector
+import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 
@@ -49,6 +52,10 @@ fun IParentNode.withdrawItemNode(
             var inventoryHasItem = hasItemCount || hasItemStack
 
             // Might ensure we have withdrawn before we close the bank.
+            //TODO, re-write, do not assume that we've withdrawn before, in fact, utilize actual state based waiting
+            // To ensure we double check to see if our inventory actually represents what we wanted to withdraw
+            // - could be with a timeout checking, to give the withdraw some time to update game state
+            // - ensure we query after withdrawing (as well) and not (only) before withdrawing like we do now.
             if (!inventoryHasItem) {
                 inventoryHasItem = Waiting.waitUntil {
                     Bank.withdraw(name, quantity)

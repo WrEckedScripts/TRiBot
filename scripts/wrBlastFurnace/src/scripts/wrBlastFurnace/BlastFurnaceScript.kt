@@ -1,9 +1,9 @@
 package scripts.wrBlastFurnace
 
-import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
+import org.tribot.script.sdk.painting.template.basic.PaintLocation
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import org.tribot.script.sdk.script.TribotScript
@@ -13,6 +13,7 @@ import scripts.utils.Logger
 import scripts.utils.formatters.Coins
 import scripts.utils.formatters.Countdown
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
+import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.payForemanNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.smeltBarsNode
@@ -129,7 +130,13 @@ class BlastFurnaceScript : TribotScript {
         /**
          * Initialise the basic paint
          */
-        initPaint(progressionManager, tripStateManager, upkeepManager, staminaManager)
+        initPaint(
+            progressionManager,
+            tripStateManager,
+            upkeepManager,
+            staminaManager,
+            playerRunManager
+        )
 
         val blastFurnaceTree = getBlastTree(
             logger = logger,
@@ -159,7 +166,6 @@ class BlastFurnaceScript : TribotScript {
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             sequence {
-
                 /**
                  * @TODO implement a cycleFailSafeNode
                  * - That, based on a set of conditionals, resets the cycle back to a specific case
@@ -183,10 +189,25 @@ class BlastFurnaceScript : TribotScript {
 
                 selector {
                     condition { playerRunManager.satisfiesRunExpectation() }
-                    condition { Bank.isOpen() }
                     perform {
                         playerRunManager.enableRun()
                         logger.debug("enabled run via default tree...")
+                    }
+                }
+
+                /**
+                 * Serves as a failsafe, as long as the dispenser holds any kind of bar, and we're not in the collecting stage
+                 * Ensure that we switch to that state and first withdraw any bars from the dispenser.
+                 * This prevents blocking the conveyor belt
+                 * - Could happen due to re-starting the script
+                 * - Could happen when a script is stopped/ended and is started again
+                 * Or any other partial cycle flow occurrence
+                 */
+                selector {
+                    condition { tripStateManager.isCurrentState("COLLECT_BARS") == false }
+                    condition { !barManager.dispenserHoldsBars() }
+                    perform {
+                        tripStateManager.resetCycle("COLLECT_BARS")
                     }
                 }
 
@@ -198,6 +219,7 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.havePaidForeman() }
                     condition { upkeepManager.playerHoldsEnoughCoins() }
                     sequence {
+                        ensureIsOpenNode(logger)
                         bankNode(logger, true, false)
                         withdrawItemNode(logger, "Coins", 2500, true)
                         payForemanNode(logger, upkeepManager, tripStateManager, barManager)
@@ -212,9 +234,13 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.haveFilledCoffer() }
                     condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.getCofferTopupAmount()) }
                     sequence {
+                        ensureIsOpenNode(logger)
                         bankNode(logger, true, false)
+
                         withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
                         topupCofferNode(logger, upkeepManager, tripStateManager, barManager)
+
+                        ensureIsOpenNode(logger)
                         bankNode(logger, true, false)
                     }
                 }
@@ -242,7 +268,8 @@ class BlastFurnaceScript : TribotScript {
         progressionManager: ProgressionManager,
         tripStateManager: TripStateManager,
         upkeepManager: UpkeepManager,
-        staminaManager: StaminaManager
+        staminaManager: StaminaManager,
+        playerRunManager: PlayerRunManager
     ) {
         val paintTemplate = PaintTextRow.builder()
             .background(Color(62, 62, 62))
@@ -292,6 +319,9 @@ class BlastFurnaceScript : TribotScript {
                     }
                     .build()
             )
+
+        val sidePaint = BasicPaintTemplate.builder()
+            .location(PaintLocation.TOP_RIGHT_VIEWPORT)
             .row(
                 paintTemplate.toBuilder()
                     .label("Total upkeep spent")
@@ -300,21 +330,30 @@ class BlastFurnaceScript : TribotScript {
             )
 
         if (upkeepManager.shouldPayForeman()) {
-            mainPaint.row(
-                paintTemplate.toBuilder()
-                    .label("Last foreman payment")
-                    .value { Countdown().fromMillis(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
-                    .build()
-            )
+            sidePaint
+                .row(
+                    paintTemplate.toBuilder()
+                        .label("Last foreman payment")
+                        .value { Countdown().fromMillis(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
+                        .build()
+                )
         }
 
-        mainPaint.row(
-            paintTemplate.toBuilder()
-                .label("Sip Stamina")
-                .value { if (staminaManager.satisfiesStaminaState()) "No" else "Yes" }
-                .build()
-        )
+        sidePaint
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Sip Stamina")
+                    .value { if (staminaManager.satisfiesStaminaState()) "No" else "Yes" }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Re-enable run at")
+                    .value(playerRunManager.getNextEnableAtValue().toString().plus("%"))
+                    .build()
+            )
 
         Painting.addPaint { mainPaint.build().render(it) }
+        Painting.addPaint { sidePaint.build().render(it) }
     }
 }
