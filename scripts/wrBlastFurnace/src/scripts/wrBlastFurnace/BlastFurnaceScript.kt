@@ -1,13 +1,13 @@
 package scripts.wrBlastFurnace
 
-import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.behaviours.prevalidation.playerMissesRequirement
-import scripts.wrBlastFurnace.trees.getStartupTree
+import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
+import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
+import scripts.wrBlastFurnace.behaviours.setup.getStartupTree
 
 @TribotScriptManifest(
     name = "wrBlastFurnace 1.0.5",
@@ -16,7 +16,7 @@ import scripts.wrBlastFurnace.trees.getStartupTree
     author = "WrEcked"
 )
 class BlastFurnaceScript : TribotScript {
-    fun initializeMousePainter() {
+    private fun initializeMousePainter() {
         // Create configurations for the mouse paint components
         val mouseCursorPaintConfig = MouseCursorPaintConfig()
         val mouseSplinePaintConfig = MouseSplinePaintConfig()
@@ -54,18 +54,19 @@ class BlastFurnaceScript : TribotScript {
          */
 //        initPaint(progressManager)
 
-        logger.debug("tree defining")
+//        logger.debug("tree defining")
+//
+//        val startupTree = getStartupTree(
+//            logger = logger
+//        )
 
-        if (!Login.isLoggedIn()) {
-            val startupTree = getStartupTree(
-                logger = logger
-            )
+//        val startupTick = startupTree.tick()
+//        logger.debug("Resulted startup in: ${startupTick}")
 
-            val startupTick = startupTree.tick()
-            logger.debug("Resulted startup in: ${startupTick}")
-        }
+        val playerMissesRequirements = EnsurePlayerHasRequirements(logger)
+            .playerMissesRequirement()
 
-        if (playerMissesRequirement(logger)) {
+        if (playerMissesRequirements) {
             logger.error("Stopping script, we're missing requirements...")
             return
         }
@@ -102,9 +103,12 @@ class BlastFurnaceScript : TribotScript {
     private fun getBlastTree(
         logger: Logger
     ) = behaviorTree {
-        repeatUntil(BehaviorTreeStatus.KILL) {
+        repeatUntil(BehaviorTreeStatus.SUCCESS) { //todo swap to .KILL to keep looping
             selector {
-                //..
+                moveToFurnaceNode(logger)
+                perform {
+                    logger.info("After move")
+                }
             }
         }
     }

@@ -1,7 +1,6 @@
-package scripts.wrBlastFurnace.behaviours.prevalidation
+package scripts.wrBlastFurnace.behaviours.setup.actions
 
 import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 
