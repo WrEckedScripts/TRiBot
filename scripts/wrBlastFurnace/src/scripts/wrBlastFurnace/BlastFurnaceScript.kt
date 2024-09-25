@@ -1,5 +1,6 @@
 package scripts.wrBlastFurnace
 
+import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
@@ -25,6 +26,7 @@ import scripts.wrBlastFurnace.managers.UpkeepManager
 import java.awt.Color
 import java.awt.Font
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @TribotScriptManifest(
     name = "wrBlastFurnace 1.1.0",
@@ -33,6 +35,8 @@ import java.util.Locale
     author = "WrEcked"
 )
 class BlastFurnaceScript : TribotScript {
+    private val startedAt: Long = System.currentTimeMillis()
+
     private fun initializeMousePainter() {
         // Create configurations for the mouse paint components
         val mouseCursorPaintConfig = MouseCursorPaintConfig()
@@ -168,9 +172,17 @@ class BlastFurnaceScript : TribotScript {
                 }
 
                 selector {
-                    condition { playerRunManager.shouldHaveRunEnabled() }
+                    //todo, seems to interfere with banking, make sure we don't do it whilst banking
+                    condition { playerRunManager.shouldHaveRunEnabled()}
                     condition {
                         logger.debug("BFS - enablingRun")
+                        // Fake happy flow, to not execute whilst a bank screen is opened.
+                        // Untested, should prevent wrong inventory states
+                        // (half bars / half ores)
+                        if(Bank.isOpen()){
+                            return@condition true
+                        }
+
                         Waiting.waitUntil {
                             playerRunManager.enableRun()
                         }
@@ -263,6 +275,12 @@ class BlastFurnaceScript : TribotScript {
             )
             .row(
                 paintTemplate.toBuilder()
+                    .label("Per hr")
+                    .value { "Trips: ".plus(perHour(0, tripStateManager.tripCount)).plus("| Bars: ".plus(perHour(0, tripStateManager.tripCount * 14))) }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
                     .label("Total upkeep spent")
                     .value { formatCoins(upkeepManager.totalSpent) }
                     .build()
@@ -298,5 +316,20 @@ class BlastFurnaceScript : TribotScript {
             coins in 10000..9999999 -> String.format(Locale.US, "%.2fM", coins / 1000000.0)
             else -> coins.toString() // For values 10 million and above, you can adjust as needed
         }
+    }
+
+    fun perHour(start: Int, current: Int): String {
+        val currentAt = System.currentTimeMillis()
+        val gained = current - start
+        val elapsedTimeMillis = currentAt - this.startedAt
+        val elapsedTimeHours = elapsedTimeMillis / 3600000.0
+
+        if (elapsedTimeMillis < 1) {
+            return "Calculating..."
+        }
+
+        val perHour = gained / elapsedTimeHours
+
+        return perHour.roundToInt().toString()
     }
 }

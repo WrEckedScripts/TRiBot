@@ -20,6 +20,8 @@ fun IParentNode.collectBarsNode(
             .nameContains("bar")
             .count() > 0
 
+        logger.debug("InventoryContainsBars ${inventoryContainsBars}")
+
         if (inventoryContainsBars) {
             // TODO, didn't happen anymore, but let's keep this for now
             logger.error("We've collected the bars, cycling state now.")
