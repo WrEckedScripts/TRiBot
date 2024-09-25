@@ -1,12 +1,15 @@
 package scripts.wrCombat
 
+import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.antiban.Antiban
 import org.tribot.script.sdk.query.NpcQuery
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.Npc
 import kotlin.jvm.optionals.getOrNull
+import kotlin.random.Random
 
 interface ICombatManager {
     val logger: Logger
@@ -22,6 +25,8 @@ interface ICombatManager {
     fun setNewTargetNpc()
 
     fun resetTargetNpc()
+
+    fun resetInventory()
 }
 
 fun ICombatManager.incKillCount() {
@@ -141,5 +146,18 @@ class CombatManager(
                     && MyPlayer.getAnimation() != -1
                     && MyPlayer.getAnimation() != animationBeforeAttacking
         }
+    }
+
+    override fun resetInventory() {
+        Bank.depositInventory()
+        Waiting.waitNormal(100,700)
+
+        val randomFoodAmount = Random.nextInt(10, 15)
+        logger.debug("[RANDOMIZED FOOD COUNT] > Taking: ${randomFoodAmount}")
+
+        Bank.withdraw("Lobster", randomFoodAmount)
+        Bank.close()
+
+        Waiting.waitNormal(1000, 5000)
     }
 }

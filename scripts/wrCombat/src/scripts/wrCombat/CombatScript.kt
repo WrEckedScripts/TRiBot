@@ -16,11 +16,10 @@ import org.tribot.script.sdk.walking.GlobalWalking
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
-import java.awt.Paint
 import kotlin.jvm.optionals.getOrNull
 
 @TribotScriptManifest(
-    name = "wrCombat",
+    name = "wrCombat 1.0.5",
     description = "Killing script",
     category = "Combat",
     author = "WrEcked"
@@ -62,6 +61,20 @@ class CombatScript : TribotScript {
         val npcName = "Guard"
         val faladorGuardCenterTile = WorldTile(2966, 3388, 0)
         val radius = 50
+
+        //TODO let's draw the center tile
+        // sources:
+        // https://tribot.org/docs/sdk/kdocs/-tribot--scripting--s-d-k/org.tribot.script.sdk.painting/-painting/index.html
+        // https://tribot.org/docs/sdk/kdocs/-tribot--scripting--s-d-k/org.tribot.script.sdk.types/-world-tile/index.html
+
+        Painting.addPaint { g: Graphics ->
+            g.color = Color.blue
+            val boundsToDraw = faladorGuardCenterTile.bounds
+
+            if (boundsToDraw.isPresent) {
+                g.drawPolygon(boundsToDraw.get());
+            }
+        }
 
         combatArea = Area.fromRadius(faladorGuardCenterTile, radius)
         npcNames.add(npcName)
@@ -106,20 +119,8 @@ class CombatScript : TribotScript {
                 }
 
                 // Ensure inventory is not full sequence
-                // Or ensure that we have eatable food within our Inventory
                 sequence {
                     condition { Inventory.isFull() }
-                    //todo this needs to be validated
-                    condition {
-                        Query.inventory()
-                            .actionContains("Eat")
-                            .isNotNoted
-                            .findFirst()
-                            .getOrNull() === null
-                    }
-                    //end todo
-
-                    perform { logger.debug("Banking") }
                     selector {
                         condition { Bank.ensureOpen() }
                         sequence {
@@ -127,10 +128,22 @@ class CombatScript : TribotScript {
                             perform { Bank.ensureOpen() }
                         }
                     }
-                    perform { Bank.depositInventory() }
-//                    perform {
-//                        todo fetch food from bank
-//                    }
+                    perform { combatManager.resetInventory() }
+                }
+
+                // Ensure inventory contains eatable food
+                sequence {
+                    condition {
+                        Inventory.isFull() || !Inventory.contains("Lobster")
+                    }
+                    selector {
+                        condition { Bank.ensureOpen() }
+                        sequence {
+                            perform { GlobalWalking.walkToBank() }
+                            perform { Bank.ensureOpen() }
+                        }
+                    }
+                    perform { combatManager.resetInventory() }
                 }
 
                 // Ensure in combat area sequence
@@ -143,26 +156,27 @@ class CombatScript : TribotScript {
                 // Ensure target is not null
                 sequence {
                     condition { combatManager.isTargetNull() }
-                    perform { logger.debug("Initializing new target npc") }
                     perform { combatManager.setNewTargetNpc() }
                 }
 
                 // Ensure target is valid
                 sequence {
                     condition { combatManager.isTargetNotValid() }
-                    perform { logger.debug("Target npc has been neutralized") }
                     perform { combatManager.incKillCount() }
                     perform { combatManager.setNewTargetNpc() }
                 }
 
                 // Consume any food when the players HP is low
                 sequence {
-                    condition { MyPlayer.getCurrentHealthPercent() <= 50 }
+                    condition { MyPlayer.getCurrentHealthPercent() <= 75 }
                     perform {
+                        logger.error("[EAT] - We're at ${MyPlayer.getCurrentHealthPercent()} %")
+                        logger.debug("[EAT] - Let's eat!")
+
                         Query.inventory()
                             .actionContains("Eat")
                             .isNotNoted
-                            .findFirst()
+                            .findRandom() //or findFirst? try out what it differ
                             .getOrNull()
                             //https://kotlinlang.org/docs/scope-functions.html#lambda-result (about "let" and "it")
                             ?.let { it.click("Eat") }
@@ -175,8 +189,6 @@ class CombatScript : TribotScript {
                     condition { !combatManager.inCombat() }
                     perform { lootingManager.manageLooting() }
                 }
-
-                logger.debug("after loot:");
 
                 // Bury any bones that were picked up when the player is not in combat
                 sequence {
@@ -194,16 +206,11 @@ class CombatScript : TribotScript {
                     }
                 }
 
-                logger.debug("after bury/loot bones:");
-
                 // No need to attack if already in combat
                 condition { combatManager.inCombat() }
 
-                logger.debug("after incombat check:");
-
                 // Not in combat, attack the target npc
                 perform { combatManager.attackTargetNpc() }
-                logger.debug("after attack target:");
             }
         }
     }
