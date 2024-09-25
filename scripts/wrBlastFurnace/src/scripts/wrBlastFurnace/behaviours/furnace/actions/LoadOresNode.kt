@@ -5,11 +5,11 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
-import org.tribot.script.sdk.input.Mouse
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
+import scripts.utils.antiban.MiniBreak
 
 fun IParentNode.loadOresNode(
     logger: Logger,
@@ -29,12 +29,8 @@ fun IParentNode.loadOresNode(
         val res = Waiting.waitUntil(TribotRandom.normal(1750, 55)) {
             val interacted = conveyor.interact("Put-ore-on")
 
-            //todo refactor to Antibanmanager class..
             Lottery(logger).execute(0.1) {
-                val miniLeave = TribotRandom.normal(5000, 2340)
-                logger.info("[Antiban] - Leaving screen for ${miniLeave}ms, we'll be right back!")
-                Mouse.leaveScreen()
-                Waiting.wait(miniLeave)
+                MiniBreak.miniLeave()
             }
 
             interacted

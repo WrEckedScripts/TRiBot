@@ -10,6 +10,7 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
+import scripts.utils.antiban.MiniBreak
 import scripts.utils.formatters.Coins
 import scripts.utils.formatters.Countdown
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
@@ -348,6 +349,12 @@ class BlastFurnaceScript : TribotScript {
                 paintTemplate.toBuilder()
                     .label("Re-enable run at")
                     .value(playerRunManager.getNextEnableAtValue().toString().plus("%"))
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Mini-break")
+                    .value(MiniBreak.stateForPaint())
                     .build()
             )
 

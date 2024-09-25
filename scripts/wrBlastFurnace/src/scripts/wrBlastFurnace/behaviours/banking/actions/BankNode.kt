@@ -27,9 +27,15 @@ fun IParentNode.bankNode(
         if (depositInventory) {
             Bank.depositInventory()
 
-            Waiting.waitNormal(300, 30)
+            // Wait a maximum of 3 seconds to deposit our inventory
+            Waiting.waitUntil(3000) {
+                val deposited = Bank.depositInventory()
+                Waiting.waitNormal(300, 30)
+                deposited
+            }
 
-            if (!Inventory.isEmpty()) {
+            // If somehow our inventory is still full, let's fail the condition.
+            if (Inventory.isFull()) {
                 logger.error("[Banking] - Failed to deposit inventory, re-trying")
                 return@condition false
             }

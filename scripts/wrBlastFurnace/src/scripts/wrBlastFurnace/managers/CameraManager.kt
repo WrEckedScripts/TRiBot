@@ -7,31 +7,30 @@ import scripts.utils.Logger
 
 class CameraManager(val logger: Logger) {
 
-    fun initialize(){
+    fun initialize() {
         // Set to mouse scrolling
         Camera.setZoomMethod(Camera.ZoomMethod.MOUSE_SCROLL) //todo user pref?
         Camera.setRotationMethod(Camera.RotationMethod.MOUSE) //todo user pref?
-        logger.info("[Camera] - set zooming method to 'mouse scrolling'")
 
         this.randomize()
     }
 
-    private fun setZoom(): Unit {
+    private fun setZoom(): Double {
         val randomZoom = TribotRandom.normal(2.23, 1.25)
         Camera.setZoomPercent(randomZoom)
-        logger.info("[Camera] - set zoom % to ${randomZoom}")
+        return randomZoom
     }
 
-    private fun setAngle(): Unit {
+    private fun setAngle(): Int {
         val randomAngle = TribotRandom.normal(90, 4)
         Camera.setAngle(randomAngle)
-        logger.info("[Camera] - set angle to ${randomAngle}")
+        return randomAngle
     }
 
-    private fun setRotation(): Unit {
+    private fun setRotation(): Int {
         val randomRotation = TribotRandom.normal(285, 15)
         Camera.setRotation(randomRotation)
-        logger.info("[Camera] - set rotation to ${randomRotation}")
+        return randomRotation
     }
 
     fun randomize(
@@ -39,17 +38,24 @@ class CameraManager(val logger: Logger) {
         angle: Boolean = true,
         rotation: Boolean = true
     ): Unit {
+        var logMessage = "[Camera] - "
         if (zoom) {
-            this.setZoom()
+            val newZoom: Double = this.setZoom()
+            logMessage = logMessage.plus("zoom: ${newZoom} ")
         }
+
         if (angle) {
-            this.setAngle()
+            val newAngle = this.setAngle()
+            logMessage = logMessage.plus("angle: ${newAngle} ")
         }
+
         if (rotation) {
-            this.setRotation()
+            val newRotate = this.setRotation()
+            logMessage = logMessage.plus("rotate: ${newRotate} ")
         }
 
         GameTab.INVENTORY.open()
+        logger.info(logMessage)
         logger.info("[Camera] - finished camera randomization")
     }
 }
