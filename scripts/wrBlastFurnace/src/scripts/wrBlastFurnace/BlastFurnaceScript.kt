@@ -99,6 +99,7 @@ class BlastFurnaceScript : TribotScript {
         // -    based on the level for now?
 
         val upkeepManager = UpkeepManager(logger)
+        upkeepManager.setNextCofferTopup()
 
         val blastFurnaceTree = getBlastTree(
             logger = logger,
@@ -121,7 +122,7 @@ class BlastFurnaceScript : TribotScript {
                 perform {
                     logger.debug(
                         "lastPaidAt: ${upkeepManager.lastPaidForemanAt}" +
-                        "holdEnfCoins: ${upkeepManager.playerHoldsEnoughCoins()}"
+                        "cofferTopup: ${upkeepManager.nextCofferTopupAmount}"
                     )
                 }
                 selector {
@@ -134,9 +135,22 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.playerHoldsEnoughCoins() }
                     sequence {
                         bankNode(logger)
-                        //todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
+//                        //todo deposit all items, to ensure enough room
+//                        //todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
                         withdrawItemNode(logger, "Coins", 2500)
                         payForemanNode(logger, upkeepManager)
+                    }
+                }
+
+                selector {
+                    condition { upkeepManager.haveFilledCoffer() }
+                    condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.nextCofferTopupAmount) }
+                    sequence {
+                        bankNode(logger)
+                        //todo deposit all items, to ensure enough room
+//                        todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
+                        withdrawItemNode(logger, "Coins", upkeepManager.nextCofferTopupAmount)
+                        topupCofferNode(logger, upkeepManager)
                     }
                 }
 

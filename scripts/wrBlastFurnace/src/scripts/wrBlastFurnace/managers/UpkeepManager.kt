@@ -9,6 +9,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.input.Keyboard
 import org.tribot.script.sdk.query.Query
+import org.tribot.script.sdk.util.TribotRandom
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
 import kotlin.jvm.optionals.getOrNull
@@ -20,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 class UpkeepManager(val logger: Logger) {
     var lastPaidForemanAt: Long? = null
+    var nextCofferTopupAmount: Int = 0
 
     fun setLastPaidForemanAt(timestamp: Long) {
         lastPaidForemanAt = timestamp
@@ -40,11 +42,13 @@ class UpkeepManager(val logger: Logger) {
         return (currentTimestamp - lastPaidAt) <= tenMinutesInMillis
     }
 
-    fun shouldTopupCoffer(): Boolean {
+    fun haveFilledCoffer(): Boolean {
         //todo don't wait until it's fully empty. randomly set new topup moments
         val cofferValue = GameState.getVarbit(5357)
+        logger.error("CofferValue: ${cofferValue}")
 
         if (cofferValue <= 0) {
+            setNextCofferTopup()
             return false
         }
 
@@ -52,21 +56,33 @@ class UpkeepManager(val logger: Logger) {
         return true
     }
 
-    fun playerHoldsEnoughCoins(): Boolean {
+    fun getCofferTopupAmount(): Int {
+        if (0 == nextCofferTopupAmount) {
+            setNextCofferTopup()
+        }
+
+        return nextCofferTopupAmount;
+    }
+
+    fun setNextCofferTopup(): Unit {
+        nextCofferTopupAmount = TribotRandom.uniform(10000, 20000)
+        logger.error("Set next coffer topup amount to ${nextCofferTopupAmount}")
+    }
+
+    fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {
+        logger.error("Checking if holding: '${amount}' coins")
         val coins = Query.inventory()
             .nameEquals("Coins")
-            .minStack(2500)
+            .minStack(amount)
             .findFirst()
             .getOrNull()
 
-        logger.debug("Coins: ${coins}")
+        logger.debug("Coin stack: ${coins?.stack}")
 
         if (null == coins) {
-            logger.debug("returning false")
             return false
         }
 
-        logger.debug("returning true")
         return true
     }
 }

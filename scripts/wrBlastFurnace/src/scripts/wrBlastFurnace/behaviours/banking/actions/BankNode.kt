@@ -34,7 +34,6 @@ fun IParentNode.bankNode(logger: Logger) = sequence {
                 }
             }
             condition {
-                logger.debug("EnsureOpen:Bank")
                 Bank.ensureOpen()
             }
         }

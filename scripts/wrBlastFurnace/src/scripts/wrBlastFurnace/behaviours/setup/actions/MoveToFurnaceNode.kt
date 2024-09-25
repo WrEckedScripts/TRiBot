@@ -25,7 +25,7 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
     selector {
         condition { !MoveToFurnaceValidation(logger).isNearTrapdoor() || !MoveToFurnaceValidation(logger).isWithinKeldagrim() }
         condition {
-            logger.info("Navigating to trapdoor")
+//            logger.info("Navigating to trapdoor")
             Waiting.waitUntil {
                 GlobalWalking.walkTo(MoveToFurnaceValidation(logger).randomTrapdoorTile())
                 MoveToFurnaceValidation(logger).isNearTrapdoor()
@@ -45,10 +45,10 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
                 }
                 .orElse(false)
 
-            logger.debug("Trapdoor: ${trapdoor}")
+//            logger.debug("Trapdoor: ${trapdoor}")
             if (trapdoor) {
-                logger.debug("Trapdoor: ${trapdoor}")
-                logger.info("Traveling to Keldagrim")
+//                logger.debug("Trapdoor: ${trapdoor}")
+//                logger.info("Traveling to Keldagrim")
                 Waiting.waitUntil {
                     MoveToFurnaceValidation(logger).isWithinKeldagrim()
                 }
@@ -62,9 +62,9 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
     selector {
         condition { MoveToFurnaceValidation(logger).isWithinKeldagrim() && MoveToFurnaceValidation(logger).isNearBlastFurnaceEntrance() }
         condition {
-            logger.info("Navigating to Blast Furnace Stairs")
+//            logger.info("Navigating to Blast Furnace Stairs")
             Waiting.waitUntil {
-                logger.info("We are going down!")
+//                logger.info("We are going down!")
                 GlobalWalking.walkTo(MoveToFurnaceValidation(logger).entranceStairsTile)
             }
         }

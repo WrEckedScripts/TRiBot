@@ -24,7 +24,7 @@ fun IParentNode.withdrawItemNode(
     selector {
         condition {
             Waiting.waitUntil {
-                logger.debug("time to withdraw")
+                logger.debug("Withdrawing ${itemName} x ${quantity}")
                 Bank.withdraw(itemName, quantity)
 
                 if (closeBankWindow) {
