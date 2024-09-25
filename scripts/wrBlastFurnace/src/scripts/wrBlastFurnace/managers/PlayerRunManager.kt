@@ -13,7 +13,7 @@ class PlayerRunManager(val logger: Logger) {
         return MyPlayer.getRunEnergy()
     }
 
-    private fun getIsRunning(): Boolean {
+    fun isRunning(): Boolean {
         return Options.isRunEnabled()
     }
 
@@ -35,7 +35,7 @@ class PlayerRunManager(val logger: Logger) {
      * - returns FALSE if we should be running.
      */
     fun satisfiesRunExpectation(): Boolean {
-        if (this.getIsRunning()) {
+        if (this.isRunning()) {
             return true
         }
 

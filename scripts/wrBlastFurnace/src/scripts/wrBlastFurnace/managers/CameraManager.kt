@@ -9,7 +9,8 @@ class CameraManager(val logger: Logger) {
 
     fun initialize(){
         // Set to mouse scrolling
-        Camera.setZoomMethod(Camera.ZoomMethod.MOUSE_SCROLL)
+        Camera.setZoomMethod(Camera.ZoomMethod.MOUSE_SCROLL) //todo user pref?
+        Camera.setRotationMethod(Camera.RotationMethod.MOUSE) //todo user pref?
         logger.info("[CameraManager] - set zooming method to 'mouse scrolling'")
 
         this.randomize()

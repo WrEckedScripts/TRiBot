@@ -15,7 +15,7 @@ fun IParentNode.loadOresNode(
 ) = sequence {
     condition {
         Waiting.waitUntil {
-            Waiting.waitNormal(400, 60)
+            Waiting.waitNormal(675, 60)
             !Inventory.isEmpty()
         }
 
@@ -25,7 +25,7 @@ fun IParentNode.loadOresNode(
             .get()
 
         val res = Waiting.waitUntil {
-            Waiting.waitNormal(1900, 55)
+            Waiting.waitNormal(2000, 55)
             conveyor.interact("Put-ore-on")
         }
 

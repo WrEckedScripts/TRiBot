@@ -117,16 +117,15 @@ class BlastFurnaceScript : TribotScript {
         val playerRunManager = PlayerRunManager(logger)
         playerRunManager.setNextRunEnablingThreshold()
 
+        //todo enable/disable use of stamina/energy pots
+        val staminaManager = StaminaManager(logger, playerRunManager)
+
         val cameraManager = CameraManager(logger)
-        cameraManager.initialize()
 
         /**
          * INITIALIZATION
          * - will setup our player / world controls, options and preferences
          */
-        // does not re-open the inventory tab
-
-        logger.info("[Initialization] - Camera set")
 
         /**
          * Initialise the basic paint
@@ -139,6 +138,7 @@ class BlastFurnaceScript : TribotScript {
             barManager = barManager,
             tripStateManager = tripStateManager,
             playerRunManager = playerRunManager,
+            staminaManager = staminaManager,
             cameraManager = cameraManager
         )
 
@@ -155,6 +155,7 @@ class BlastFurnaceScript : TribotScript {
         barManager: BarManager,
         tripStateManager: TripStateManager,
         playerRunManager: PlayerRunManager,
+        staminaManager: StaminaManager,
         cameraManager: CameraManager
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
@@ -197,7 +198,7 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.havePaidForeman() }
                     condition { upkeepManager.playerHoldsEnoughCoins() }
                     sequence {
-                        bankNode(logger, true)
+                        bankNode(logger, staminaManager, true)
                         withdrawItemNode(logger, "Coins", 2500, true)
                         payForemanNode(logger, upkeepManager, tripStateManager, barManager)
                     }
@@ -211,10 +212,10 @@ class BlastFurnaceScript : TribotScript {
                     condition { upkeepManager.haveFilledCoffer() }
                     condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.getCofferTopupAmount()) }
                     sequence {
-                        bankNode(logger, true)
+                        bankNode(logger, staminaManager, true)
                         withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
                         topupCofferNode(logger, upkeepManager, tripStateManager, barManager)
-                        bankNode(logger, true)
+                        bankNode(logger, staminaManager, true)
                     }
                 }
 
@@ -223,7 +224,7 @@ class BlastFurnaceScript : TribotScript {
                     condition { !upkeepManager.haveFilledCoffer() }
                     condition { !upkeepManager.havePaidForeman() }
                     sequence {
-                        smeltBarsNode(logger, barManager, tripStateManager, cameraManager)
+                        smeltBarsNode(logger, barManager, tripStateManager, cameraManager, staminaManager)
                     }
                 }
             }
