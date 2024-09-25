@@ -3,7 +3,6 @@ package scripts.utils.progress.webhook
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbed.EmbedAuthor
-import club.minnced.discord.webhook.send.WebhookEmbed.EmbedFooter
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessage
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
@@ -28,8 +27,8 @@ object DiscordNotifier {
     /**
      * Notify the known webhook, regarding the current progression
      */
-    fun notify(force: Boolean = false) {
-        this.sendScreenshot(force)
+    fun notify(force: Boolean = false, message: String? = null, color: Int? = null) {
+        this.sendScreenshot(force, message, color)
     }
 
     /**
@@ -53,9 +52,9 @@ object DiscordNotifier {
         return (currentTime - lastSent!!) >= nextTime
     }
 
-    private fun embed(): WebhookEmbed {
+    private fun embed(message: String?, color: Int?): WebhookEmbed {
         return WebhookEmbedBuilder()
-            .setDescription("Your account (${MyPlayer.getUsername()}) is grinding at the Blast Furnace!")
+            .setDescription(message ?: "Your account (${MyPlayer.getUsername()}) is grinding at the Blast Furnace!")
             .setAuthor(
                 EmbedAuthor(
                     ScriptRuntimeInfo.getScriptName(),
@@ -63,20 +62,14 @@ object DiscordNotifier {
                     null
                 )
             )
-            .setFooter(
-                EmbedFooter(
-                    "Go hard or go home!",
-                    null
-                )
-            )
             .setTimestamp(OffsetDateTime.now())
-            .setColor(0x1E90FF)
+            .setColor(color ?: 0x1E90FF)
             .setImageUrl("attachment://wrBlastFurnaceUpdate.png")
             .build()
     }
 
-    private fun message(file: File?): WebhookMessage {
-        val embed = this.embed()
+    private fun message(file: File?, message: String?, color: Int?): WebhookMessage {
+        val embed = this.embed(message, color)
 
         var builder = WebhookMessageBuilder()
             .setUsername(MyPlayer.getUsername())
@@ -99,7 +92,7 @@ object DiscordNotifier {
         return file
     }
 
-    private fun sendScreenshot(force: Boolean = false): Unit {
+    private fun sendScreenshot(force: Boolean = false, message: String?, color: Int?): Unit {
         if (!shouldSend(force)) {
             return
         }
@@ -107,7 +100,7 @@ object DiscordNotifier {
         WebhookClient.withUrl(
             "https://discord.com/api/webhooks/1279066926953402419/VBj8I3sB4Scj73MoV_p1Ei-uUGOCW-b09swi6gKMNVC_o1MsL_eQDkOuyTH47-3a38w-"
         ).send(
-            message(this.createScreenshot())
+            message(this.createScreenshot(), message, color)
         )
 
         lastSent = System.currentTimeMillis()

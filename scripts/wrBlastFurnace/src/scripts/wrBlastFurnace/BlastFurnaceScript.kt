@@ -1,5 +1,9 @@
 package scripts.wrBlastFurnace
 
+import org.tribot.script.sdk.Chatbox
+import org.tribot.script.sdk.MyPlayer
+import org.tribot.script.sdk.ScriptListening
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
@@ -51,9 +55,17 @@ class BlastFurnaceScript : TribotScript {
     }
 
     override fun execute(args: String) {
-        val logger = Logger("Main")
+        val logger = Logger("WrBlastFurnace Lite")
 
         this.initializeMousePainter()
+
+        ScriptListening.addEndingListener {
+            DiscordNotifier.notify(
+                true,
+                "Instance ended, Your account (${MyPlayer.getUsername()}) is no longer running!",
+                0xFF1E61
+            )
+        }
 
         /**
          * Setup manager classes
@@ -130,23 +142,29 @@ class BlastFurnaceScript : TribotScript {
             playerRunManager
         )
 
-        val blastFurnaceTree = getBlastTree(
-            logger = logger,
-            upkeepManager = upkeepManager,
-            dispenserManager = dispenserManager,
-            tripStateManager = tripStateManager,
-            playerRunManager = playerRunManager,
-            staminaManager = staminaManager,
-            cameraManager = cameraManager
-        )
+        try {
+            val blastFurnaceTree = getBlastTree(
+                logger = logger,
+                upkeepManager = upkeepManager,
+                dispenserManager = dispenserManager,
+                tripStateManager = tripStateManager,
+                playerRunManager = playerRunManager,
+                staminaManager = staminaManager,
+                cameraManager = cameraManager
+            )
 
-        DiscordNotifier.notify(true)
+            Chatbox.hide()
+            Waiting.wait(10000)
+            DiscordNotifier.notify(true)
 
-        /**
-         * Execute the behaviourTree until the final result is reached.
-         */
-        val tick = blastFurnaceTree.tick()
-        logger.debug("[BLAST] - Behavior Tree TICK result: $tick");
+            /**
+             * Execute the behaviourTree until the final result is reached.
+             */
+            val tick = blastFurnaceTree.tick()
+            logger.debug("[BLAST] - Behavior Tree TICK result: $tick");
+        } catch (ex: Throwable) {
+            logger.error(ex.message)
+        }
     }
 
     private fun initPaint(
