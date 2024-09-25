@@ -1,8 +1,11 @@
 package scripts.wrCrafting
 
 import org.tribot.script.sdk.Bank
+import org.tribot.script.sdk.ChatScreen
 import org.tribot.script.sdk.Login
+import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.antiban.Antiban
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -14,6 +17,7 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.WorldTile
+import org.tribot.script.sdk.util.Notifications
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
 import java.awt.Color
@@ -21,7 +25,7 @@ import java.awt.Font
 import java.awt.Graphics
 
 @TribotScriptManifest(
-    name = "wrCrafting 0.0.3",
+    name = "wrCrafting 0.0.6",
     description = "Auto Crafter",
     category = "Crafting",
     author = "WrEcked",
@@ -38,13 +42,19 @@ class Crafter : TribotScript {
         val radius = 3
         val grandExchangeArea = Area.fromRadius(grandExchangeCenterTile, radius)
 
+        val craftableName = "Uncut emerald"
+
         val logisticsManager = LogisticsManager(logger, grandExchangeArea)
+        val suppliesManager = SuppliesManager(logger, craftableName)
+        val craftingManager = CraftingManager(logger, craftableName)
 
         paintTile(grandExchangeCenterTile)
         logger.debug("Painted location-tile")
 
         val behaviorTree = getCraftingTrees(
             logisticsManager = logisticsManager,
+            suppliesManager = suppliesManager,
+            craftingManager = craftingManager,
             logger = logger
         )
 
@@ -52,16 +62,23 @@ class Crafter : TribotScript {
         logger.debug("Behavior Tree TICK result: $tick");
     }
 
-    private fun getCraftingTrees(logisticsManager: LogisticsManager, logger: Logger) = behaviorTree {
+    private fun getCraftingTrees(
+        logisticsManager: LogisticsManager,
+        suppliesManager: SuppliesManager,
+        craftingManager: CraftingManager,
+        logger: Logger
+    ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             logger.debug("repeatUntill KILL status given:")
             selector {
+                // Make sure the character is logged in or log them in
                 sequence {
                     condition { !Login.isLoggedIn() }
                     perform { logger.debug("Waiting until logged in") }
                     perform { Login.login() }
                 }
 
+                // Make sure we're in the skilling area, or move there.
                 sequence {
                     condition { !logisticsManager.inSkillingArea() }
                     perform { logger.debug("Walking to skilling area") }
@@ -70,17 +87,10 @@ class Crafter : TribotScript {
 
                 sequence {
                     condition {
-                        val chiselPresent = Query.inventory()
-                            .nameContains("Chisel")
-                            .isNotNoted //this should've fixed the always false loop... (was isNoted, dumbass....)
-                            .findRandom()
-                            .isPresent
-
-                        !chiselPresent
+                        Waiting.waitUntil {
+                            suppliesManager.needsChisel() || suppliesManager.needsCraftables()
+                        }
                     }
-                    perform { logger.debug("Going to grab a Chisel from the bank")}
-                    perform { Waiting.waitNormal(1000, 3000) }
-
                     selector {
                         condition { Bank.ensureOpen() }
                         sequence {
@@ -89,18 +99,80 @@ class Crafter : TribotScript {
                         }
                     }
                     perform {
+                        // Added waiting.waituntil, as i've seen these two become false here?
+                        logger.debug("CHISEL: " + suppliesManager.needsChisel())
+                        logger.debug("GEMS  : " + suppliesManager.needsCraftables())
                         logger.debug("banking time");
-                        //todo this is should be a BankManager related flow:
-                        Bank.depositInventory()
 
-                        //todo if chisel isn't in bank, we should buy one
-                        Bank.withdraw("Chisel", 1)
+                        Query.inventory()
+                            .nameNotEquals(
+                                "Chisel",
+                                craftingManager.craftableName
+                            )
+                            .forEach { item ->
+                                Bank.depositAll(item.name)
+
+                                //todo Wait until it's banked?
+                                Waiting.waitUntil {
+                                    Query.inventory()
+                                        .nameEquals(item.name)
+                                        .findRandom()
+                                        .isEmpty
+                                }
+                            }
+
+                        if (suppliesManager.needsChisel()) {
+                            logger.debug("need a chisel")
+                            Waiting.waitUntil {
+                                suppliesManager.withdrawChiselFromBank()
+                            }
+                            logger.debug("got a chisel")
+                        }
+
+                        if (suppliesManager.needsCraftables()) {
+                            logger.debug("need craftables")
+                            Waiting.waitUntil {
+                                suppliesManager.withdrawCraftablesFromBank()
+                            }
+                            logger.debug("got craftables")
+                        }
+
                         Bank.close()
-
-                        Waiting.waitNormal(1000, 3000)
-                        logger.debug("done sleeping")
+                        // Reset the state, to re-trigger the last sequence
+                        craftingManager.isProcessing = false
                     }
+                }
+                sequence {
+                    //todo seems to be overkill / not valuable to check for a complete inv
+                    // only this condition, causes spam using chisel
+                    condition { !suppliesManager.hasCompletedInventory() }
+                    // this actually re-triggers the sequence
+                    condition { !craftingManager.isProcessing }
+                    perform {
+                        logger.debug("crafting sequence")
+                        Waiting.waitUntil {
+                            craftingManager.initCrafting()
+                        }
+                    }
+                }
+                sequence {
+                    //todo any condition we could use here?
+                    // perhaps non animating character.
+                    perform {
+                        logger.debug("Checking for stale char, due to interface pop-up?")
+                        Waiting.waitNormal(2000, 4000)
 
+                        //todo untested, need to see if levelup now gets closed
+                        // and we continue with cutting gems
+                        if (ChatScreen.isClickContinueOpen()) {
+                            //todo in favor of antiban, sometimes click, sometimes just re-init crafting?
+
+                            ChatScreen.clickContinue()
+                            craftingManager.initCrafting()
+                        }
+
+                        //todo antiban, open random widget? inspect skills/hover random skill
+                    }
                 }
             }
         }
