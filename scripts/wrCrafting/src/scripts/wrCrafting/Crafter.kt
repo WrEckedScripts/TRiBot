@@ -1,6 +1,8 @@
 package scripts.wrCrafting
 
 import org.tribot.script.sdk.*
+import org.tribot.script.sdk.antiban.Antiban
+import org.tribot.script.sdk.antiban.PlayerPreferences
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -21,14 +23,14 @@ import java.awt.Graphics
 
 
 @TribotScriptManifest(
-    name = "wrCrafting 0.1.0",
+    name = "wrCrafting 0.1.1",
     description = "Auto Crafter",
     category = "Crafting",
     author = "WrEcked",
 )
 class Crafter : TribotScript {
     override fun execute(args: String) {
-        val logger = Logger(ScriptRuntimeInfo.getScriptName())
+        val logger = Logger("Main")
 
         /**
          * SETUP
@@ -36,6 +38,8 @@ class Crafter : TribotScript {
          * - radius around location
          * - Craftable resource name
          */
+
+        //todo randomise the tile
         val grandExchangeCenterTile = WorldTile(3167, 3488, 0);
         val radius = 3
         val grandExchangeArea = Area.fromRadius(grandExchangeCenterTile, radius)
@@ -47,18 +51,22 @@ class Crafter : TribotScript {
         /**
          * Setup manager classes
          */
-        val logisticsManager = LogisticsManager(logger, grandExchangeArea)
+        val logisticsManager = LogisticsManager(grandExchangeArea)
         val progressManager = ProgressManager(Skill.CRAFTING, Skill.CRAFTING.xp)
-        val suppliesManager = SuppliesManager(logger, taskConfiguration, progressManager)
-        val craftingManager = CraftingManager(logger, taskConfiguration)
+        val suppliesManager = SuppliesManager(taskConfiguration, progressManager)
+        val craftingManager = CraftingManager(taskConfiguration)
 
+        /**
+         * Initialise the basic paint
+         */
         initPaint(progressManager)
 
         // Let's highlight the tile we're working from
         paintTile(grandExchangeCenterTile)
 
+        logger.debug("tree defining")
         /**
-         * BehaviourTree, which executes the full action-set
+         * Define the Crafting BehaviourTree
          */
         val behaviorTree = getCraftingTrees(
             logisticsManager = logisticsManager,
@@ -67,6 +75,11 @@ class Crafter : TribotScript {
             logger = logger
         )
 
+        logger.debug("tree defined")
+
+        /**
+         * Execute the behaviourTree until the final result is reached.
+         */
         val tick = behaviorTree.tick()
         logger.debug("Behavior Tree TICK result: $tick");
     }
@@ -79,6 +92,7 @@ class Crafter : TribotScript {
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             selector {
+                // region Login & Locational sequences
                 /**
                  * Sequence Login
                  * - Makes sure the user is fully logged into the RS world
@@ -103,10 +117,46 @@ class Crafter : TribotScript {
                  * - - - varrock tablet / ring of wealth (charged)
                  * - - - teleport to the g.e / varrock town
                  */
+                //todo no need to keep on running this right? executed every god damn milisecond
                 sequence {
                     condition { !logisticsManager.inSkillingArea() }
                     perform { logger.debug("Walking to skilling area") }
                     perform { GlobalWalking.walkTo(logisticsManager.skillingArea.center) }
+                }
+
+
+                // endregion
+
+                /**
+                 * TODO idea:
+                 * - Separate chisel fetching and craftables fetching to own sequences
+                 * - Closing of banks is a sequence, after we've done the chisel and craftables
+                 * - - Only if a bank is open of course
+                 * - This above could be a fix to the false-positives we've seen, where we'd re-open the bank quickly
+                 */
+
+                /**
+                 * Ensure we've got a chisel in our inventory for gem cutting
+                 */
+                sequence {
+                    condition {
+                        suppliesManager.needsChisel()
+                    }
+                    selector {
+                        condition { Bank.ensureOpen() } //todo can this be a simple isOpen check?
+                        sequence {
+                            perform { GlobalWalking.walkToBank() }
+                            perform { Bank.ensureOpen() }
+                        }
+                    }
+                    perform {
+                        Waiting.waitUntil{
+                            suppliesManager.depositUnusableItems()
+                            suppliesManager.withdrawChiselFromBank()
+                        }
+
+                        craftingManager.taskConfiguration.isProcessing = false
+                    }
                 }
 
                 /**
@@ -116,59 +166,41 @@ class Crafter : TribotScript {
                  */
                 sequence {
                     condition {
-                        //todo we now do allow one run of crafting when the inv contains 1 chisel and 1 uncut
-                        // so we could double check if we're fully starting with a craftable inv?
-                        suppliesManager.needsChisel() || suppliesManager.needsCraftables()
+                        suppliesManager.needsCraftables()
                     }
                     selector {
-                        logger.error("[CHECK!]selector run")
                         condition { Bank.ensureOpen() }
                         sequence {
                             perform { GlobalWalking.walkToBank() }
                             perform { Bank.ensureOpen() }
                         }
                     }
+
                     perform {
-                        if (!suppliesManager.needsChisel() && !suppliesManager.needsCraftables()) {
-                            logger.error("WE SHOULD NOT BE HERE!")
-                        }
-
-                        //todo Added waiting.waituntil, as i've seen these two become false here?
-                        logger.debug("CHISEL: " + suppliesManager.needsChisel())
-                        logger.debug("GEMS  : " + suppliesManager.needsCraftables())
-
-                        suppliesManager.depositUnusableItems()
-
-                        if (suppliesManager.needsChisel()) {
-                            logger.debug("need a chisel")
-                            suppliesManager.withdrawChiselFromBank()
-                            logger.debug("got a chisel")
-                        }
-
-                        if (suppliesManager.needsCraftables()) {
-                            logger.debug("need craftables")
+                        Waiting.waitUntil {
+                            suppliesManager.depositUnusableItems()
                             suppliesManager.withdrawCraftablesFromBank()
-                            logger.debug("got craftables")
                         }
 
-                        Waiting.waitUntil {
-                            craftingManager.taskConfiguration.isProcessing = false
-                            Bank.close()
-                        }
+                        craftingManager.taskConfiguration.isProcessing = false
                     }
                 }
+
+                /**
+                 * Start crafting
+                 * - If we're not already in a processing state
+                 * - If we don't need a chisel
+                 * - If we don't need any craftables
+                 */
                 sequence {
-                    condition { !suppliesManager.hasCompletedInventory() }
-                    // this actually re-triggers the sequence
-                    condition { !craftingManager.taskConfiguration.isProcessing }
+                    condition { ! craftingManager.taskConfiguration.isProcessing }
+                    condition { ! suppliesManager.needsChisel() }
+                    condition { ! suppliesManager.needsCraftables() }
                     perform {
-                        logger.debug("crafting sequence")
-                        Waiting.waitUntil {
-                            craftingManager.initCrafting()
-                            // todo antiban, leave screen sometimes
-                        }
+                        craftingManager.initCrafting()
                     }
                 }
+
                 /**
                  * Sequence: Chat pop-up, Level-up related
                  * - Make sure to, when a "click continue" is in chat, we click it and restart crafting again.

@@ -5,15 +5,19 @@ import org.tribot.script.sdk.types.Area
 import scripts.utils.Logger
 
 interface LogisticsManagerInterface {
-    val logger: Logger
     val skillingArea: Area
+
+    fun logger(): Logger
 }
 
-fun LogisticsManagerInterface.inSkillingArea() = skillingArea.containsMyPlayer()
+fun LogisticsManagerInterface.inSkillingArea(): Boolean {
+    return skillingArea.containsMyPlayer()
+}
 
 class LogisticsManager(
-    override val logger: Logger,
     override val skillingArea: Area
 ) : LogisticsManagerInterface {
-
+    override fun logger(): Logger {
+        return Logger("Logistics")
+    }
 }

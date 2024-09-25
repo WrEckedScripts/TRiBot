@@ -1,5 +1,7 @@
 package scripts.wrCrafting
 
+import org.tribot.script.sdk.Bank
+import org.tribot.script.sdk.BankSettings
 import org.tribot.script.sdk.MakeScreen
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
@@ -8,21 +10,30 @@ import scripts.utils.Logger
 import scripts.wrCrafting.models.TaskConfiguration
 
 interface CraftingManagerInterface {
-    val logger: Logger
     val taskConfiguration: TaskConfiguration
+
+    fun logger(): Logger
 
     fun initCrafting(): Boolean
 }
 
 class CraftingManager(
-    override val logger: Logger,
     override val taskConfiguration: TaskConfiguration
 
 ) : CraftingManagerInterface {
-    // Marker to indicate we're processing a batch.
+    override fun logger(): Logger {
+        return Logger("Crafting")
+    }
 
     override fun initCrafting(): Boolean {
-        logger.debug("[INIT] - start func")
+        logger().info("Initialized crafting")
+
+        //TODO verify if all widgets are closed
+        // TODO make sure bank is closed
+
+        if (Bank.isOpen()) {
+            Bank.close()
+        }
 
         val chisel = Query.inventory()
             .nameContains("Chisel")
@@ -47,7 +58,7 @@ class CraftingManager(
 
         taskConfiguration.isProcessing = true
 
-        logger.debug("[INIT] - SET isProcessing to TRUE")
+        logger().debug("TASK set to processing state")
 
         return true
     }

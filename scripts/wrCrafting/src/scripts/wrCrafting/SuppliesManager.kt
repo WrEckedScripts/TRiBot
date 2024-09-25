@@ -1,21 +1,24 @@
 package scripts.wrCrafting
 
 import org.tribot.script.sdk.Bank
+import org.tribot.script.sdk.BankSettings
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.wrCrafting.models.TaskConfiguration
+import kotlin.random.Random
 
 interface SuppliesManagerInterface {
-    val logger: Logger
     val taskConfiguration: TaskConfiguration
     val progressManager: ProgressManager
+
+    fun logger(): Logger
 
     fun withdrawChiselFromBank(): Boolean
 
     fun withdrawCraftablesFromBank(): Boolean
 
-    fun depositUnusableItems()
+    fun depositUnusableItems(): Boolean
 
     fun needsChisel(): Boolean
 
@@ -25,22 +28,29 @@ interface SuppliesManagerInterface {
 }
 
 class SuppliesManager(
-    override val logger: Logger,
     override val taskConfiguration: TaskConfiguration,
     override val progressManager: ProgressManager
 ) : SuppliesManagerInterface {
 
+    override fun logger(): Logger {
+        return Logger("Supplies")
+    }
+
     override fun withdrawChiselFromBank(): Boolean {
         if (!Bank.isOpen()) {
-            logger.error("[withdrawChiselFromBank] - can't, bank is not opened")
+            logger().error("[withdrawChiselFromBank] - can't, bank is not opened")
         }
 
         val bankHasChisel = Query.bank()
             .nameEquals("Chisel")
             .count() > 0
 
-        if (!bankHasChisel) {
-            logger.error("[withdrawChiselFromBank] - we're out of chisels")
+        val invHasChisel = Query.inventory()
+            .nameEquals("Chisel")
+            .count() > 0
+
+        if (!bankHasChisel && !invHasChisel) {
+            logger().error("[withdrawChiselFromBank] - we're out of chisels")
             //todo buy one
         }
 
@@ -55,32 +65,54 @@ class SuppliesManager(
 
     override fun withdrawCraftablesFromBank(): Boolean {
         if (!Bank.isOpen()) {
-            logger.error("[withdrawCraftablesFromBank] - can't bank is not open")
+            logger().error("Oh oh, seems like the bank isn't open..")
         }
 
         val craftableCount: Int = Query.bank()
             .nameEquals(taskConfiguration.craftableName)
             .sumStacks()
 
-        logger.debug("[SUM] - ${craftableCount}")
+        logger().debug(taskConfiguration.craftableName)
+
+        logger().debug("[Stock count] - ${craftableCount}")
 
         if (craftableCount < 1) {
-            logger.error("[withdrawCraftablesFromBank] - no craftables in bank")
+            logger().error("[withdrawCraftablesFromBank] - no craftables in bank")
         }
 
         val withdrawQuantity = if (craftableCount > 27) 27 else craftableCount
-        logger.debug("[withdrawQuantity] = ${withdrawQuantity}")
+        logger().debug("Withdrawable amount : ${withdrawQuantity}")
 
 
-        // TODO could also setup the script to change the button click to simply click gems to fill the full inv
+        //TODO does this now, set the "x" value and simply left-clicks for re-stocking?
+//        if (BankSettings.getWithdrawXQuantity() != withdrawQuantity) {
+//            BankSettings.setWithdrawXQuantity(27)
+//            logger().info("SET withdraw x quantity to '27'")
+//        }
+
         Waiting.waitUntil {
+            /**
+             * Something like (Antiban name is taken)
+             * Antiban.executeAndWait(600, 9000) {
+             *     logger().info("Antiban - Sleeping for ${wait}ms")
+             *     Bank.withdraw(taskConfiguration.craftableName, withdrawQuantity)
+             *     // under the hood, does this after the closure:
+             *     Waiting.wait(RESULT_FROM_600_9000)
+             * }
+             */
+
+            val wait = Random.nextInt(600, 9000)
+            logger().info("Antiban - Sleeping for ${wait}ms")
             Bank.withdraw(taskConfiguration.craftableName, withdrawQuantity)
+            //todo, for stuff like this, a manager/util class would be awesome
+            Waiting.wait(wait)
+            true
         }
 
         return true
     }
 
-    override fun depositUnusableItems() {
+    override fun depositUnusableItems(): Boolean {
         val processedCount = Query.inventory()
             .nameEquals(taskConfiguration.craftedName)
             .isNotNoted
@@ -94,8 +126,8 @@ class SuppliesManager(
                 taskConfiguration.craftableName
             )
             .forEach { item ->
-                logger.debug("Found unusable item: ${item.name}, time to bank them.")
-                // Per unusable item, let's deposit-all
+                logger().debug("Found unusable item: ${item.name}, time to bank them.")
+
                 Bank.depositAll(item.name)
 
                 // Make sure that the item is indeed banked, before moving to the next
@@ -107,7 +139,7 @@ class SuppliesManager(
                 }
             }
 
-        //todo any noted craftableItem should also be banked
+        //todo, is this the boogyman?
         Query.inventory()
             .nameEquals(
                 "Chisel",
@@ -115,21 +147,24 @@ class SuppliesManager(
             )
             .isNoted
             .forEach { noted ->
-                logger.debug("Found noted ${noted.name}, let's bank them.")
+                logger().debug("Found noted ${noted.name}, let's bank them.")
                 Waiting.waitUntil {
                     Bank.depositAll(noted.name)
                 }
             }
+
+        return true
     }
 
+    //TODO, if temp var + log, this keeps on getting executed.
     override fun needsChisel(): Boolean {
-        return !Query.inventory()
+        return Query.inventory()
             .nameContains("Chisel")
             .isNotNoted //this should've fixed the always false loop... (was isNoted, dumbass....)
-            .findRandom()
-            .isPresent
+            .count() < 1
     }
 
+    //TODO, if temp var + log, this keeps on getting executed.
     override fun needsCraftables(): Boolean {
         return Query.inventory()
             .nameEquals(taskConfiguration.craftableName)
@@ -144,7 +179,7 @@ class SuppliesManager(
             .nameEquals(taskConfiguration.craftableName)
             .isNotNoted
             .count()
-
+        logger().debug("Checking inventory state: ${result}")
         return result == 0
     }
 

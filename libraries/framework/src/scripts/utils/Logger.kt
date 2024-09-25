@@ -1,14 +1,11 @@
 package scripts.utils
 
 import org.tribot.script.sdk.Log
-//import org.tribot.script.sdk.script.ScriptRuntimeInfo
 
-class Logger(header: String) {
-//    private val scriptName = ScriptRuntimeInfo.getScriptName()
-//    private val format = "[$scriptName] - [$header]"
-    private val format = "[$header]"
+class Logger(section: String) {
+    private val format = section
 
-    private fun formatMessage(message: Any?) = "$format | $message"
+    private fun formatMessage(message: Any?) = "[$format] | $message"
 
     fun debug(message: Any?) {
         return Log.debug(this.formatMessage(message))
@@ -17,4 +14,18 @@ class Logger(header: String) {
     fun error(message: Any?) {
         return Log.error(this.formatMessage(message))
     }
+
+    fun warn(message: Any?) {
+        return Log.warn(this.formatMessage(message))
+    }
+
+    fun info(message: Any?) {
+        return Log.info(this.formatMessage(message))
+    }
+
+    fun trace(message: Any?) {
+        return Log.trace(this.formatMessage(message))
+    }
+
+
 }

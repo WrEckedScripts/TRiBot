@@ -4,10 +4,13 @@ import org.tribot.script.sdk.Log
 import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
+import scripts.utils.Logger
 
 interface ProgressManagerInterface {
     val trackingSkill: Skill
     val startingExperience: Int
+
+    fun logger(): Logger
 }
 
 class ProgressManager(
@@ -18,8 +21,14 @@ class ProgressManager(
     private val startedAt = System.currentTimeMillis()
     private var craftedItems: Int = 0
 
+    override fun logger(): Logger {
+        return Logger("Progress")
+    }
+
     fun incrementCraftedItems(increment: Int) {
+        logger().debug("incrementing crafted items from: ${this.craftedItems} with: ${increment}")
         this.craftedItems += increment
+        logger().debug("incrementing done, new count: ${this.craftedItems}")
     }
 
     fun getCraftedItemsCount(): String {
@@ -31,7 +40,6 @@ class ProgressManager(
     }
 
     fun experiencePerHour(): Double {
-        Log.debug("CALLED-EXPHR")
         val currentAt = System.currentTimeMillis()
         val experienceGained = experienceGained()
         val elapsedTimeMillis = currentAt - startedAt
@@ -42,11 +50,9 @@ class ProgressManager(
         }
 
         val experiencePerHour = experienceGained / elapsedTimeHours
-        Log.debug("Estimated exp/hr ${experiencePerHour}")
 
         return experiencePerHour
     }
-
 
     private fun formatNumber(value: Double): String {
         return when {
