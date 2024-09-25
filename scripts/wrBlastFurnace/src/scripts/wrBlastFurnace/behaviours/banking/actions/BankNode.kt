@@ -47,6 +47,7 @@ fun IParentNode.bankNode(
             }
             condition {
                 if (depositInventory) {
+                    logger.error("depositing")
                     Bank.depositInventory()
 
                     Waiting.waitNormal(300, 30)
@@ -59,6 +60,7 @@ fun IParentNode.bankNode(
                     }
                 }
 
+                logger.debug("deposit condition to true")
                 return@condition true
             }
             sequence {

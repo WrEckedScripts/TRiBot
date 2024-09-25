@@ -22,10 +22,10 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { tripStateManager.isCurrentState("BANK_BARS") == true }
         sequence {
-            bankNode(logger, staminaManager,true, false)
             condition {
                 !Inventory.contains(tripStateManager.bar)
             }
+            bankNode(logger, staminaManager,true, false)
             condition {
                 logger.debug("Cycling state:")
                 tripStateManager.cycleStateFrom(

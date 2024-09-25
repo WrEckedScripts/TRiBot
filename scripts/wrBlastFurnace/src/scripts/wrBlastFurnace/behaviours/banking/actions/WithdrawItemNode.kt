@@ -24,15 +24,26 @@ fun IParentNode.withdrawItemNode(
 
     selector {
         condition {
-            logger.debug("withdrawing ${itemName} x ${quantity}")
+            var name = itemName
+            if(itemName.contains("potion")){
+                 name = Query.bank()
+                    .nameContains(itemName)
+                    .findRandom()
+                    .get()
+                    .name
+            }
+
+            logger.debug("withdrawing ${name} x ${quantity}")
+
+
             // Either we need the exact item count
             val hasItemCount = Query.inventory()
-                .nameEquals(itemName)
+                .nameEquals(name)
                 .count() == quantity
 
             // Or, we need at least the quantity as a stack (for coins)
             val hasItemStack = Query.inventory()
-                .nameEquals(itemName)
+                .nameEquals(name)
                 .sumStacks() >= quantity
 
             var inventoryHasItem = hasItemCount || hasItemStack
@@ -40,7 +51,7 @@ fun IParentNode.withdrawItemNode(
             // Might ensure we have withdrawn before we close the bank.
             if (!inventoryHasItem) {
                 inventoryHasItem = Waiting.waitUntil {
-                    Bank.withdraw(itemName, quantity)
+                    Bank.withdraw(name, quantity)
                 }
             }
 

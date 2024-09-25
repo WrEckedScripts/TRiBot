@@ -20,7 +20,7 @@ fun IParentNode.sipStaminaPotion(
         condition { staminaManager.notOutOfPotions() }
         sequence {
             // needs a explicit name now, won't work with pots..?
-            withdrawItemNode(logger, Query.bank().nameContains("Stamina potion").findRandom().get().name, 1, false)
+            withdrawItemNode(logger, "Stamina potion", 1, false)
             perform {
                 Waiting.waitUntil {
                     Waiting.waitNormal(500, 24)
