@@ -1,8 +1,12 @@
 package scripts.wrBlastFurnace
 
+import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.Bank
+import org.tribot.script.sdk.Camera
+import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.antiban.PlayerPreferences
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -10,6 +14,7 @@ import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
+import org.tribot.script.sdk.types.Widget
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
@@ -112,6 +117,18 @@ class BlastFurnaceScript : TribotScript {
         playerRunManager.setNextRunEnablingThreshold()
 
         /**
+         * INITIALIZATION
+         * - will setup our player / world controls, options and preferences
+         */
+        //TODO randomize and define actual values
+        Camera.setZoomPercent(6.25)
+        Camera.setAngle(92)
+        Camera.setRotation(284)
+        // does not re-open the inventory tab
+
+        logger.info("[Initialization] - Camera set")
+
+        /**
          * Initialise the basic paint
          */
         initPaint(tripStateManager, upkeepManager)
@@ -155,13 +172,6 @@ class BlastFurnaceScript : TribotScript {
                  */
 
                 /**
-                 * @TODO implement playerState checkups
-                 * - Re-enable run (DONE)
-                 * - sip stamina on next bank trip (to add in bankNode)
-                 * - other stuff?
-                 */
-
-                /**
                  * Make sure we're at the Blast Furnace Area
                  */
                 selector {
@@ -169,14 +179,13 @@ class BlastFurnaceScript : TribotScript {
                     moveToFurnaceNode(logger)
                 }
 
-//                selector {
-//                    condition { playerRunManager.shouldHaveRunEnabled() }
-//                    condition {
-//                        Waiting.waitUntil {
-//                            playerRunManager.enableRun()
-//                        }
-//                    }
-//                }
+                selector {
+                    condition { playerRunManager.satisfiesRunExpectation() }
+                    perform {
+                        playerRunManager.enableRun()
+                        logger.debug("enabled run...")
+                    }
+                }
 
                 /**
                  * When necessary, ensure we've paid the foreman to use the furnace

@@ -17,7 +17,6 @@ fun IParentNode.payForemanNode(
     barManager: BarManager
 ) = sequence {
     selector {
-        condition { Skill.SMITHING.actualLevel < 60 }
         perform {
             Query.npcs()
                 .nameEquals("Blast Furnace Foreman")

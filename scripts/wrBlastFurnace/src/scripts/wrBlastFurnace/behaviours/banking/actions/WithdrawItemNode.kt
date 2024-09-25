@@ -24,12 +24,13 @@ fun IParentNode.withdrawItemNode(
 
     selector {
         condition {
+            logger.debug("withdrawing ${itemName} x ${quantity}")
             // Either we need the exact item count
             val hasItemCount = Query.inventory()
                 .nameEquals(itemName)
                 .count() == quantity
 
-            // Or, we need at least the quantity as a stack
+            // Or, we need at least the quantity as a stack (for coins)
             val hasItemStack = Query.inventory()
                 .nameEquals(itemName)
                 .sumStacks() >= quantity
@@ -50,9 +51,13 @@ fun IParentNode.withdrawItemNode(
                 }
             }
 
-            Waiting.waitNormal(450, 23) // Wait for inventory to update, hopefully prevents double banks
+            //todo can be removed, now that we wait for the inv to has the ores?
+            Waiting.waitNormal(750, 23) // Wait for inventory to update, hopefully prevents double banks
             // Slight hack to ensure we return true/false
-            inventoryHasItem
+            Waiting.waitUntil {
+                logger.error("WAITING FOR INVENTORY TO CONTAIN ITEM: ${itemName} x ${quantity}")
+                inventoryHasItem
+            }
         }
     }
 }

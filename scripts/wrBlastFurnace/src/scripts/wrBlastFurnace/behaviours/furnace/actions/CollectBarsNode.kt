@@ -53,6 +53,12 @@ fun IParentNode.collectBarsNode(
                     .count() > 0
             }
 
+            val invCount = Query.inventory()
+                .nameContains("bar")
+                .count()
+
+            logger.debug("collecting bars x ${invCount}")
+
             tripStateManager.cycleStateFrom(
                 "COLLECT_BARS"
             )

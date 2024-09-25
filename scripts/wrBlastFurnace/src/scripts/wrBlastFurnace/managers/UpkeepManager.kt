@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.managers
 
 import org.tribot.script.sdk.GameState
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
@@ -24,11 +25,16 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun havePaidForeman(): Boolean {
+        if (Skill.SMITHING.currentLevel >= 60) {
+            lastPaidForemanAt = null
+            return true
+        }
+
         // if the lastPaidForemanAt = 10 minutes ago, return true
         val lastPaidAt = lastPaidForemanAt ?: return false // if null, we should pay them now.
         val currentTimestamp = System.currentTimeMillis()
 
-        val randAdd = TribotRandom.normal(400,55)
+        val randAdd = TribotRandom.normal(400, 55)
         val nextTimeInMillis = 60 * (9_000 + randAdd) // 9 minutes in miliseconds + some random
         // if the difference, between the current timestamp, minus the last paid at
         // is lower than 10 minutes, we don't need to pay the foreman
@@ -60,7 +66,7 @@ class UpkeepManager(val logger: Logger) {
 
     fun setNextCofferTopup(): Unit {
         this.nextCofferTopupAmount = TribotRandom.uniform(10000, 200000)
-        Waiting.waitNormal(400,45) // todo might fix resulting in 0 value in withdrawNode
+        Waiting.waitNormal(400, 45) // todo might fix resulting in 0 value in withdrawNode
     }
 
     fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {

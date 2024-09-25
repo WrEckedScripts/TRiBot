@@ -18,11 +18,13 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { tripStateManager.isCurrentState("BANK_BARS") == true }
         sequence {
-            bankNode(logger, true, false)
+            bankNode(logger, depositInventory = true, close = false)
             condition {
+                logger.debug("inv contains no bars: ${!Inventory.contains(tripStateManager.bar)}")
                 !Inventory.contains(tripStateManager.bar)
             }
             condition {
+                logger.debug("Cycling state:")
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
@@ -39,13 +41,20 @@ fun IParentNode.smeltBarsNode(
 
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true || tripStateManager.isCurrentState("PROCESS_COAL") == true}
-        condition { barManager.dispenserHoldsBars() }
+        condition { !barManager.dispenserHoldsBars() }
         perform {
             //todo, we should now collect if dispenser holds bars..
             logger.error("CYCLE from ${tripStateManager.getCurrentKey()} as dispenser returns ${barManager.dispenserHoldsBars()}")
         }
     }
 
+    /**
+     * Given we are processing base
+     * And the dispenser is not holding bars
+     * And our inventory is full
+     *
+     * We will withdraw a coal
+     */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
         condition { barManager.dispenserHoldsBars() }
@@ -61,6 +70,13 @@ fun IParentNode.smeltBarsNode(
         }
     }
 
+    /**
+     * Given we are processing base
+     * And the dispenser is not holding bars
+     * And our inventory is full
+     *
+     * We will load our ores to the conveyor
+     */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
         condition { barManager.dispenserHoldsBars() }
@@ -75,10 +91,17 @@ fun IParentNode.smeltBarsNode(
         }
     }
 
+    /**
+     * Given we are processing coal
+     * And the dispenser is not holding bars
+     * And our inventory is empty
+     *
+     * We will withdraw a coal
+     */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
         condition { barManager.dispenserHoldsBars() }
-        condition { Inventory.isFull() } //can sometimes double bank, slight wait perhaps?
+        condition { Inventory.isFull() }
         sequence {
             bankNode(logger, true)
             withdrawItemNode(
@@ -90,10 +113,17 @@ fun IParentNode.smeltBarsNode(
         }
     }
 
+    /**
+     * Given we are processing coal
+     * And the dispenser is not holding bars
+     * And our inventory is not empty
+     *
+     * We will load our ores to the conveyor
+     */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true}
         condition { barManager.dispenserHoldsBars() }
-        condition { Inventory.isEmpty() } //can sometimes double bank, slight wait perhaps?
+        condition { Inventory.isEmpty() }
         sequence {
             loadOresNode(logger)
             condition {
