@@ -4,6 +4,7 @@ rootProject.name = "tribot-script-template"
 include("libraries:framework")
 
 include("scripts:wrCombat")
+include("scripts:wrBlastFurnace")
 include("scripts:wrCrafting")
 
 // Boilerplate
