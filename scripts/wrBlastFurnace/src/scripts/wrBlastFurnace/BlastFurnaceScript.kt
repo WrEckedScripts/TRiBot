@@ -9,6 +9,8 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
+import scripts.utils.formatters.Coins
+import scripts.utils.formatters.Countdown
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.payForemanNode
@@ -20,8 +22,6 @@ import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidatio
 import scripts.wrBlastFurnace.managers.*
 import java.awt.Color
 import java.awt.Font
-import java.util.*
-import kotlin.math.roundToInt
 
 @TribotScriptManifest(
     name = "WrBlastFurnace Lite 1.2.0",
@@ -113,6 +113,13 @@ class BlastFurnaceScript : TribotScript {
 
         val cameraManager = CameraManager(logger)
 
+        val progressionManager = ProgressionManager(
+            logger,
+            System.currentTimeMillis(),
+            tripStateManager,
+            barManager
+        )
+
         /**
          * INITIALIZATION
          * - will setup our player / world controls, options and preferences
@@ -121,7 +128,7 @@ class BlastFurnaceScript : TribotScript {
         /**
          * Initialise the basic paint
          */
-        initPaint(tripStateManager, upkeepManager, staminaManager)
+        initPaint(progressionManager, tripStateManager, upkeepManager, staminaManager)
 
         val blastFurnaceTree = getBlastTree(
             logger = logger,
@@ -230,6 +237,7 @@ class BlastFurnaceScript : TribotScript {
     }
 
     private fun initPaint(
+        progressionManager: ProgressionManager,
         tripStateManager: TripStateManager,
         upkeepManager: UpkeepManager,
         staminaManager: StaminaManager
@@ -245,56 +253,47 @@ class BlastFurnaceScript : TribotScript {
             .row(
                 paintTemplate.toBuilder()
                     .label("Handle Coal")
-                    .value { if (tripStateManager.isCurrentState("PROCESS_COAL") == false) "<---" else "" }
+                    .value { progressionManager.indicateState("PROCESS_COAL") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Handle Ores")
-                    .value { if (tripStateManager.isCurrentState("PROCESS_BASE") == false) "<---" else "" }
+                    .value { progressionManager.indicateState("PROCESS_BASE") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Bars")
-                    .value { if (tripStateManager.isCurrentState("COLLECT_BARS") == false) "<---" else "" }
+                    .value { progressionManager.indicateState("COLLECT_BARS") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Bank Bars")
-                    .value { if (tripStateManager.isCurrentState("BANK_BARS") == false) "<---" else "" }
+                    .value { progressionManager.indicateState("BANK_BARS") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Trips")
                     .value {
-                        tripStateManager.tripCount.toString()
-                            .plus("| Bars (${tripStateManager.tripCount * tripStateManager.barsPerTrip})")
+                        progressionManager.currentTrips()
                     }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
-                    .label("Per hr")
+                    .label("Forecast")
                     .value {
-                        "Trips: ".plus(perHour(0, tripStateManager.tripCount))
-                            .plus(
-                                "| Bars: ".plus(
-                                    perHour(
-                                        0,
-                                        tripStateManager.tripCount * tripStateManager.barsPerTrip
-                                    )
-                                )
-                            )
+                        progressionManager.estimatedPerHourTrips()
                     }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Total upkeep spent")
-                    .value { formatCoins(upkeepManager.totalSpent) }
+                    .value { Coins().format(upkeepManager.totalSpent) }
                     .build()
             )
 
@@ -302,7 +301,7 @@ class BlastFurnaceScript : TribotScript {
             mainPaint.row(
                 paintTemplate.toBuilder()
                     .label("Last foreman payment")
-                    .value { formatMillisToCountdown(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
+                    .value { Countdown().fromMillis(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
                     .build()
             )
         }
@@ -315,42 +314,5 @@ class BlastFurnaceScript : TribotScript {
         )
 
         Painting.addPaint { mainPaint.build().render(it) }
-    }
-
-    fun formatMillisToCountdown(milliseconds: Long): String {
-        // Calculate total seconds
-        val nextPayTime = (System.currentTimeMillis() - milliseconds)
-        val totalSeconds = (nextPayTime / 1000).toInt()
-
-        // Calculate minutes and seconds
-        val minutes = totalSeconds / 60
-        val seconds = totalSeconds % 60
-
-        // Format minutes and seconds as "MM:SS"
-        return String.format("%02d:%02d", minutes, seconds)
-    }
-
-    fun formatCoins(coins: Int): String {
-        return when {
-            coins < 1000 -> coins.toString()
-            coins in 1000..9999 -> String.format(Locale.US, "%.2fk", coins / 1000.0)
-            coins in 10000..9999999 -> String.format(Locale.US, "%.2fM", coins / 1000000.0)
-            else -> coins.toString() // For values 10 million and above, you can adjust as needed
-        }
-    }
-
-    fun perHour(start: Int, current: Int): String {
-        val currentAt = System.currentTimeMillis()
-        val gained = current - start
-        val elapsedTimeMillis = currentAt - this.startedAt
-        val elapsedTimeHours = elapsedTimeMillis / 3600000.0
-
-        if (elapsedTimeMillis < 1) {
-            return "Calculating..."
-        }
-
-        val perHour = gained / elapsedTimeHours
-
-        return perHour.roundToInt().toString()
     }
 }
