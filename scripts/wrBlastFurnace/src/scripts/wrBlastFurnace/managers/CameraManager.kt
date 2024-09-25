@@ -1,7 +1,6 @@
 package scripts.wrBlastFurnace.managers
 
 import org.tribot.script.sdk.Camera
-import org.tribot.script.sdk.GameTab
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 
@@ -54,8 +53,6 @@ class CameraManager(val logger: Logger) {
             logMessage = logMessage.plus("rotate: ${newRotate} ")
         }
 
-        GameTab.INVENTORY.open()
         logger.info(logMessage)
-        logger.info("[Camera] - finished camera randomization")
     }
 }

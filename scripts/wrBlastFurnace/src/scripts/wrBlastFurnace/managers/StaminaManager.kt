@@ -8,7 +8,7 @@ import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 
 class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager) {
-    var minimumStaminaLevel: Int = TribotRandom.normal(15, 5)
+    private var minimumStaminaLevel: Int = TribotRandom.normal(15, 5)
 
     private fun isActive(): Boolean {
         return MyPlayer.isStaminaActive()

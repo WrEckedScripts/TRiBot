@@ -28,16 +28,16 @@ fun IParentNode.withdrawItemNode(
     selector {
         condition {
             var name = itemName
-            if(itemName.contains("potion")){
-                 name = Query.bank()
-                    .nameContains(itemName)
+
+            // Randomize potion to pick, when working with a Stamina potion withdrawal
+            // This ensures all doses are usable and are simply randomly picked.
+            if (itemName.contains("potion")) {
+                name = Query.bank()
+                    .nameContains(itemName) // This still uses "Stamina potion"
                     .findRandom()
                     .get()
                     .name
             }
-
-            logger.debug("withdrawing ${name} x ${quantity}")
-
 
             // Either we need the exact item count
             val hasItemCount = Query.inventory()

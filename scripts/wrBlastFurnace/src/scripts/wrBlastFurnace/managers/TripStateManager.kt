@@ -5,7 +5,14 @@ import scripts.wrBlastFurnace.banking.materials.Bar
 import scripts.wrBlastFurnace.banking.materials.Ore
 
 class TripStateManager(val logger: Logger) {
-    val states = mutableMapOf(
+    /**
+     * List of states, that reflect the trips taken for Steel bars
+     * - false = active
+     * - true = inactive
+     *
+     * Since the behaviour tree loves fulfilling conditions.
+     */
+    private val states = mutableMapOf(
         "PROCESS_COAL" to false,
         "PROCESS_BASE" to true,
         "COLLECT_BARS" to true,

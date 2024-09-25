@@ -2,20 +2,19 @@ package scripts.wrBlastFurnace.managers
 
 import org.tribot.script.sdk.GameState
 import org.tribot.script.sdk.Skill
-import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * The upkeep managers is used to keep track of when to pay the foreman
- * and to calculate / determine the next coffer amount to topup for
- * todo, idea to separate the foreman and the coffer into a separate manager.
- * - above lv 60, the foreman isn't needed anymore, so we should not need to load all this stuff in?
+ * The upkeep manager is used to keep track of when to pay the foreman and to fill up the coffer
+ * And we do keep track of the coins spent on up-keeping here.
+ * Additionally, any next occurrence calculations can be found here for continuously having a filled up coffer.
  */
 class UpkeepManager(val logger: Logger) {
     private var nextCofferTopupAmount: Int = 0
+    private var nextCofferTopupThreshold: Int = 0
 
     var lastPaidForemanAt: Long? = null
     var totalSpent = 0
@@ -45,31 +44,43 @@ class UpkeepManager(val logger: Logger) {
         return (currentTimestamp - lastPaidAt) <= nextTimeInMillis
     }
 
-    fun getCofferValue(): Int {
+    private fun getCofferValue(): Int {
         return GameState.getVarbit(5357)
     }
 
     fun haveFilledCoffer(): Boolean {
-        //todo don't wait until it's fully empty. randomly set new topup moments
         val cofferValue = this.getCofferValue()
 
-        //todo, we don't want to wait until the coffer fully depleted,
-        // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount
-        if (cofferValue <= 0) {
+        if (cofferValue <= this.nextCofferTopupThreshold) {
             getCofferTopupAmount()
             return false
         }
 
-        // coffer is not empty
         return true
     }
 
+    /**
+     * Randomizes the values for next topup amount and threshold to fill it at.
+     */
     fun getCofferTopupAmount(): Int {
         if (0 == this.nextCofferTopupAmount) {
             setNextCofferTopup()
         }
 
+        if (0 == this.nextCofferTopupThreshold) {
+            setNextCofferTopupThreshold()
+        }
+
         return this.nextCofferTopupAmount
+    }
+
+    /**
+     * To prevent always waiting until the coffer is fully depleted, give it some wiggle room
+     * - Could in case of a overlapping coffer values cause a double top-up
+     * - - Which, imo, could serve as mimicking human behaviour.
+     */
+    fun setNextCofferTopupThreshold() {
+        this.nextCofferTopupThreshold = TribotRandom.uniform(0, 15000)
     }
 
     fun setNextCofferTopup(): Unit {
@@ -81,8 +92,6 @@ class UpkeepManager(val logger: Logger) {
             minAmount / stepSize, // 10k becomes 10
             maxAmount / stepSize // 200k becomes 200
         ) * stepSize // Example: 164 * 1000 = 164k
-
-        Waiting.waitNormal(400, 45) // todo might fix resulting in 0 value in withdrawNode
     }
 
     fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {

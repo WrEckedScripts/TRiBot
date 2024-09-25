@@ -36,7 +36,7 @@ fun IParentNode.bankNode(
                 deposited
             }
 
-            Lottery.execute(0.1) {
+            Lottery.execute(0.06) {
                 MiniBreak.leave()
             }
 

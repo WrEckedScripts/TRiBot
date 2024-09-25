@@ -3,13 +3,13 @@ package scripts.wrBlastFurnace.behaviours.furnace
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
+import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.payForemanNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.smeltBarsNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
-import scripts.wrBlastFurnace.behaviours.setup.actions.loginNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
 import scripts.wrBlastFurnace.managers.*
@@ -33,35 +33,39 @@ fun getBlastTree(
              * Ensures that we're logged in, after we get disconnected for example
              * - Main login action, is handled within the startupTree
              */
+
+            /**
+             * @TODO implement a cycleFailSafeNode
+             * - That, based on a set of conditionals, resets the cycle back to a specific case
+             * - This should be taken the highest priority of the tree, by doing this at the top here
+             * - I believe it should do so.
+             */
+
+            /**
+             * @TODO implement a cycleFailSafeNode
+             * - That, based on a set of conditionals, resets the cycle back to a specific case
+             * - This should be taken the highest priority of the tree, by doing this at the top here
+             * - I believe it should do so.
+             */
+
+            /**
+             * @TODO include support for stopping script when no more resources in bank
+             * - IF re-stocking is disabled OR failed due to no GP
+             * - But for now, without re-stocking, it should gracefully stop.
+             */
+
+            /**
+             * @TODO include support for stopping script when no more resources in bank
+             * - IF re-stocking is disabled OR failed due to no GP
+             * - But for now, without re-stocking, it should gracefully stop.
+             */
+
+            // Will send a screenshot every x minutes
             selector {
-                loginNode(logger)
+                perform {
+                    DiscordNotifier.notify()
+                }
             }
-
-            /**
-             * @TODO implement a cycleFailSafeNode
-             * - That, based on a set of conditionals, resets the cycle back to a specific case
-             * - This should be taken the highest priority of the tree, by doing this at the top here
-             * - I believe it should do so.
-             */
-
-            /**
-             * @TODO implement a cycleFailSafeNode
-             * - That, based on a set of conditionals, resets the cycle back to a specific case
-             * - This should be taken the highest priority of the tree, by doing this at the top here
-             * - I believe it should do so.
-             */
-
-            /**
-             * @TODO include support for stopping script when no more resources in bank
-             * - IF re-stocking is disabled OR failed due to no GP
-             * - But for now, without re-stocking, it should gracefully stop.
-             */
-
-            /**
-             * @TODO include support for stopping script when no more resources in bank
-             * - IF re-stocking is disabled OR failed due to no GP
-             * - But for now, without re-stocking, it should gracefully stop.
-             */
 
             /**
              * Make sure we're at the Blast Furnace Area
@@ -75,18 +79,8 @@ fun getBlastTree(
                 condition { playerRunManager.satisfiesRunExpectation() }
                 perform {
                     playerRunManager.enableRun()
-                    logger.debug("enabled run via default tree...")
                 }
             }
-
-            /**
-             * Serves as a failsafe, as long as the dispenser holds any kind of bar, and we're not in the collecting stage
-             * Ensure that we switch to that state and first withdraw any bars from the dispenser.
-             * This prevents blocking the conveyor belt
-             * - Could happen due to re-starting the script
-             * - Could happen when a script is stopped/ended and is started again
-             * Or any other partial cycle flow occurrence
-             */
 
             /**
              * Serves as a failsafe, as long as the dispenser holds any kind of bar, and we're not in the collecting stage
@@ -114,15 +108,6 @@ fun getBlastTree(
                 }
             }
 
-            /**
-             * When necessary, ensure we've paid the foreman to use the furnace
-             * - todo, we could try to combine the foreman and coffer, to only need 1 banking action..
-             */
-
-            /**
-             * When necessary, ensure we've paid the foreman to use the furnace
-             * - todo, we could try to combine the foreman and coffer, to only need 1 banking action..
-             */
             selector {
                 condition { upkeepManager.havePaidForeman() }
                 condition { upkeepManager.playerHoldsEnoughCoins() }
@@ -134,15 +119,6 @@ fun getBlastTree(
                 }
             }
 
-            /**
-             * Ensures the coffer remains filled.
-             * - todo, we could try to combine the foreman and coffer, to only need 1 banking action..
-             */
-
-            /**
-             * Ensures the coffer remains filled.
-             * - todo, we could try to combine the foreman and coffer, to only need 1 banking action..
-             */
             selector {
                 condition { upkeepManager.haveFilledCoffer() }
                 condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.getCofferTopupAmount()) }

@@ -15,7 +15,6 @@ class ProgressionManager(
     private val logger: Logger,
     private val startedAt: Long,
     private val tripStateManager: TripStateManager,
-    private val dispenserManager: DispenserManager
 ) {
     private val tripCalculator = CachedPerHourCalculator(this.startedAt)
     private val barCalculator = CachedPerHourCalculator(this.startedAt)
@@ -37,7 +36,7 @@ class ProgressionManager(
         return value
     }
 
-    fun currentSpentValue(): Int {
+    private fun currentSpentValue(): Int {
         val coalsUsed = tripStateManager.coalOre.quantity() * tripStateManager.tripCount
         val baseUsed = tripStateManager.baseOre.quantity() * tripStateManager.tripCount
 
@@ -53,7 +52,7 @@ class ProgressionManager(
         return "-".plus(Coins().format(raw))
     }
 
-    fun grossProfitValue(): Int {
+    private fun grossProfitValue(): Int {
         val barsCreated = tripStateManager.barsPerTrip * tripStateManager.tripCount
         return tripStateManager.bar.priceTimes(barsCreated)
     }

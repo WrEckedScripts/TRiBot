@@ -53,6 +53,10 @@ fun IParentNode.topupCofferNode(
                 ChatScreen.clickContinue()
                 Waiting.waitNormal(900, 120)
 
+                // Randomize values for next time
+                upkeepManager.setNextCofferTopup()
+                upkeepManager.setNextCofferTopupThreshold()
+
                 // Ensure we reset our cycle after we've done upkeep-ing with the coffer
 //                if (dispenserManager.holdsBars()) {
 //                    tripStateManager.resetCycle("COLLECT_BARS")

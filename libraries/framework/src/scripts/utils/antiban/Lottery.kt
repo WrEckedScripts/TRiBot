@@ -4,7 +4,7 @@ import scripts.utils.Logger
 import kotlin.random.Random
 
 /**
- * Utility class to randomize certain actions on a % basis.
+ * Utility class to randomize certain actions on a probability(%) basis.
  */
 object Lottery {
     var logger: Logger? = null
@@ -20,7 +20,7 @@ object Lottery {
         val won: Boolean = shouldExecute(probability)
 
         if (won) {
-            this.logger?.info("[Lottery/Antiban] - Executing probability based action")
+            this.logger?.info("[Lottery/Antiban] - Executing randomized action")
             action()
         }
     }

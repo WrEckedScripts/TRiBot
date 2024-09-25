@@ -32,7 +32,7 @@ fun IParentNode.loadOresNode(
 
             val interacted = conveyor.interact("Put-ore-on")
 
-            Lottery.execute(0.1) {
+            Lottery.execute(0.16) {
                 MiniBreak.leave()
             }
 

@@ -20,17 +20,15 @@ fun IParentNode.sipStaminaPotion(
         condition { staminaManager.satisfiesStaminaState() }
         condition { staminaManager.notOutOfPotions() }
         sequence {
-            // needs an explicit name now, won't work with pots.?
             withdrawItemNode(logger, "Stamina potion", 1, false)
             perform {
                 Waiting.waitUntil {
                     Waiting.waitNormal(500, 24)
                     val sipped = staminaManager.sipStamina()
 
-                    // todo Closes the bank window, if run is directly enabled.
-                    // could either be a anti-ban lottery thingy, or simply never do it here.
-                    // There's a tree node that enables run as well.
-                    Lottery.execute(0.9) {
+                    // 75% of the time, we will enable run directly after sipping.
+                    // The remaining 25% will be handled through the tree, where we do enable run if we need to
+                    Lottery.execute(0.75) {
                         playerRunManager.enableRun()
                     }
 
