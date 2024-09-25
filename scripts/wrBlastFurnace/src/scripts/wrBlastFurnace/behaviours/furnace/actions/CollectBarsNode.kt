@@ -36,10 +36,15 @@ fun IParentNode.collectBarsNode(
 //                dispenser.hover()
 //            }
 
-            // Wait until the bars are ready
             Waiting.waitUntil {
-                Waiting.waitNormal(2262, 254)
-                dispenserManager.holdsBars()
+                val holdsBars = dispenserManager.holdsBars()
+
+                if (!holdsBars) {
+                    Waiting.waitNormal(2062, 254)
+                }
+
+                Waiting.waitNormal(150, 75)
+                holdsBars
             }
 
             Waiting.waitUntil {
@@ -65,9 +70,9 @@ fun IParentNode.collectBarsNode(
                 interacted && MakeScreen.isOpen()
             }
 
-            Waiting.waitUntil {
-                // What about a random/player pref space bar spam
-                // needs to ensure we got make-all set.
+            // MakeScreen is open, move onto making the actual bars
+            // We'll give this action 5 seconds to finish, otherwise we'd failed and need to redo the condition.
+            Waiting.waitUntil(5000) {
                 MakeScreen.makeAll(tripStateManager.bar.name())
 
                 val barsInInventoryCount = Query.inventory()
@@ -77,20 +82,20 @@ fun IParentNode.collectBarsNode(
                 val succeeded = barsInInventoryCount > 0
 
                 if (!succeeded) {
-                    Waiting.waitNormal(174, 28)
+                    // Slight delay before we re-run this waiting lambda.
+                    // Could fix any game loading delays, where the inventory wasn't updated yet.
+                    Waiting.waitNormal(175, 45)
                 }
 
                 succeeded
             }
 
-            val invCount = Query.inventory()
+            val barsInInventoryCount = Query.inventory()
                 .nameContains("bar")
                 .count()
 
-            if (invCount == 0) {
-                logger.debug("collecting bars x ${invCount}")
-                logger.error("Failed to make bars?!")
-
+            if (barsInInventoryCount == 0) {
+                logger.error("[CollectBars] - We've failed to collect bars from the dispenser, re-trying...")
                 return@condition false
             }
 

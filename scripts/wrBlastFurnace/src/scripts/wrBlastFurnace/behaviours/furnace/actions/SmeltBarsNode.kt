@@ -104,7 +104,7 @@ fun IParentNode.smeltBarsNode(
                 val preWalkTile = WorldTile(1939, 4963, 0)
                 LocalWalking.walkTo(preWalkTile)
 
-                Lottery.execute(0.6) {
+                Lottery.execute(0.78) {
                     cameraManager.randomize(zoom = false)
                 }
             }
