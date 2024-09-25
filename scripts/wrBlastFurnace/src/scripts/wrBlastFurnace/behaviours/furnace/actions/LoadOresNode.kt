@@ -29,7 +29,7 @@ fun IParentNode.loadOresNode(
         val res = Waiting.waitUntil(TribotRandom.normal(1750, 55)) {
             val interacted = conveyor.interact("Put-ore-on")
 
-            Lottery(logger).execute(0.1) {
+            Lottery.execute(0.1) {
                 MiniBreak.miniLeave()
             }
 

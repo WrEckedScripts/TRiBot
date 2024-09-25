@@ -6,14 +6,21 @@ import kotlin.random.Random
 /**
  * Utility class to randomize certain actions on a % basis.
  */
-class Lottery(val logger: Logger) {
+object Lottery {
+    var logger: Logger? = null
+
+    fun setLogger(log: Logger) {
+        this.logger = log
+    }
+
     /**
      * Pass through a probability and lambda to execute, if our case is within the probability threshold
      */
     fun execute(probability: Double, action: () -> Unit) {
         val won: Boolean = shouldExecute(probability)
-        logger.info("[Lottery] - next random action should run: ${won}")
+
         if (won) {
+            this.logger?.info("[Lottery/Antiban] - Executing probability based action")
             action()
         }
     }

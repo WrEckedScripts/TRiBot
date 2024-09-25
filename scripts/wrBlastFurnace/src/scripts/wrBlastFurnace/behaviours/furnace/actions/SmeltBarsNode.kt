@@ -32,7 +32,7 @@ fun IParentNode.smeltBarsNode(
                 )
             }
             perform {
-                Lottery(logger).execute(1.0) {
+                Lottery.execute(1.0) {
                     cameraManager.randomize(zoom = false)
                 }
             }
@@ -44,7 +44,7 @@ fun IParentNode.smeltBarsNode(
         sequence {
             collectBarsNode(logger, barManager, tripStateManager)
             perform {
-                Lottery(logger).execute(0.6) {
+                Lottery.execute(0.6) {
                     cameraManager.randomize(zoom = false)
                 }
             }
@@ -65,6 +65,7 @@ fun IParentNode.smeltBarsNode(
         sequence {
             ensureIsOpenNode(logger)
             bankNode(logger, true, false)
+            sipStaminaPotion(logger, staminaManager, playerRunManager)
             withdrawItemNode(
                 logger,
                 tripStateManager.baseOre.name,
@@ -72,7 +73,7 @@ fun IParentNode.smeltBarsNode(
                 true
             )
             perform {
-                Lottery(logger).execute(0.6) {
+                Lottery.execute(0.6) {
                     cameraManager.randomize(zoom = false)
                 }
             }
@@ -103,7 +104,7 @@ fun IParentNode.smeltBarsNode(
                 val preWalkTile = WorldTile(1939, 4963, 0)
                 LocalWalking.walkTo(preWalkTile)
 
-                Lottery(logger).execute(0.6) {
+                Lottery.execute(0.6) {
                     cameraManager.randomize(zoom = false)
                 }
             }
@@ -124,6 +125,7 @@ fun IParentNode.smeltBarsNode(
         sequence {
             ensureIsOpenNode(logger)
             bankNode(logger, true, false)
+            sipStaminaPotion(logger, staminaManager, playerRunManager)
             withdrawItemNode(
                 logger,
                 tripStateManager.coalOre.name,
@@ -131,7 +133,7 @@ fun IParentNode.smeltBarsNode(
                 true
             )
             perform {
-                Lottery(logger).execute(0.6) {
+                Lottery.execute(0.6) {
                     cameraManager.randomize(zoom = false)
                 }
             }
@@ -157,7 +159,7 @@ fun IParentNode.smeltBarsNode(
                 )
             }
             perform {
-                Lottery(logger).execute(0.6) {
+                Lottery.execute(0.6) {
                     cameraManager.randomize(zoom = false)
                 }
             }

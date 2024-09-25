@@ -32,8 +32,8 @@ fun IParentNode.collectBarsNode(
                 .get()
 
             // Randomize pre-hover
-//            Lottery(logger).execute(0.6) {
-//                Mouse.
+//            Lottery.execute(0.6) {
+//                dispenser.hover()
 //            }
 
             // Wait until the bars are ready

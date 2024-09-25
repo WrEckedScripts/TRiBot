@@ -3,6 +3,7 @@ package scripts.wrBlastFurnace.behaviours.stamina.actions
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
+import scripts.utils.antiban.Lottery
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.managers.PlayerRunManager
 import scripts.wrBlastFurnace.managers.StaminaManager
@@ -19,7 +20,7 @@ fun IParentNode.sipStaminaPotion(
         condition { staminaManager.satisfiesStaminaState() }
         condition { staminaManager.notOutOfPotions() }
         sequence {
-            // needs a explicit name now, won't work with pots..?
+            // needs an explicit name now, won't work with pots.?
             withdrawItemNode(logger, "Stamina potion", 1, false)
             perform {
                 Waiting.waitUntil {
@@ -27,11 +28,11 @@ fun IParentNode.sipStaminaPotion(
                     val sipped = staminaManager.sipStamina()
 
                     // todo Closes the bank window, if run is directly enabled.
-                    // could either be a antiban lottery thingy, or simply never do it here.
+                    // could either be a anti-ban lottery thingy, or simply never do it here.
                     // There's a tree node that enables run as well.
-//                    Lottery(logger).execute(0.1) {
-//                        playerRunManager.enableRun()
-//                    }
+                    Lottery.execute(0.9) {
+                        playerRunManager.enableRun()
+                    }
 
                     sipped
                 }
