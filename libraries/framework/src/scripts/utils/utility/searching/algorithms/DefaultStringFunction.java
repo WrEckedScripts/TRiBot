@@ -1,8 +1,8 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import scripts.kt.utility.searching.ToStringFunction;
+import scripts.utils.utility.searching.ToStringFunction;
 
 public class DefaultStringFunction implements ToStringFunction<String> {
 

@@ -1,4 +1,4 @@
-package scripts.kt.utility
+package scripts.utils.utility
 
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image

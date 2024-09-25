@@ -4,12 +4,15 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import kotlinx.coroutines.CoroutineScope
+import org.tribot.script.sdk.Log
 import org.tribot.script.sdk.ScriptListening
 import scripts.utils.gui.HomeScreen
 import scripts.utils.gui.ScriptGui
 import scripts.utils.gui.components.alert.ScriptGuiAlertState
+import kotlin.system.exitProcess
 
 
 /* Written by IvanEOD 9/28/2022, at 10:28 AM */
@@ -25,6 +28,7 @@ fun ScriptGui(
         DisposableEffect(Unit) {
             val quitListener = Runnable {
                 guiScope.state = GuiState.Cancelled
+                Log.warn("QUITLISTENER - state: ${guiScope.state}")
                 exitApplication()
             }
             ScriptListening.addEndingListener(quitListener)
@@ -33,18 +37,25 @@ fun ScriptGui(
             }
         }
 
+        fun shutdown() {
+            guiData.onGuiClosed()
+            Log.warn("shutdown: state - ${guiScope.state}")
+            guiData.screens.forEach { screen ->
+                screen.onGuiClosed()
+                screen.screens.forEach { it.onGuiClosed() }
+            }
+            exitApplication()
+        }
+
+        guiScope.onGuiClosed.value = { shutdown() }
+
         GuiWindow(
             title = guiData.title,
             guiScope = guiScope,
             icon = guiData.icon,
             onCloseRequest = {
-                guiData.onGuiClosed()
-                guiData.screens.forEach { screen ->
-                    screen.onGuiClosed()
-                    screen.screens.forEach { it.onGuiClosed() }
-                }
                 guiData.state = GuiState.Cancelled
-                exitApplication()
+                shutdown()
             },
         )
 
@@ -69,10 +80,17 @@ fun rememberGuiScope(
         }
     }
 
+    val internalState = remember { mutableStateOf(guiData.state) }
+
     return rememberSaveable(guiData) {
         object : GuiScope {
             override var scope: CoroutineScope = scope
-            override var state: GuiState = guiData.state
+            override var state: GuiState
+                get() = internalState.value
+                set(value) {
+                    internalState.value = value
+                    guiData.state = value
+                }
             override var scrollbarState: ScriptScaffoldScrollbarState = scrollbarState
             override var navigation: NavigationController = navgation
             override var desktopScaffoldState: ScriptScaffoldState = scaffoldState
@@ -82,6 +100,11 @@ fun rememberGuiScope(
             override var alertState: ScriptGuiAlertState = ScriptGuiAlertState()
             override var onAlertConfirmed: MutableState<() -> Unit> = mutableStateOf({ })
             override var onAlertCancelled: MutableState<() -> Unit> = mutableStateOf({ })
+            override var onGuiClosed: MutableState<() -> Unit> = mutableStateOf({})
+            override fun closeGui() {
+                Log.warn("closeGui: state = ${state}")
+                onGuiClosed.value.invoke()
+            }
         }
     }
 }
@@ -100,6 +123,7 @@ interface GuiScope {
     var alertState: ScriptGuiAlertState
     var onAlertConfirmed: MutableState<() -> Unit>
     var onAlertCancelled: MutableState<() -> Unit>
+    var onGuiClosed: MutableState<() -> Unit>
 
     fun navigateTo(screen: String) = navigation.navigate(screen)
     fun navigateTo(screen: GuiScreen) = navigation.navigate(screen)

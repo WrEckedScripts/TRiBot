@@ -1,8 +1,8 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import scripts.kt.utility.searching.StringProcessor;
+import scripts.utils.utility.searching.StringProcessor;
 
 /**
  * @deprecated Use {@code DefaultStringFunction} instead.

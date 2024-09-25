@@ -1,4 +1,4 @@
-package scripts.kt.utility.searching.diffUtils.structs;
+package scripts.utils.utility.searching.diffUtils.structs;
 
 public enum EditType {
 

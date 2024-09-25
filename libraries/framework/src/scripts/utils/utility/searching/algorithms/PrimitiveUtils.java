@@ -1,4 +1,4 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
 final class PrimitiveUtils {
 

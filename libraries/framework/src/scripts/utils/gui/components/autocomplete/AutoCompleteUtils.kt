@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import scripts.kt.utility.searching.FuzzySearch
+import scripts.utils.utility.searching.FuzzySearch
 
 
 /* Written by IvanEOD 9/22/2022, at 12:46 PM */

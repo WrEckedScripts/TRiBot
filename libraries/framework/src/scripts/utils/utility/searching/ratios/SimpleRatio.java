@@ -1,8 +1,8 @@
-package scripts.kt.utility.searching.ratios;
+package scripts.utils.utility.searching.ratios;
 
-import scripts.kt.utility.searching.Ratio;
-import scripts.kt.utility.searching.ToStringFunction;
-import scripts.kt.utility.searching.diffUtils.DiffUtils;
+import scripts.utils.utility.searching.Ratio;
+import scripts.utils.utility.searching.ToStringFunction;
+import scripts.utils.utility.searching.diffUtils.DiffUtils;
 
 public class SimpleRatio implements Ratio {
 

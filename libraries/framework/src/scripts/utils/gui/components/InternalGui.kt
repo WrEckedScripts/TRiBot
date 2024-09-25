@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.launch
+import org.tribot.script.sdk.Log
 import org.tribot.script.sdk.script.ScriptRuntimeInfo
 import scripts.utils.gui.AsyncImage
 import scripts.utils.gui.ScriptIcon
@@ -73,8 +74,16 @@ fun GuiWindow(
     val iconPainter = icon.painter()
     val rememberIconPainter = remember { iconPainter }
 
+    var shutdown by remember { mutableStateOf(false) }
+
+    fun shutdownGui() {
+        if (shutdown) return
+        shutdown = true
+        onCloseRequest()
+    }
+
     Window(
-        onCloseRequest = onCloseRequest,
+        onCloseRequest = { shutdownGui() },
         icon = iconPainter,
         title = title,
         state = rememberWindowState(size = size),
@@ -132,7 +141,7 @@ fun GuiWindow(
                                             hoveringClose = false
                                         },
                                         onClick = {
-                                            onCloseRequest()
+                                            shutdownGui()
                                         }
                                     ) {
                                         ScriptIcon(Icons.Filled.Close, "")
@@ -262,6 +271,10 @@ internal fun GuiLayout(
                                     { guiScope.closeGui() }
                                 )
                             } else {
+                                // evaluate gui settings, check for errors, etc....
+                                // if you have errors you can set the state to GuiState.Error, otherwise GuiState.Completed
+                                guiScope.state = GuiState.Completed
+                                Log.warn("set state to COMPLETED ${guiScope.state}}")
                                 guiScope.closeGui()
                             }
                         }

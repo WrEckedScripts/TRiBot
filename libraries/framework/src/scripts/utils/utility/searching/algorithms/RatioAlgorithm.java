@@ -1,8 +1,8 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
-import scripts.kt.utility.searching.Ratio;
-import scripts.kt.utility.searching.ToStringFunction;
-import scripts.kt.utility.searching.ratios.SimpleRatio;
+import scripts.utils.utility.searching.Ratio;
+import scripts.utils.utility.searching.ToStringFunction;
+import scripts.utils.utility.searching.ratios.SimpleRatio;
 
 public abstract class RatioAlgorithm extends BasicAlgorithm {
 

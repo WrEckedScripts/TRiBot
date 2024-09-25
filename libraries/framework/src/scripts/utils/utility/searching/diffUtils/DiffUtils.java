@@ -1,9 +1,9 @@
-package scripts.kt.utility.searching.diffUtils;
+package scripts.utils.utility.searching.diffUtils;
 
-import scripts.kt.utility.searching.diffUtils.structs.EditOp;
-import scripts.kt.utility.searching.diffUtils.structs.EditType;
-import scripts.kt.utility.searching.diffUtils.structs.MatchingBlock;
-import scripts.kt.utility.searching.diffUtils.structs.OpCode;
+import scripts.utils.utility.searching.diffUtils.structs.EditOp;
+import scripts.utils.utility.searching.diffUtils.structs.EditType;
+import scripts.utils.utility.searching.diffUtils.structs.MatchingBlock;
+import scripts.utils.utility.searching.diffUtils.structs.OpCode;
 
 /**
  * This is a port of all the functions needed from python-levenshtein C implementation.

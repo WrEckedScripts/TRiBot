@@ -34,6 +34,7 @@ class GuiScreen(
 
     var onGuiClosed by mutableStateOf<() -> Unit>({})
 
+
     override fun onGuiClosed(block: () -> Unit) {
         onGuiClosed = block
     }
@@ -75,7 +76,7 @@ private val tempGuiScope = object : GuiScope {
     override var alertState: ScriptGuiAlertState = ScriptGuiAlertState()
     override var onAlertConfirmed: MutableState<() -> Unit> = mutableStateOf({})
     override var onAlertCancelled: MutableState<() -> Unit> = mutableStateOf({})
-
+    override var onGuiClosed: MutableState<() -> Unit> = mutableStateOf({})
 }
 
 @Stable

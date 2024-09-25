@@ -1,12 +1,12 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
-import scripts.kt.utility.searching.Ratio;
+import scripts.utils.utility.searching.Ratio;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import scripts.kt.utility.searching.ToStringFunction;
+import scripts.utils.utility.searching.ToStringFunction;
 
 public class TokenSet extends RatioAlgorithm {
 

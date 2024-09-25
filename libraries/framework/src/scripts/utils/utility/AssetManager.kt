@@ -1,4 +1,4 @@
-package scripts.kt.utility
+package scripts.utils.utility
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter

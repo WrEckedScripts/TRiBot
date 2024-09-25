@@ -14,6 +14,7 @@ import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
+import scripts.utils.gui.components.GuiState
 import scripts.utils.gui.components.ScriptGui
 import scripts.wrCrafting.gui.scriptGui
 import java.awt.Color
@@ -36,10 +37,11 @@ class Crafter : TribotScript {
         logger.debug("Painted!")
 
         val scriptGui = ScriptGui(scriptGui)
-
-        Log.info("Results: " + scriptGui);
-
-        return;
+        logger.error("SHOWTIME!: " + scriptGui)
+        if(! scriptGui.equals(GuiState.Completed)){
+            Log.error("You didn't complete the GUI")
+            return
+        }
 
         val grandExchangeCenterTile = WorldTile(3167, 3488, 0);
         val radius = 3

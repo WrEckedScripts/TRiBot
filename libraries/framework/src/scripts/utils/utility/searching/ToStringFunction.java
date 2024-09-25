@@ -1,4 +1,4 @@
-package scripts.kt.utility.searching;
+package scripts.utils.utility.searching;
 
 /**
  * Transforms an item of type T to a String.

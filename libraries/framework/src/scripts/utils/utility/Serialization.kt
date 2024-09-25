@@ -1,4 +1,4 @@
-package scripts.kt.utility
+package scripts.utils.utility
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

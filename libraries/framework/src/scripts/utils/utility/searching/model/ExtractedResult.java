@@ -1,4 +1,4 @@
-package scripts.kt.utility.searching.model;
+package scripts.utils.utility.searching.model;
 
 public class ExtractedResult implements Comparable<ExtractedResult> {
 

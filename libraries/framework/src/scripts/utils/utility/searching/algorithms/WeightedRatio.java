@@ -1,9 +1,9 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
-import scripts.kt.utility.searching.ToStringFunction;
+import scripts.utils.utility.searching.ToStringFunction;
 
-import static scripts.kt.utility.searching.FuzzySearch.*;
-import static scripts.kt.utility.searching.algorithms.PrimitiveUtils.max;
+import static scripts.utils.utility.searching.FuzzySearch.*;
+import static scripts.utils.utility.searching.algorithms.PrimitiveUtils.max;
 import static java.lang.Math.round;
 
 

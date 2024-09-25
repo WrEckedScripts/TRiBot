@@ -1,6 +1,6 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
-import scripts.kt.utility.searching.StringProcessor;
+import scripts.utils.utility.searching.StringProcessor;
 
 /**
  * @deprecated Use {@code ToStringFunction#NO_PROCESS} instead.

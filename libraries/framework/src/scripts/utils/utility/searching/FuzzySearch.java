@@ -1,12 +1,12 @@
-package scripts.kt.utility.searching;
+package scripts.utils.utility.searching;
 
-import scripts.kt.utility.searching.algorithms.TokenSet;
-import scripts.kt.utility.searching.algorithms.TokenSort;
-import scripts.kt.utility.searching.algorithms.WeightedRatio;
-import scripts.kt.utility.searching.model.BoundExtractedResult;
-import scripts.kt.utility.searching.model.ExtractedResult;
-import scripts.kt.utility.searching.ratios.PartialRatio;
-import scripts.kt.utility.searching.ratios.SimpleRatio;
+import scripts.utils.utility.searching.algorithms.TokenSet;
+import scripts.utils.utility.searching.algorithms.TokenSort;
+import scripts.utils.utility.searching.algorithms.WeightedRatio;
+import scripts.utils.utility.searching.model.BoundExtractedResult;
+import scripts.utils.utility.searching.model.ExtractedResult;
+import scripts.utils.utility.searching.ratios.PartialRatio;
+import scripts.utils.utility.searching.ratios.SimpleRatio;
 
 import java.util.Collection;
 import java.util.List;

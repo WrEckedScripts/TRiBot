@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import org.jetbrains.skia.Image
 import scripts.utils.gui.toComposeImageBitmap
-import scripts.kt.utility.AssetManager
+import scripts.utils.utility.AssetManager
 import java.awt.image.BufferedImage
 
 

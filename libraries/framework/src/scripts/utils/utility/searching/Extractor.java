@@ -1,8 +1,8 @@
-package scripts.kt.utility.searching;
+package scripts.utils.utility.searching;
 
-import scripts.kt.utility.searching.algorithms.Utils;
-import scripts.kt.utility.searching.model.BoundExtractedResult;
-import scripts.kt.utility.searching.model.ExtractedResult;
+import scripts.utils.utility.searching.algorithms.Utils;
+import scripts.utils.utility.searching.model.BoundExtractedResult;
+import scripts.utils.utility.searching.model.ExtractedResult;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -17,8 +17,8 @@ import org.jetbrains.skiko.Cursor
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.definitions.ItemDefinition
 import scripts.utils.gui.theme.ScriptColorProvider
-import scripts.kt.utility.AssetManager
-import scripts.kt.utility.ImageCache
+import scripts.utils.utility.AssetManager
+import scripts.utils.utility.ImageCache
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
 import java.util.*

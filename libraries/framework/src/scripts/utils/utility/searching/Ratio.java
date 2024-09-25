@@ -1,4 +1,4 @@
-package scripts.kt.utility.searching;
+package scripts.utils.utility.searching;
 
 /**
  * Interface for the different ratios

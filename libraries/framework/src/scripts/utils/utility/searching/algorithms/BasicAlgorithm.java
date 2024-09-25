@@ -1,14 +1,14 @@
-package scripts.kt.utility.searching.algorithms;
+package scripts.utils.utility.searching.algorithms;
 
-import scripts.kt.utility.searching.Applicable;
-import scripts.kt.utility.searching.ToStringFunction;
+import scripts.utils.utility.searching.Applicable;
+import scripts.utils.utility.searching.ToStringFunction;
 
 public abstract class BasicAlgorithm implements Applicable {
 
     private ToStringFunction<String> stringFunction;
 
     public BasicAlgorithm() {
-        this.stringFunction = new DefaultStringFunction();
+        this.stringFunction = new scripts.utils.utility.searching.algorithms.DefaultStringFunction();
     }
 
     public BasicAlgorithm(ToStringFunction<String> stringFunction) {

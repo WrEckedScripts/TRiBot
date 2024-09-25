@@ -1,4 +1,4 @@
-package scripts.kt.utility
+package scripts.utils.utility
 
 import com.google.gson.Gson
 import org.tribot.script.sdk.MyPlayer

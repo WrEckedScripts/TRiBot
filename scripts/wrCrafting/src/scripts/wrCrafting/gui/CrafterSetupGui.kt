@@ -11,15 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.tribot.script.sdk.Log
+import org.tribot.script.sdk.script.ScriptRuntimeInfo
 import scripts.utils.gui.*
 import scripts.utils.gui.components.ScriptIcon
 
 
 /* Written by IvanEOD 9/28/2022, at 11:05 AM */
 
-val scriptGui = buildGui("My Script", ScriptIcon.fromGithubImage("${windowFrameIcons.random()}%20icon")) {
+val scriptGui = buildGui("${ScriptRuntimeInfo.getScriptName()} - GUI", ScriptIcon.fromGithubImage("${windowFrameIcons.random()}%20icon")) {
 
-    Screen("Page One", ScriptIcon.fromGithubImage("one")) {
+    Screen("Settings", ScriptIcon.fromGithubImage("one")) {
 
         onGuiClosed {
             Log.trace("Gui Closed (Page One)")
