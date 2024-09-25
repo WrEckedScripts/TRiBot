@@ -38,13 +38,11 @@ fun IParentNode.collectBarsNode(
 
             // Wait until the bars are ready
             Waiting.waitUntil {
-                logger.debug("waiting until dispenser holds bars!")
                 Waiting.waitNormal(2262, 254)
                 barManager.dispenserHoldsBars()
             }
 
             Waiting.waitUntil {
-                logger.debug("Waiting until we can interact 'TAKE' on the dispenser")
                 val interacted = dispenser.interact("Take")
 
                 if (!interacted) {
@@ -59,13 +57,11 @@ fun IParentNode.collectBarsNode(
                 // Have some patience on the player moving to the dispenser.
                 if (interacted && MyPlayer.isMoving()) {
                     Waiting.waitUntil {
-                        logger.debug("Waiting on done moving")
                         Waiting.waitNormal(500, 50)
                         !MyPlayer.isMoving()
                     }
                 }
 
-                logger.debug("Done moving, wait until makeScreen is open.")
                 interacted && MakeScreen.isOpen()
             }
 
@@ -81,7 +77,6 @@ fun IParentNode.collectBarsNode(
                 val succeeded = barsInInventoryCount > 0
 
                 if (!succeeded) {
-                    logger.debug("Mini sleep before we retry again..")
                     Waiting.waitNormal(174, 28)
                 }
 

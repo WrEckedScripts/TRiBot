@@ -50,7 +50,6 @@ fun IParentNode.depositItemNode(
             inventoryIsBanked &&
             closeBankWindow
         ) {
-            logger.info("[depositItemNode] - closing bankInterface")
             Bank.close()
         }
 

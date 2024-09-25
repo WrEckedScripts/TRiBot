@@ -24,7 +24,6 @@ fun IParentNode.bankNode(
     close: Boolean = false
 ) = sequence {
     condition {
-        logger.error("Inside bank conditions")
         if (depositInventory) {
             Bank.depositInventory()
 

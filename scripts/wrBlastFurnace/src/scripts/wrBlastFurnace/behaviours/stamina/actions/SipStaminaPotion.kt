@@ -24,8 +24,16 @@ fun IParentNode.sipStaminaPotion(
             perform {
                 Waiting.waitUntil {
                     Waiting.waitNormal(500, 24)
-                    staminaManager.sipStamina()
-                    playerRunManager.enableRun()
+                    val sipped = staminaManager.sipStamina()
+
+                    // todo Closes the bank window, if run is directly enabled.
+                    // could either be a antiban lottery thingy, or simply never do it here.
+                    // There's a tree node that enables run as well.
+//                    Lottery(logger).execute(0.1) {
+//                        playerRunManager.enableRun()
+//                    }
+
+                    sipped
                 }
             }
         }

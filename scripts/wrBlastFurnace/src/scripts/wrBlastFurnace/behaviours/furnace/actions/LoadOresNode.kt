@@ -16,7 +16,6 @@ fun IParentNode.loadOresNode(
 ) = sequence {
     condition {
         Waiting.waitUntil {
-            logger.debug("waiting until inv is empty")
             Waiting.waitNormal(475, 60)
             !Inventory.isEmpty()
         }
@@ -28,7 +27,6 @@ fun IParentNode.loadOresNode(
 
         //TODO increase the TribotRandom.normal, as this is a timeout + add step?
         val res = Waiting.waitUntil(TribotRandom.normal(1750, 55)) {
-            logger.debug("waiting until put-ore-on action")
             val interacted = conveyor.interact("Put-ore-on")
 
             //todo refactor to Antibanmanager class..
@@ -43,7 +41,6 @@ fun IParentNode.loadOresNode(
         }
 
         val inv = Waiting.waitUntil {
-            logger.debug("Checking if inv is now empty.")
             Waiting.waitNormal(1200, 120)
             Inventory.isEmpty()
         }

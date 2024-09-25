@@ -1,5 +1,6 @@
 package scripts.wrBlastFurnace
 
+import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -182,9 +183,10 @@ class BlastFurnaceScript : TribotScript {
 
                 selector {
                     condition { playerRunManager.satisfiesRunExpectation() }
+                    condition { Bank.isOpen() }
                     perform {
                         playerRunManager.enableRun()
-                        logger.debug("enabled run...")
+                        logger.debug("enabled run via default tree...")
                     }
                 }
 
