@@ -25,7 +25,8 @@ class DispenserManager(val logger: Logger) {
     )
 
     /**
-     * Reads out the current bar dispenser state, if it holds bars, the value represent the amount of bars.
+     * Reads out the current bar dispenser state,
+     * if it holds bars, the value of the varbit represent the amount of bars.
      */
     fun holdsBars(): Boolean {
         return barBits.any { GameState.getVarbit(it) > 0 }

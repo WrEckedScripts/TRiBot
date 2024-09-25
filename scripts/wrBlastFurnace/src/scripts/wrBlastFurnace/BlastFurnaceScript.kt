@@ -24,7 +24,7 @@ import java.awt.Color
 import java.awt.Font
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.2.8",
+    name = "WrBlastFurnace Lite 1.3.0",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -67,19 +67,6 @@ class BlastFurnaceScript : TribotScript {
             )
         }
 
-        /**
-         * Setup manager classes
-         */
-
-//        logger.debug("tree defining")
-//          If we use this, and we're logged in when we start, this now keeps stuck here.
-//        val startupTree = getStartupTree(
-//            logger = logger
-//        )
-
-//        val startupTick = startupTree.tick()
-//        logger.debug("Resulted startup in: ${startupTick}")
-
         val playerMissesRequirements = EnsurePlayerHasRequirements(logger)
             .playerMissesRequirement()
 
@@ -90,35 +77,15 @@ class BlastFurnaceScript : TribotScript {
 
         logger.info("Requirement check completed")
 
-        // Prepare Tree
-        // - Move to g.e.
-        // -    if not at g.e. find nearest bank for ring of wealth
-        // -    if no ring of wealth, find varrock tab
-        // -    if no varrock tab
-        // -    start walking
-
-        // - Determine if we need 1-dose stamina's
-        // -    if we have, ensure we got a random amount between 10,40
-        // -    if we don't have 1-dose's but have other doses, let's decant some
-        // -    if we can't decant, let's buy them
-
-        // - Determine if we need ores
-        // -    based on the level for now?
-
         val upkeepManager = UpkeepManager(logger)
-
         val dispenserManager = DispenserManager(logger)
-
         val tripStateManager = TripStateManager(logger)
 
         val playerRunManager = PlayerRunManager(logger)
         playerRunManager.setNextRunEnablingThreshold()
 
-        //todo enable/disable use of stamina/energy pots
         val staminaManager = StaminaManager(logger, playerRunManager)
-
         val cameraManager = CameraManager(logger)
-
         val progressionManager = ProgressionManager(
             logger,
             System.currentTimeMillis(),
@@ -126,11 +93,6 @@ class BlastFurnaceScript : TribotScript {
         )
 
         Lottery.initLogger(logger)
-
-        /**
-         * INITIALIZATION
-         * - will setup our player / world controls, options and preferences
-         */
 
         /**
          * Initialise the basic paint
@@ -154,14 +116,14 @@ class BlastFurnaceScript : TribotScript {
             )
 
             Chatbox.hide()
-            Waiting.wait(10000)
+            Waiting.wait(10000) //todo, can be removed
             DiscordNotifier.notify(true)
 
             /**
              * Execute the behaviourTree until the final result is reached.
              */
             val tick = blastFurnaceTree.tick()
-            logger.debug("[BLAST] - Behavior Tree TICK result: $tick");
+            logger.debug("[Ending] - Reason: $tick");
         } catch (ex: Throwable) {
             logger.error(ex.message)
         }

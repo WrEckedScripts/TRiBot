@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.behaviours.furnace
 
 import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.progress.webhook.DiscordNotifier
@@ -29,10 +30,10 @@ fun getBlastTree(
              * Ensures that we're logged in, after we get disconnected for example
              * - Main login action, is handled within the startupTree
              */
-            /**
-             * Ensures that we're logged in, after we get disconnected for example
-             * - Main login action, is handled within the startupTree
-             */
+            sequence {
+                condition { !Login.isLoggedIn() }
+                perform { Login.login() }
+            }
 
             /**
              * @TODO implement a cycleFailSafeNode

@@ -8,6 +8,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.behaviours.banking.validation.ItemPresence
 
 /**
  * Only to be called after a bankNode() is called and finished.
@@ -37,6 +38,13 @@ fun IParentNode.withdrawItemNode(
                     .findRandom()
                     .get()
                     .name
+            }
+
+            // We will prevent early exiting, when running out of Stamina potions
+            // But other items, need to be present, otherwise we will fail the script.
+            //todo untested as of 1.3.0
+            if (!name.contains("potion")) {
+                ItemPresence.throwExceptionIfBankMissesItem(name)
             }
 
             // Either we need the exact item count
