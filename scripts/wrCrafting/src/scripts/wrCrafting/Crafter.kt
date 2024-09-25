@@ -1,20 +1,17 @@
 package scripts.wrCrafting
 
 import org.tribot.script.sdk.*
-import org.tribot.script.sdk.antiban.Antiban
-import org.tribot.script.sdk.antiban.PlayerPreferences
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
-import org.tribot.script.sdk.query.Query
-import org.tribot.script.sdk.script.ScriptRuntimeInfo
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.GlobalWalking
+import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
 import scripts.wrCrafting.models.TaskConfiguration
 import java.awt.Color
@@ -23,15 +20,40 @@ import java.awt.Graphics
 
 
 @TribotScriptManifest(
-    name = "wrCrafting 0.1.1",
+    name = "wrCrafting 0.1.2",
     description = "Auto Crafter",
     category = "Crafting",
     author = "WrEcked",
 )
 class Crafter : TribotScript {
+    fun initializeMousePainter(){
+        // Create configurations for the mouse paint components
+        val mouseCursorPaintConfig = MouseCursorPaintConfig()
+        val mouseSplinePaintConfig = MouseSplinePaintConfig()
+        val mouseRipplePaintConfig = MouseRipplePaintConfig()
+
+        // Choose a specific MouseCursorPaint implementation
+        val mouseCursorPaint = MouseCursorPaint(mouseCursorPaintConfig)
+        // Or use another implementation like OriginalMouseCursorPaint or PlusSignMouseCursorPaint
+        // val mouseCursorPaint = OriginalMouseCursorPaint(mouseCursorPaintConfig)
+        // val mouseCursorPaint = PlusSignMouseCursorPaint(mouseCursorPaintConfig)
+
+        // Create the MousePaintThread instance with the configurations
+        val mousePaintThread = MousePaintThread(
+            mouseSplinePaintConfig,
+            mouseCursorPaintConfig,
+            mouseRipplePaintConfig,
+            mouseCursorPaint
+        )
+
+        // Start the MousePaintThread
+        mousePaintThread.start()
+    }
+
     override fun execute(args: String) {
         val logger = Logger("Main")
 
+        this.initializeMousePainter()
         /**
          * SETUP
          * - location
