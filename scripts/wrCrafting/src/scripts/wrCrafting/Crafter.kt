@@ -1,5 +1,10 @@
 package scripts.wrCrafting
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+import org.tribot.script.Script
 import org.tribot.script.sdk.*
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
@@ -13,20 +18,24 @@ import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
+import scripts.wrCrafting.gui.GUI
+import scripts.wrCrafting.gui.ScriptSettings
 import scripts.wrCrafting.models.TaskConfiguration
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
+import java.util.concurrent.CompletableFuture
+import kotlin.system.exitProcess
 
 
 @TribotScriptManifest(
-    name = "wrCrafting 0.1.2",
+    name = "wrCrafting 0.1.4",
     description = "Auto Crafter",
     category = "Crafting",
     author = "WrEcked",
 )
 class Crafter : TribotScript {
-    fun initializeMousePainter(){
+    fun initializeMousePainter() {
         // Create configurations for the mouse paint components
         val mouseCursorPaintConfig = MouseCursorPaintConfig()
         val mouseSplinePaintConfig = MouseSplinePaintConfig()
@@ -61,7 +70,22 @@ class Crafter : TribotScript {
          * - Craftable resource name
          */
 
-        //todo randomise the tile
+        // Create a CompletableFuture to wait for the GUI to close and obtain ScriptSettings
+        val guiClosedFuture = CompletableFuture<ScriptSettings>()
+
+        // Start the GUI
+        startGUI(guiClosedFuture)
+
+        guiClosedFuture.thenAccept { settings ->
+            logger.debug("GUI Completed, time to start working")
+            logger.trace(settings)
+
+            //todo need to handle when clicked "cancel" to stop the script
+            //todo need to handle hard closing of the GUI, to not litterally exit the whole application/process
+            // - could be due to a single thread being used, however, once multiple threads are used
+            // - we have not yet figured out how to prevent the script from early ending...
+        }
+
         val grandExchangeCenterTile = WorldTile(3167, 3488, 0);
         val radius = 3
         val grandExchangeArea = Area.fromRadius(grandExchangeCenterTile, radius)
@@ -104,6 +128,39 @@ class Crafter : TribotScript {
          */
         val tick = behaviorTree.tick()
         logger.debug("Behavior Tree TICK result: $tick");
+
+
+        //todo randomise the tile
+
+    }
+
+    private fun startGUI(guiClosedFuture: CompletableFuture<ScriptSettings>) {
+        val settings = ScriptSettings()
+
+        application (
+            exitProcessOnExit = false
+        ) {
+            val guiRunning = remember { mutableStateOf(true) }
+
+            if (guiRunning.value) {
+                Window(
+                    onCloseRequest = {
+                        guiRunning.value = false
+                        settings.scriptStart = false
+                        guiClosedFuture.complete(settings)
+                    },
+                    title = "Testing",
+                    resizable = false
+                ) {
+                    val gui = GUI(onStartScript = {
+                        settings.scriptStart = true
+                        guiRunning.value = false
+                        guiClosedFuture.complete(settings)
+                    })
+                    gui.App(settings)
+                }
+            }
+        }
     }
 
     private fun getCraftingTrees(
@@ -172,7 +229,7 @@ class Crafter : TribotScript {
                         }
                     }
                     perform {
-                        Waiting.waitUntil{
+                        Waiting.waitUntil {
                             suppliesManager.depositUnusableItems()
                             suppliesManager.withdrawChiselFromBank()
                         }
@@ -215,9 +272,9 @@ class Crafter : TribotScript {
                  * - If we don't need any craftables
                  */
                 sequence {
-                    condition { ! craftingManager.taskConfiguration.isProcessing }
-                    condition { ! suppliesManager.needsChisel() }
-                    condition { ! suppliesManager.needsCraftables() }
+                    condition { !craftingManager.taskConfiguration.isProcessing }
+                    condition { !suppliesManager.needsChisel() }
+                    condition { !suppliesManager.needsCraftables() }
                     perform {
                         craftingManager.initCrafting()
                     }

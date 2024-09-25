@@ -9,12 +9,12 @@ import scripts.wrCrafting.gui.methods.Gemstones
 import scripts.wrCrafting.gui.methods.MoltenGlass
 
 class ScriptSettings {
+    var scriptStart: Boolean? by mutableStateOf(null)
     var method: String by mutableStateOf("")
     var gemMaterial: String by mutableStateOf("")
 
     var batchBuy: Int by mutableStateOf(1000)
-    var selling: Boolean by mutableStateOf(false)
-    var stopLevel: Int by mutableStateOf(99)
+    var stopLevel: Int by mutableStateOf(90)
 
     fun getMethods(): Map<String, CraftingMethod> {
         return mapOf(

@@ -1,6 +1,7 @@
 package scripts.wrCrafting.gui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,37 +20,81 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import scripts.wrCrafting.gui.methods.Gemstones
 
-class GUI {
+class GUI(private val onStartScript: () -> Unit) {
 
     @Composable
     @Preview
     fun App(settings: ScriptSettings) {
         MaterialTheme {
-            Column(
-                modifier = Modifier.padding(16.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                MethodDropdown(settings) // this sets the settings.method
-                Spacer(modifier = Modifier.padding(16.dp))
-
-                if (settings.getMethods()[settings.method]?.hasMaterialOptions == true) {
-                    MaterialDropdown(settings)
-                    Spacer(modifier = Modifier.padding(16.dp))
-                }
-
-                BatchBuy(settings)
-
+            Box {
                 Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.Bottom
+                    modifier = Modifier.border(1.dp, Color.Red)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text("method: ${settings.method}")
-                    Text("gem: ${settings.gemMaterial}")
-                    Text("batchbuy: ${settings.batchBuy}")
-                }
+                    Row(
+                        modifier = Modifier.border(4.dp, Color.Yellow)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                                .border(2.dp, Color.Yellow),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            MethodDropdown(settings) // this sets the settings.method
+                            Spacer(modifier = Modifier.padding(16.dp))
 
+                            if (settings.getMethods()[settings.method]?.hasMaterialOptions == true) {
+                                MaterialDropdown(settings)
+                                Spacer(modifier = Modifier.padding(16.dp))
+                            }
+
+                            BatchBuy(settings)
+                            Spacer(modifier = Modifier.padding(16.dp))
+
+                            StopLevel(settings)
+                            Spacer(modifier = Modifier.padding(16.dp))
+
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                Text("method: ${settings.method}")
+                                Text("gem: ${settings.gemMaterial}")
+                                Text("batchbuy: ${settings.batchBuy}")
+                                Text("stopLvl: ${settings.stopLevel}")
+                                Text("scriptStart: ${settings.scriptStart}")
+                            }
+                        }
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = { onStartScript() },
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                "Start Script",
+                                color = Color.White
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                print("Clicked stop btn")
+                                settings.scriptStart = false
+                            },
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                "Cancel",
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -70,6 +115,32 @@ class GUI {
                     }
                 },
                 label = { Text("Batch buying (leave 0 to opt-out)") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                modifier = Modifier
+                    .padding(1.dp)
+                    .zIndex(1f) // Ensure OutlinedTextField is on top
+            )
+        }
+    }
+
+    @Composable
+    fun StopLevel(settings: ScriptSettings) {
+        val (selectedNumber, setSelectedNumber) = remember { mutableStateOf(settings.stopLevel) }
+
+        Box {
+            OutlinedTextField(
+                value = selectedNumber.toString(),
+                onValueChange = { newValue ->
+                    val newNumber = newValue.toIntOrNull() ?: 0
+
+                    if (newValue.isNotEmpty() || newValue.all { it.isDigit() }) {
+                        setSelectedNumber(newNumber)
+                        settings.stopLevel = newNumber
+                    }
+                },
+                label = { Text("Stop level, set to 0 to not end") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
                 ),
@@ -109,7 +180,7 @@ class GUI {
             // Box limited to parent box size to enclose the clickable surface and adjust its size and alignment relative to the parent box size
             Box(
                 modifier = Modifier.matchParentSize()
-                    .border(1.dp, Color.Red) // just for debug display purposes
+//                    .border(1.dp, Color.Red) // just for debug display purposes
                     .zIndex(1.5f) // above the text field but below the dropdown menu
             ) {
                 // Surface to capture clicks
@@ -120,8 +191,8 @@ class GUI {
                         .align(Alignment.BottomCenter)
                         .clickable { setExpanded(!expanded) }
                         .zIndex(1.75f) // slightly above but less than the dropdown menu
-                        .alpha(0.5f) // just for debug display purposes
-                        .border(1.dp, Color.Green) // just for debug display purposes
+                        .alpha(0.3f) // just for debug display purposes
+//                        .border(1.dp, Color.Green) // just for debug display purposes
                 ) {
                     // Empty surface to capture clicks and dismiss the dropdown
                 }
@@ -174,7 +245,7 @@ class GUI {
             // Box limited to parent box size to enclose the clickable surface and adjust its size and alignment relative to the parent box size
             Box(
                 modifier = Modifier.matchParentSize()
-                    .border(1.dp, Color.Red) // just for debug display purposes
+//                    .border(1.dp, Color.Red) // just for debug display purposes
                     .zIndex(1.5f) // above the text field but below the dropdown menu
             ) {
                 // Surface to capture clicks
@@ -185,8 +256,8 @@ class GUI {
                         .align(Alignment.BottomCenter)
                         .clickable { setExpanded(!expanded) }
                         .zIndex(1.75f) // slightly above but less than the dropdown menu
-                        .alpha(0.5f) // just for debug display purposes
-                        .border(1.dp, Color.Green) // just for debug display purposes
+                        .alpha(0.3f) // just for debug display purposes
+//                        .border(1.dp, Color.Green) // just for debug display purposes
                 ) {
                     // Empty surface to capture clicks and dismiss the dropdown
                 }
