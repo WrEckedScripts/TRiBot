@@ -1,5 +1,7 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
+import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
@@ -18,6 +20,9 @@ fun IParentNode.smeltBarsNode(
         sequence {
             bankNode(logger, true, false)
             condition {
+                !Inventory.contains(tripStateManager.bar)
+            }
+            condition {
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
@@ -33,22 +38,54 @@ fun IParentNode.smeltBarsNode(
     }
 
     selector {
-        condition {
-            tripStateManager.isCurrentState("FILL_CONVEYOR") == true
+        condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
+        condition { Inventory.isFull() }
+        sequence {
+            bankNode(logger, true)
+            withdrawItemNode(
+                logger,
+                tripStateManager.baseOre.name,
+                tripStateManager.baseOre.quantity,
+                true
+            )
         }
-
-        loadOresNode(logger, barManager, tripStateManager)
     }
 
     selector {
-        condition {
-            tripStateManager.isCurrentState("COLLECT_ORES") == true
+        condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
+        condition { Inventory.isEmpty() }
+        sequence {
+            loadOresNode(logger)
+            condition {
+                logger.debug("cycleState BASE - executed")
+                tripStateManager.cycleStateFrom(
+                    tripStateManager.getCurrentKey()
+                )
+            }
         }
+    }
+
+    selector {
+        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
+        condition { Inventory.isFull() } //can sometimes double bank, slight wait perhaps?
         sequence {
             bankNode(logger, true)
-            withdrawItemNode(logger, "Copper ore", 14, false)
-            withdrawItemNode(logger, "Tin ore", 14, true)
+            withdrawItemNode(
+                logger,
+                tripStateManager.coalOre.name,
+                tripStateManager.coalOre.quantity,
+                true
+            )
+        }
+    }
+
+    selector {
+        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
+        condition { Inventory.isEmpty() } //can sometimes double bank, slight wait perhaps?
+        sequence {
+            loadOresNode(logger)
             condition {
+                logger.debug("cycleState COAL - executed")
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )

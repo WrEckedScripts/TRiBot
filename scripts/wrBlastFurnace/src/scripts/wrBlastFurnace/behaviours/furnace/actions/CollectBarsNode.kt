@@ -3,6 +3,7 @@ package scripts.wrBlastFurnace.behaviours.furnace.actions
 import org.tribot.script.sdk.MakeScreen
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
+import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.perform
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
@@ -15,7 +16,7 @@ fun IParentNode.collectBarsNode(
     barManager: BarManager,
     tripStateManager: TripStateManager
 ) = sequence {
-    perform {
+    condition {
         val inventoryContainsBars = Query.inventory()
             .nameContains("bar")
             .count() > 0
@@ -47,14 +48,10 @@ fun IParentNode.collectBarsNode(
 
             Waiting.waitUntil {
                 MakeScreen.isOpen()
-            }
-
-            Waiting.waitUntil {
                 Waiting.waitNormal(700, 86)
-                MakeScreen.makeAll("Bronze bar")
-            }
 
-            Waiting.waitUntil {
+                MakeScreen.makeAll(tripStateManager.bar)
+
                 Query.inventory()
                     .nameContains("bar")
                     .count() > 0

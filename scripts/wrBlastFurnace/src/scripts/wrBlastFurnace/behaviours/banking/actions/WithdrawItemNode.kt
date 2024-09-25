@@ -34,25 +34,25 @@ fun IParentNode.withdrawItemNode(
                 .nameEquals(itemName)
                 .sumStacks() >= quantity
 
-            val inventoryHasItem = hasItemCount || hasItemStack
-
-            var status = false
+            var inventoryHasItem = hasItemCount || hasItemStack
 
             // Might ensure we have withdrawn before we close the bank.
             if (!inventoryHasItem) {
-                status = Waiting.waitUntil {
+                inventoryHasItem = Waiting.waitUntil {
                     Bank.withdraw(itemName, quantity)
                 }
             }
 
-            if (status && closeBankWindow) {
-                status = Waiting.waitUntil {
+            //todo, what if we don't have the ores withdrawn?
+            if (closeBankWindow) {
+                Waiting.waitUntil {
                     Bank.close()
                 }
             }
 
+            Waiting.waitNormal(450, 23) // Wait for inventory to update, hopefully prevents double banks
             // Slight hack to ensure we return true/false
-            status
+            inventoryHasItem
         }
     }
 }

@@ -1,36 +1,42 @@
 package scripts.wrBlastFurnace.managers
 
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.banking.materials.Ore
 
 class TripStateManager(val logger: Logger) {
-    val bronzeStates = mutableMapOf(
-        "COLLECT_ORES" to false,
-        "FILL_CONVEYOR" to true,
+    val states = mutableMapOf(
+        "PROCESS_COAL" to false,
+        "PROCESS_BASE" to true,
         "COLLECT_BARS" to true,
         "BANK_BARS" to true
     )
 
+    val baseOre = Ore("Iron ore", 28)
+    val coalOre = Ore("Coal", 28)
+    val bar = "Steel bar"
+
     var tripCount: Int = 0
+    var barsPerTrip: Int = 28
 
     fun isCurrentState(state: String): Boolean? {
-        return this.bronzeStates[state]
+        return this.states[state]
     }
 
     fun getCurrentKey(): String {
-        return this.bronzeStates.entries.first { !it.value }.key
+        return this.states.entries.first { !it.value }.key
     }
 
     fun cycleStateFrom(currentKey: String): Boolean {
-        val keys = this.bronzeStates.keys.toList()
+        val keys = this.states.keys.toList()
         val currentIndex = keys.indexOf(currentKey)
 
         if (currentIndex != -1) {
             // Update the current item to true (processed)
-            this.bronzeStates[keys[currentIndex]] = true
+            this.states[keys[currentIndex]] = true
 
             // Update the next item to false (to start processing it)
             val nextIndex = (currentIndex + 1) % keys.size
-            this.bronzeStates[keys[nextIndex]] = false
+            this.states[keys[nextIndex]] = false
 
             if(nextIndex == 0){
                 this.tripCount++
@@ -45,10 +51,10 @@ class TripStateManager(val logger: Logger) {
     }
 
     fun resetCycle(to: String){
-        for (key in this.bronzeStates.keys){
-            this.bronzeStates[key] = true
+        for (key in this.states.keys){
+            this.states[key] = true
         }
 
-        this.bronzeStates[to] = false
+        this.states[to] = false
     }
 }

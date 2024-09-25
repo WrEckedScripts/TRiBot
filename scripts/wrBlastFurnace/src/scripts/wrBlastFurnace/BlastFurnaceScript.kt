@@ -19,10 +19,7 @@ import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
-import scripts.wrBlastFurnace.managers.BarManager
-import scripts.wrBlastFurnace.managers.PlayerRunManager
-import scripts.wrBlastFurnace.managers.TripStateManager
-import scripts.wrBlastFurnace.managers.UpkeepManager
+import scripts.wrBlastFurnace.managers.*
 import java.awt.Color
 import java.awt.Font
 import java.util.Locale
@@ -172,17 +169,9 @@ class BlastFurnaceScript : TribotScript {
                 }
 
                 selector {
-                    //todo, seems to interfere with banking, make sure we don't do it whilst banking
                     condition { playerRunManager.shouldHaveRunEnabled() }
+                    condition { !Bank.isOpen() }
                     condition {
-                        logger.debug("BFS - enablingRun")
-                        // Fake happy flow, to not execute whilst a bank screen is opened.
-                        // Untested, should prevent wrong inventory states
-                        // (half bars / half ores)
-                        if (Bank.isOpen()) {
-                            return@condition true
-                        }
-
                         Waiting.waitUntil {
                             playerRunManager.enableRun()
                         }
@@ -244,21 +233,20 @@ class BlastFurnaceScript : TribotScript {
             .row(PaintRows.runtime(paintTemplate.toBuilder()))
             .row(
                 paintTemplate.toBuilder()
-                    .label("Collect Ores")
-                    .value { if (tripStateManager.isCurrentState("COLLECT_ORES") == false) "<---" else "" }
+                    .label("Handle Coal")
+                    .value { if (tripStateManager.isCurrentState("PROCESS_COAL") == false) "<---" else "" }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
-                    .label("Fill Conveyor")
-                    .value { if (tripStateManager.isCurrentState("FILL_CONVEYOR") == false) "<---" else "" }
+                    .label("Handle Ores")
+                    .value { if (tripStateManager.isCurrentState("PROCESS_BASE") == false) "<---" else "" }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Bars")
                     .value { if (tripStateManager.isCurrentState("COLLECT_BARS") == false) "<---" else "" }
-
                     .build()
             )
             .row(
@@ -270,7 +258,10 @@ class BlastFurnaceScript : TribotScript {
             .row(
                 paintTemplate.toBuilder()
                     .label("Trips")
-                    .value { tripStateManager.tripCount.toString().plus("| Bars (${tripStateManager.tripCount * 14})") }
+                    .value {
+                        tripStateManager.tripCount.toString()
+                            .plus("| Bars (${tripStateManager.tripCount * tripStateManager.barsPerTrip})")
+                    }
                     .build()
             )
             .row(
@@ -278,7 +269,14 @@ class BlastFurnaceScript : TribotScript {
                     .label("Per hr")
                     .value {
                         "Trips: ".plus(perHour(0, tripStateManager.tripCount))
-                            .plus("| Bars: ".plus(perHour(0, tripStateManager.tripCount * 14)))
+                            .plus(
+                                "| Bars: ".plus(
+                                    perHour(
+                                        0,
+                                        tripStateManager.tripCount * tripStateManager.barsPerTrip
+                                    )
+                                )
+                            )
                     }
                     .build()
             )

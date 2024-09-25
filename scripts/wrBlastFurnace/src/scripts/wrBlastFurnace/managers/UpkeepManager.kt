@@ -42,7 +42,7 @@ class UpkeepManager(val logger: Logger) {
         //todo, we don't want to wait until the coffer fully depleted,
         // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount
         if (cofferValue <= 0) {
-            setNextCofferTopup()
+            setNextCofferTopup() //todo get rid of this? to prevent duplicate calls
             return false
         }
 

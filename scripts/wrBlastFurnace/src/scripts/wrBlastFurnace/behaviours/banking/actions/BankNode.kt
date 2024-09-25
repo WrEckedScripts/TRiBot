@@ -57,6 +57,5 @@ fun IParentNode.bankNode(
                 }
             }
         }
-
     }
 }

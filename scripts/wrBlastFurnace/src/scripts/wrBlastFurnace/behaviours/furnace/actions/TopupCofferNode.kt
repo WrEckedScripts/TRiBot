@@ -53,7 +53,7 @@ fun IParentNode.topupCofferNode(
                 Waiting.waitNormal(900, 120)
 
                 // Ensure we reset our cycle after we've done upkeeing with the coffer
-                tripStateManager.resetCycle("COLLECT_ORES")
+                tripStateManager.resetCycle("PROCESS_COAL")
             }
     }
 

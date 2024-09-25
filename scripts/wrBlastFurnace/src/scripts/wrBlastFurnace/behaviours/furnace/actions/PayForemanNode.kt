@@ -35,7 +35,7 @@ fun IParentNode.payForemanNode(
                     upkeepManager.setLastPaidForemanAt(System.currentTimeMillis())
 
                     // Ensure we reset our cycle after we've done upkeeing with the foreman
-                    tripStateManager.resetCycle("COLLECT_ORES")
+                    tripStateManager.resetCycle("PROCESS_COAL")
                 }
         }
     }
