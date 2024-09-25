@@ -25,15 +25,18 @@ fun IParentNode.loadOresNode(
             .findBestInteractable()
             .get()
 
-        //TODO increase the TribotRandom.normal, as this is a timeout + add step?
         val res = Waiting.waitUntil(TribotRandom.normal(1750, 55)) {
+            if (Inventory.isEmpty()) {
+                return@waitUntil true
+            }
+
             val interacted = conveyor.interact("Put-ore-on")
 
             Lottery.execute(0.1) {
                 MiniBreak.miniLeave()
             }
 
-            interacted
+            return@waitUntil interacted
         }
 
         val inv = Waiting.waitUntil {
@@ -41,8 +44,7 @@ fun IParentNode.loadOresNode(
             Inventory.isEmpty()
         }
 
-        logger.info("Yeah it's empty!")
-        logger.info("[Conveyor] - Interacted: ${res} - Inventory cleared - ${inv}")
+        logger.info("[Conveyor] - dropped off inventory full of ores")
 
         res && inv
     }

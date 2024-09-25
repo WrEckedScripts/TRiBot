@@ -3,6 +3,7 @@ package scripts.utils.antiban
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.input.Mouse
 import org.tribot.script.sdk.util.TribotRandom
+import scripts.utils.progress.Discorder
 
 object MiniBreak {
     private var leaveActive: Boolean = false
@@ -20,6 +21,7 @@ object MiniBreak {
 
     fun miniLeave() {
         val leaveForMillis = TribotRandom.normal(5000, 2340)
+        Discorder.send("[MiniBreak] - Breaking for ${leaveForMillis}ms BRB!")
         this.leaveActive = true
         Mouse.leaveScreen()
         Waiting.wait(leaveForMillis)

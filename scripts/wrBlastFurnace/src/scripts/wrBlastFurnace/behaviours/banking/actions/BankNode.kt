@@ -7,6 +7,9 @@ import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.Logger
+import scripts.utils.antiban.Lottery
+import scripts.utils.antiban.MiniBreak
+import scripts.utils.progress.Discorder
 
 /**
  * Node that should be called upon when we are within either one of the following area's
@@ -32,6 +35,14 @@ fun IParentNode.bankNode(
                 val deposited = Bank.depositInventory()
                 Waiting.waitNormal(300, 30)
                 deposited
+            }
+
+            //todo temp
+            Discorder.initLogger(logger)
+            Discorder.screenshot()
+
+            Lottery.execute(0.1) {
+                MiniBreak.miniLeave()
             }
 
             // If somehow our inventory is still full, let's fail the condition.

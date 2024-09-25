@@ -29,14 +29,12 @@ import java.awt.Color
 import java.awt.Font
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.2.7",
+    name = "WrBlastFurnace Lite 1.2.8",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
 )
 class BlastFurnaceScript : TribotScript {
-    private val startedAt: Long = System.currentTimeMillis()
-
     private fun initializeMousePainter() {
         // Create configurations for the mouse paint components
         val mouseCursorPaintConfig = MouseCursorPaintConfig()
