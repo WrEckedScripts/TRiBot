@@ -80,9 +80,6 @@ fun IParentNode.collectBarsNode(
 
                 val succeeded = barsInInventoryCount > 0
 
-                // Account for a slight delay, the query won't return this instantly.
-                Waiting.waitNormal(600, 50)
-
                 if (!succeeded) {
                     logger.debug("Mini sleep before we retry again..")
                     Waiting.waitNormal(174, 28)

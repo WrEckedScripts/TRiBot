@@ -2,6 +2,8 @@ package scripts.wrBlastFurnace.behaviours.furnace.actions
 
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.types.WorldTile
+import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
@@ -94,6 +96,11 @@ fun IParentNode.smeltBarsNode(
                 )
             }
             perform {
+                //TODO Randomly pick one of the touching tiles?
+                // - Could be GUI option to pre-walk
+                val preWalkTile = WorldTile(1939, 4963, 0)
+                LocalWalking.walkTo(preWalkTile)
+
                 Lottery(logger).execute(0.6) {
                     cameraManager.randomize(zoom = false)
                 }

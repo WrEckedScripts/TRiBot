@@ -1,8 +1,10 @@
 package scripts.wrBlastFurnace.managers
 
+import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
+import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 
 class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager) {
@@ -16,7 +18,10 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
             .count() == 0
     }
 
-    fun sipStamina(): Boolean{
+    fun sipStamina(): Boolean {
+        val currentMouseSpeed = Mouse.getSpeed()
+        logger.info("currentSpeed whilst sipping = ${currentMouseSpeed}")
+
         logger.info("Sipping...")
         Query.inventory()
             .nameContains("Stamina potion")
@@ -28,20 +33,25 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
                 // Antiban / antiprofile:
                 // - Full inv deposit
                 // - deposit specific potion
-                it.click()
-                Waiting.waitNormal(500, 15)
+                Waiting.waitUntil {
+                    val clicked = it.click()
+                    Waiting.waitNormal(120, 25)
+                    clicked
+                }
             }
 
         return this.isActive()
     }
 
     fun satisfiesStaminaState(): Boolean {
-        // If we're rand. X below next re-enable (PlayerRunManager)
         if (this.isActive()) {
             return true
         }
 
-        if (this.playerRunManager.isRunning()) {
+        if (
+            this.playerRunManager.isRunning()
+            && this.playerRunManager.getCurrentRunEnergy() > TribotRandom.normal(19, 2)
+        ) {
             return true
         }
 

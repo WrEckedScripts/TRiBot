@@ -9,7 +9,7 @@ import scripts.utils.Logger
 class PlayerRunManager(val logger: Logger) {
     private var enableAt: Int? = null
 
-    private fun getCurrentRunEnergy(): Int {
+    fun getCurrentRunEnergy(): Int {
         return MyPlayer.getRunEnergy()
     }
 
