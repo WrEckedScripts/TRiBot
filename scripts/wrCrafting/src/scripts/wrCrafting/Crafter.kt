@@ -1,9 +1,6 @@
 package scripts.wrCrafting
 
-import org.tribot.script.sdk.Bank
-import org.tribot.script.sdk.ChatScreen
-import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.*
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -17,6 +14,8 @@ import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
+import scripts.utils.gui.components.ScriptGui
+import scripts.wrCrafting.gui.scriptGui
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
@@ -35,6 +34,12 @@ class Crafter : TribotScript {
 
         initPaint()
         logger.debug("Painted!")
+
+        val scriptGui = ScriptGui(scriptGui)
+
+        Log.info("Results: " + scriptGui);
+
+        return;
 
         val grandExchangeCenterTile = WorldTile(3167, 3488, 0);
         val radius = 3

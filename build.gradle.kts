@@ -21,8 +21,10 @@ buildscript {
         }
     }
     repositories {
+        google()
         mavenCentral()
         maven("https://gitlab.com/api/v4/projects/20741387/packages/maven")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     dependencies {
         classpath("org.tribot:tribot-gradle-plugin:+")
