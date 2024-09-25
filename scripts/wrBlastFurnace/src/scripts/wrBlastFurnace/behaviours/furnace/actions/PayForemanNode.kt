@@ -25,6 +25,7 @@ fun IParentNode.payForemanNode(logger: Logger, upkeepManager: UpkeepManager) = s
                     }
 
                     ChatScreen.handle("Yes")
+                    upkeepManager.totalSpent += 2500
 
                     //todo, in theory, this could fail, so we need to wait until the message
                     // that mentions payment succeeded and we're good for 10 more minutes

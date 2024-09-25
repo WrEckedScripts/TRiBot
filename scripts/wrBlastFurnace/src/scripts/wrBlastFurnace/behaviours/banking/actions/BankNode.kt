@@ -20,7 +20,7 @@ fun IParentNode.bankNode(
     logger: Logger,
     depositInventory: Boolean = false,
     close: Boolean = false
-    ) = sequence {
+) = sequence {
     selector {
         // If the bank is not open
         condition {
@@ -50,7 +50,7 @@ fun IParentNode.bankNode(
                     Bank.depositInventory()
                 }
 
-                if(close){
+                if (close) {
                     Bank.close()
                 }
             }

@@ -16,6 +16,8 @@ class UpkeepManager(val logger: Logger) {
     var lastPaidForemanAt: Long? = null
     var nextCofferTopupAmount: Int = 0
 
+    var totalSpent = 0
+
     fun setLastPaidForemanAt(timestamp: Long) {
         lastPaidForemanAt = timestamp
     }
@@ -52,12 +54,11 @@ class UpkeepManager(val logger: Logger) {
             setNextCofferTopup()
         }
 
-        return nextCofferTopupAmount;
+        return nextCofferTopupAmount
     }
 
     fun setNextCofferTopup(): Unit {
-        nextCofferTopupAmount = TribotRandom.uniform(10000, 20000)
-        logger.error("Set next coffer topup amount to ${nextCofferTopupAmount}")
+        nextCofferTopupAmount = TribotRandom.uniform(10000, 200000)
     }
 
     fun playerHoldsEnoughCoins(amount: Int = 2500): Boolean {
@@ -67,8 +68,6 @@ class UpkeepManager(val logger: Logger) {
             .minStack(amount)
             .findFirst()
             .getOrNull()
-
-        logger.debug("Coin stack: ${coins?.stack}")
 
         if (null == coins) {
             return false

@@ -3,6 +3,10 @@ package scripts.wrBlastFurnace
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.painting.Painting
+import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
+import org.tribot.script.sdk.painting.template.basic.PaintRows
+import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
@@ -17,7 +21,10 @@ import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
 import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
+import java.awt.Color
+import java.awt.Font
 import kotlin.jvm.optionals.getOrNull
 
 @TribotScriptManifest(
@@ -60,11 +67,6 @@ class BlastFurnaceScript : TribotScript {
          * Setup manager classes
          */
 
-        /**
-         * Initialise the basic paint
-         */
-//        initPaint(progressManager)
-
 //        logger.debug("tree defining")
 //
 //        val startupTree = getStartupTree(
@@ -100,14 +102,21 @@ class BlastFurnaceScript : TribotScript {
         // -    based on the level for now?
 
         val upkeepManager = UpkeepManager(logger)
-        upkeepManager.setNextCofferTopup()
 
         val barManager = BarManager(logger)
+
+        val tripStateManager = TripStateManager(logger)
+
+        /**
+         * Initialise the basic paint
+         */
+        initPaint(tripStateManager, upkeepManager)
 
         val blastFurnaceTree = getBlastTree(
             logger = logger,
             upkeepManager = upkeepManager,
-            barManager = barManager
+            barManager = barManager,
+            tripStateManager = tripStateManager
         )
 
         /**
@@ -120,7 +129,8 @@ class BlastFurnaceScript : TribotScript {
     private fun getBlastTree(
         logger: Logger,
         upkeepManager: UpkeepManager,
-        barManager: BarManager
+        barManager: BarManager,
+        tripStateManager: TripStateManager
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             sequence {
@@ -134,42 +144,122 @@ class BlastFurnaceScript : TribotScript {
 
                 /**
                  * When necessary, ensure we've paid the foreman to use the furnace
+                 * - todo, we could try to combine the foreman and coffer, to only need 1 banking action..
                  */
                 selector {
                     condition { upkeepManager.havePaidForeman() }
                     condition { upkeepManager.playerHoldsEnoughCoins() }
-                    //todo, do we need this top-level sequence??
                     sequence {
                         bankNode(logger, true)
-//                        //todo deposit all items, to ensure enough room
-//                        //todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
-                        withdrawItemNode(logger, "Coins", 2500)
+                        withdrawItemNode(logger, "Coins", 2500, true)
                         payForemanNode(logger, upkeepManager)
                     }
                 }
 
                 /**
                  * Ensures the coffer remains filled.
+                 * - todo, we could try to combine the foreman and coffer, to only need 1 banking action..
                  */
                 selector {
                     condition { upkeepManager.haveFilledCoffer() }
                     condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.nextCofferTopupAmount) }
-                    //todo, do we need this top-level sequence??
                     sequence {
                         bankNode(logger, true)
-//                        todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
-                        withdrawItemNode(logger, "Coins", upkeepManager.nextCofferTopupAmount)
+                        withdrawItemNode(logger, "Coins", upkeepManager.nextCofferTopupAmount, true)
                         topupCofferNode(logger, upkeepManager)
+                        bankNode(logger, true)
                     }
                 }
 //
                 selector {
                     condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
+                    condition { !upkeepManager.haveFilledCoffer() }
+                    condition { !upkeepManager.havePaidForeman() }
                     sequence {
-                        smeltBarsNode(logger, barManager)
+                        smeltBarsNode(logger, barManager, tripStateManager)
                     }
                 }
             }
+        }
+    }
+
+    private fun initPaint(
+        tripStateManager: TripStateManager,
+        upkeepManager: UpkeepManager
+    ) {
+        val paintTemplate = PaintTextRow.builder()
+            .background(Color(62, 62, 62))
+            .font(Font("Segoe UI", 0, 12))
+            .build()
+
+        val mainPaint = BasicPaintTemplate.builder()
+            .row(PaintRows.scriptName(paintTemplate.toBuilder()))
+            .row(PaintRows.runtime(paintTemplate.toBuilder()))
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Collect Ores")
+                    .value { tripStateManager.isCurrentState("COLLECT_ORES") == false }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Fill Conveyor")
+                    .value { tripStateManager.isCurrentState("FILL_CONVEYOR") == false }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Collect Bars")
+                    .value { tripStateManager.isCurrentState("COLLECT_BARS") == false }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Bank Bars")
+                    .value { tripStateManager.isCurrentState("BANK_BARS") == false }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Trips")
+                    .value { tripStateManager.tripCount.toString().plus(" bars (${tripStateManager.tripCount * 14})") }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Total upkeep spent")
+                    .value { formatCoins(upkeepManager.totalSpent)  }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Next foreman payment in")
+                    .value { formatMillisToCountdown(upkeepManager.lastPaidForemanAt ?: 0L) }
+                    .build()
+            )
+            .build()
+
+        Painting.addPaint { mainPaint.render(it) }
+    }
+
+    fun formatMillisToCountdown(milliseconds: Long): String {
+        // Calculate total seconds
+        val totalSeconds = (milliseconds / 1000).toInt()
+
+        // Calculate minutes and seconds
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+
+        // Format minutes and seconds as "MM:SS"
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    fun formatCoins(coins: Int): String {
+        return when {
+            coins < 1000 -> coins.toString()
+            coins in 1000..9999 -> String.format("%.0fk", coins / 1000.0)
+            coins in 10000..9999999 -> String.format("%.1fM", coins / 1000000.0)
+            else -> coins.toString() // For values 10 million and above, you can adjust as needed
         }
     }
 }

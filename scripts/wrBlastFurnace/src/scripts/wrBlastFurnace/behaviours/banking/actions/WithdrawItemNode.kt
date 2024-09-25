@@ -22,6 +22,7 @@ fun IParentNode.withdrawItemNode(
     // if we're at a buy-limit, we could take a break.
 
     //TODO withdrawing can fail, if the inventory is still full, and coins didn't got withdrawn
+    // - so this requires a failsafe checking
     selector {
         condition {
             Waiting.waitUntil {

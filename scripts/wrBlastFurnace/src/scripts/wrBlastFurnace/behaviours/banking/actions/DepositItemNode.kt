@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.behaviours.banking.actions
 
 import org.tribot.script.sdk.Bank
+import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
@@ -12,22 +13,30 @@ import scripts.utils.Logger
  */
 fun IParentNode.depositItemNode(
     logger: Logger,
-    itemName: String,
+    itemName: String? = null,
     quantity: Int? = null,
     closeBankWindow: Boolean = true
 ) = sequence {
     condition {
-        //todo, what happens if we have less items than the quantity?
-        if (quantity != null){
-            Bank.deposit(itemName, quantity)
+        // Allow full inventory depositing
+        if (itemName == "" && !Inventory.isEmpty()) {
+            Bank.depositInventory()
         }
 
-        Bank.depositAll(itemName)
+        //todo, what happens if we have less items than the quantity?
+        if (quantity != null) {
+            logger.info("[depositItemNode] - Going to deposit ${itemName.toString()} x ${quantity}")
+            Bank.deposit(itemName.toString(), quantity)
+        }
+
+        logger.info("[depositItemNode] - depositAll ${itemName.toString()}")
+        Bank.depositAll(itemName.toString())
 
         if (closeBankWindow) {
+            logger.info("[depositItemNode] - closing bankInterface")
             Bank.close()
         }
 
-        true
+        true //todo, either properly populate a interacted variable or simply change to a perform()?
     }
 }

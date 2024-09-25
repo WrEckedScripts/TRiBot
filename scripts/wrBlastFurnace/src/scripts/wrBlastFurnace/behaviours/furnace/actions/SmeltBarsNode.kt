@@ -1,62 +1,67 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
-import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.TripStateManager
 
 fun IParentNode.smeltBarsNode(
     logger: Logger,
-    barManager: BarManager
+    barManager: BarManager,
+    tripStateManager: TripStateManager
 ) = sequence {
 
-    /**
-     * For bronze:
-     * do one trip of 14 copper and 14 tin
-     * - wait a bit, and collect, then bank once inventory contains bars.
-     */
-    //"Put-ore-on"
-    // Conveyor belt
+    selector {
+        condition { tripStateManager.isCurrentState("BANK_BARS") == true }
+        sequence {
+            bankNode(logger, true, false)
+            condition {
+                tripStateManager.cycleStateFrom(
+                    tripStateManager.getCurrentKey()
+                )
+            }
+        }
+    }
 
     selector {
-        condition { barManager.hasCollected() }
+        condition { tripStateManager.isCurrentState("COLLECT_BARS") == true }
         sequence {
             selector {
-                condition {
-                    logger.info("selector:SmeltBarsNode.barManager.hasCollected() | inv: ${Inventory.isEmpty()}")
-                    Inventory.isEmpty()
+                condition { !barManager.dispenserHoldsBars() }
+                perform {
+                    Waiting.waitNormal(3000, 23)
+
+                    tripStateManager.resetCycle("COLLECT_ORES")
                 }
-                // TODO, needs to ensure the inventory is deposited + closed
-                // - added todo to change perform > condition
-                bankNode(logger, true, true)
             }
-            collectBarsNode(logger, barManager)
+            collectBarsNode(logger, barManager, tripStateManager)
         }
     }
 
     selector {
         condition {
-            logger.info("selector:SmeltBarsNode.condition.!hasCollected")
-            !barManager.hasCollected()
+            tripStateManager.isCurrentState("FILL_CONVEYOR") == true
         }
-        condition {
-            logger.info("- selector:SmeltBarsNode.condition.!invHoldsOres")
-            !barManager.inventoryHoldsOres()
-        }
-        loadOresNode(logger, barManager)
+
+        loadOresNode(logger, barManager, tripStateManager)
     }
 
     selector {
         condition {
-            logger.info("selector:SmeltBarsNode.condition.invHolds")
-            barManager.inventoryHoldsOres()
+            tripStateManager.isCurrentState("COLLECT_ORES") == true
         }
         sequence {
             bankNode(logger, true)
             withdrawItemNode(logger, "Copper ore", 14, false)
             withdrawItemNode(logger, "Tin ore", 14, true)
+            condition {
+                tripStateManager.cycleStateFrom(
+                    tripStateManager.getCurrentKey()
+                )
+            }
         }
     }
 }

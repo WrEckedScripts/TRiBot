@@ -5,15 +5,19 @@ import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
-import org.tribot.script.sdk.frameworks.behaviortree.perform
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
+import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.TripStateManager
 
-fun IParentNode.loadOresNode(logger: Logger, barManager: BarManager) = sequence {
+fun IParentNode.loadOresNode(
+    logger: Logger,
+    barManager: BarManager,
+    tripStateManager: TripStateManager
+) = sequence {
     condition {
-        var interacted = false
         logger.error("[loadOresNode] - Condition executed")
         val conveyor = Query.gameObjects()
             .nameEquals("Conveyor belt")
@@ -22,14 +26,19 @@ fun IParentNode.loadOresNode(logger: Logger, barManager: BarManager) = sequence 
 
         // Prevents spam clicking while moving
         if (!MyPlayer.isMoving()) {
-            interacted = Waiting.waitUntil {
+            Waiting.waitUntil {
                 conveyor.interact("Put-ore-on")
             }
-            Waiting.waitNormal(4120, 45)
+            Waiting.waitNormal(2300, 45)
         }
 
-        logger.error("loadOresNode END result: ${Inventory.isEmpty() && !barManager.hasCollected()}")
+        Waiting.waitUntil {
+            Waiting.waitNormal(2400, 55)
+            tripStateManager.isCurrentState("COLLECT_BARS") == false
+        }
 
-        interacted
+        tripStateManager.cycleStateFrom(
+            tripStateManager.getCurrentKey()
+        )
     }
 }
