@@ -52,6 +52,7 @@ fun IParentNode.withdrawItemNode(
             }
 
             Waiting.waitUntil {
+                Waiting.waitNormal(950, 123)
                 inventoryHasItem
             }
         }

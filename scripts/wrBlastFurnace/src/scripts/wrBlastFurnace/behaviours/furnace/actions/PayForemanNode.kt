@@ -23,7 +23,7 @@ fun IParentNode.payForemanNode(
                 .findBestInteractable()
                 .map {
                     Waiting.waitUntil {
-                        it.adjustCameraTo()
+//                        it.adjustCameraTo()
                         it.interact("Pay")
                     }
 

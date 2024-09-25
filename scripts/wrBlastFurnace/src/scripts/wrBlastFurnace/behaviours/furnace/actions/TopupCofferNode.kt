@@ -27,7 +27,7 @@ fun IParentNode.topupCofferNode(
             .findFirst()
             .map {
                 Waiting.waitUntil {
-                    it.adjustCameraTo()
+//                    it.adjustCameraTo()
                     it.interact("Use")
                 }
 
