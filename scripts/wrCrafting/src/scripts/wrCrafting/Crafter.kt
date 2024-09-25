@@ -3,9 +3,7 @@ package scripts.wrCrafting
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.ChatScreen
 import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.antiban.Antiban
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -17,15 +15,15 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.WorldTile
-import org.tribot.script.sdk.util.Notifications
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
 
+
 @TribotScriptManifest(
-    name = "wrCrafting 0.0.6",
+    name = "wrCrafting 0.0.8",
     description = "Auto Crafter",
     category = "Crafting",
     author = "WrEcked",
@@ -50,6 +48,8 @@ class Crafter : TribotScript {
 
         paintTile(grandExchangeCenterTile)
         logger.debug("Painted location-tile")
+
+        //todo await until GUI rendered and filled.
 
         val behaviorTree = getCraftingTrees(
             logisticsManager = logisticsManager,
@@ -152,6 +152,7 @@ class Crafter : TribotScript {
                         logger.debug("crafting sequence")
                         Waiting.waitUntil {
                             craftingManager.initCrafting()
+                            // todo antiban, leave screen sometimes
                         }
                     }
                 }
@@ -166,14 +167,14 @@ class Crafter : TribotScript {
                         // and we continue with cutting gems
                         if (ChatScreen.isClickContinueOpen()) {
                             //todo in favor of antiban, sometimes click, sometimes just re-init crafting?
+                            // perhaps player preferences class could be used here.
 
                             ChatScreen.clickContinue()
                             craftingManager.initCrafting()
                         }
-
-                        //todo antiban, open random widget? inspect skills/hover random skill
                     }
                 }
+                //todo antiban, open random widget/inspect skills/hover random skill/hover random item or tile
             }
         }
     }
