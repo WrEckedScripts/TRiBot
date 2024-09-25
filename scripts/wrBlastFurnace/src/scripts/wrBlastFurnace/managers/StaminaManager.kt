@@ -20,7 +20,8 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
 
     fun sipStamina(): Boolean {
         val currentMouseSpeed = Mouse.getSpeed()
-        logger.info("currentSpeed whilst sipping = ${currentMouseSpeed}")
+        logger.info("[Antiban] - temporarily increasing Mouse Speed")
+        Mouse.setSpeed(currentMouseSpeed + TribotRandom.normal(95, 19))
 
         logger.info("Sipping...")
         Query.inventory()
@@ -39,6 +40,8 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
                     clicked
                 }
             }
+
+        Mouse.setSpeed(currentMouseSpeed)
 
         return this.isActive()
     }
