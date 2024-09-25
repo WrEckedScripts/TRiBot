@@ -49,14 +49,14 @@ class TripStateManager(val logger: Logger) {
 
             return true
         } else {
-            logger.error("[TripStateManager] - No state found...")
+            logger.error("[State] - No state found...")
         }
 
         return false
     }
 
     fun resetCycle(to: String) {
-        logger.error("[State] - RESET state to: ${to}")
+        logger.error("[State] - Resetting cycle to ${to}")
         for (key in this.states.keys) {
             this.states[key] = true
         }

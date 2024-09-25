@@ -92,10 +92,6 @@ class UpkeepManager(val logger: Logger) {
             .findFirst()
             .getOrNull()
 
-        if (null == coins) {
-            return false
-        }
-
-        return true
+        return null != coins
     }
 }

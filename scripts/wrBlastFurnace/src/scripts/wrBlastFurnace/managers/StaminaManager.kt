@@ -20,10 +20,9 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
 
     fun sipStamina(): Boolean {
         val currentMouseSpeed = Mouse.getSpeed()
-        logger.info("[Antiban] - temporarily increasing Mouse Speed")
+        logger.info("[Antiban] - Temporarily increasing Mouse Speed")
         Mouse.setSpeed(currentMouseSpeed + TribotRandom.normal(95, 19))
 
-        logger.info("Sipping...")
         Query.inventory()
             .nameContains("Stamina potion")
             .findRandom()

@@ -21,13 +21,12 @@ fun IParentNode.topupCofferNode(
     // keep track of this, and whenever we top-up the coffer, let's pick a next at random number
     // as well as the amount per topup.
     perform {
-        logger.info("[UpkeepManagement] - Time to fill-up the 'Coffer'")
+        logger.info("[Upkeep] - Time to fill-up the 'Coffer'")
         Query.gameObjects()
             .nameEquals("Coffer")
             .findFirst()
             .map {
                 Waiting.waitUntil {
-//                    it.adjustCameraTo()
                     it.interact("Use")
                 }
 
@@ -58,7 +57,7 @@ fun IParentNode.topupCofferNode(
                 if (barManager.dispenserHoldsBars()) {
                     tripStateManager.resetCycle("COLLECT_BARS")
                 } else {
-                    tripStateManager.resetCycle("PROCESS_COAL")
+                    tripStateManager.resetCycle(tripStateManager.getCurrentKey())
                 }
             }
     }
