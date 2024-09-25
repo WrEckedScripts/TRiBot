@@ -16,6 +16,7 @@ import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
+import scripts.wrBlastFurnace.managers.BarManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
 import kotlin.jvm.optionals.getOrNull
 
@@ -101,9 +102,12 @@ class BlastFurnaceScript : TribotScript {
         val upkeepManager = UpkeepManager(logger)
         upkeepManager.setNextCofferTopup()
 
+        val barManager = BarManager(logger)
+
         val blastFurnaceTree = getBlastTree(
             logger = logger,
-            upkeepManager = upkeepManager
+            upkeepManager = upkeepManager,
+            barManager = barManager
         )
 
         /**
@@ -115,16 +119,14 @@ class BlastFurnaceScript : TribotScript {
 
     private fun getBlastTree(
         logger: Logger,
-        upkeepManager: UpkeepManager
+        upkeepManager: UpkeepManager,
+        barManager: BarManager
     ) = behaviorTree {
         repeatUntil(BehaviorTreeStatus.KILL) {
             sequence {
-                perform {
-                    logger.debug(
-                        "lastPaidAt: ${upkeepManager.lastPaidForemanAt}" +
-                        "cofferTopup: ${upkeepManager.nextCofferTopupAmount}"
-                    )
-                }
+                /**
+                 * Make sure we're at the Blast Furnace Area
+                 */
                 selector {
                     condition { MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
                     moveToFurnaceNode(logger)
@@ -136,8 +138,9 @@ class BlastFurnaceScript : TribotScript {
                 selector {
                     condition { upkeepManager.havePaidForeman() }
                     condition { upkeepManager.playerHoldsEnoughCoins() }
+                    //todo, do we need this top-level sequence??
                     sequence {
-                        bankNode(logger)
+                        bankNode(logger, true)
 //                        //todo deposit all items, to ensure enough room
 //                        //todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
                         withdrawItemNode(logger, "Coins", 2500)
@@ -151,36 +154,21 @@ class BlastFurnaceScript : TribotScript {
                 selector {
                     condition { upkeepManager.haveFilledCoffer() }
                     condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.nextCofferTopupAmount) }
+                    //todo, do we need this top-level sequence??
                     sequence {
-                        bankNode(logger)
-                        //todo deposit all items, to ensure enough room
+                        bankNode(logger, true)
 //                        todo, withdraw shouldn't be a node.. it's simply an action to execute at this point.
                         withdrawItemNode(logger, "Coins", upkeepManager.nextCofferTopupAmount)
                         topupCofferNode(logger, upkeepManager)
                     }
                 }
-
-//                selector {
-//                    condition { !upkeepManager.playerHoldsEnoughCoins(logger) }
-//                    payForemanNode(logger)
-//                }
-
-
-//                selector {
-//                    condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() && !upkeepManager.shouldTopupCoffer() }
-//                    perform {
-//                        logger.error("COFFERTOPUP")
-//                    }
-//                    topupCofferNode(logger) //todo add upkeepManager for both coffer and foreman (below 60 smith)
-//                }
 //
-//                selector {
-//                    condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
-//                    perform {
-//                        logger.error("SMELTBARS")
-//                    }
-////                    smeltBarsNode(logger) //todo add BarManager
-//                }
+                selector {
+                    condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
+                    sequence {
+                        smeltBarsNode(logger, barManager)
+                    }
+                }
             }
         }
     }
