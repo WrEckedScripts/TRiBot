@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace
 
 import org.tribot.script.sdk.Inventory
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -15,6 +16,7 @@ import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
 import scripts.utils.formatters.Coins
 import scripts.utils.formatters.Countdown
+import scripts.utils.progress.DiscordNotifier
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
@@ -150,11 +152,14 @@ class BlastFurnaceScript : TribotScript {
             cameraManager = cameraManager
         )
 
+        DiscordNotifier.screenshot()
+        Waiting.wait(10000)
+
         /**
          * Execute the behaviourTree until the final result is reached.
          */
-        val tick = blastFurnaceTree.tick()
-        logger.debug("[BLAST] - Behavior Tree TICK result: $tick");
+//        val tick = blastFurnaceTree.tick()
+//        logger.debug("[BLAST] - Behavior Tree TICK result: $tick");
     }
 
     private fun getBlastTree(

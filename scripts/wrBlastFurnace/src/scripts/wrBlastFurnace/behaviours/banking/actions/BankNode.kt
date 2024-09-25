@@ -9,7 +9,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
-import scripts.utils.progress.Discorder
+import scripts.utils.progress.DiscordNotifier
 
 /**
  * Node that should be called upon when we are within either one of the following area's
@@ -38,8 +38,8 @@ fun IParentNode.bankNode(
             }
 
             //todo temp
-            Discorder.initLogger(logger)
-            Discorder.screenshot()
+            DiscordNotifier.initLogger(logger)
+            DiscordNotifier.screenshot()
 
             Lottery.execute(0.1) {
                 MiniBreak.miniLeave()
