@@ -2,6 +2,7 @@ package scripts.wrBlastFurnace.behaviours.stamina.actions
 
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
@@ -19,7 +20,7 @@ fun IParentNode.sipStaminaPotion(
         condition { staminaManager.notOutOfPotions() }
         sequence {
             // needs a explicit name now, won't work with pots..?
-            withdrawItemNode(logger, "Stamina potion(4)", 1, false)
+            withdrawItemNode(logger, Query.bank().nameContains("Stamina potion").findRandom().get().name, 1, false)
             perform {
                 Waiting.waitUntil {
                     Waiting.waitNormal(500, 24)

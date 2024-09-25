@@ -24,8 +24,12 @@ class UpkeepManager(val logger: Logger) {
         lastPaidForemanAt = timestamp
     }
 
+    fun shouldPayForeman(): Boolean {
+        return Skill.SMITHING.currentLevel < 60
+    }
+
     fun havePaidForeman(): Boolean {
-        if (Skill.SMITHING.currentLevel >= 60) {
+        if (! this.shouldPayForeman()) {
             lastPaidForemanAt = null
             return true
         }

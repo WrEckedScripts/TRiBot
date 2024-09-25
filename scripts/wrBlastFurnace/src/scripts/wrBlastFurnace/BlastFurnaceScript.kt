@@ -130,7 +130,7 @@ class BlastFurnaceScript : TribotScript {
         /**
          * Initialise the basic paint
          */
-        initPaint(tripStateManager, upkeepManager)
+        initPaint(tripStateManager, upkeepManager, staminaManager)
 
         val blastFurnaceTree = getBlastTree(
             logger = logger,
@@ -233,7 +233,8 @@ class BlastFurnaceScript : TribotScript {
 
     private fun initPaint(
         tripStateManager: TripStateManager,
-        upkeepManager: UpkeepManager
+        upkeepManager: UpkeepManager,
+        staminaManager: StaminaManager
     ) {
         val paintTemplate = PaintTextRow.builder()
             .background(Color(62, 62, 62))
@@ -298,15 +299,26 @@ class BlastFurnaceScript : TribotScript {
                     .value { formatCoins(upkeepManager.totalSpent) }
                     .build()
             )
-            .row(
+
+        if (upkeepManager.shouldPayForeman()) {
+            mainPaint.row(
                 paintTemplate.toBuilder()
                     .label("Last foreman payment")
                     .value { formatMillisToCountdown(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
                     .build()
             )
-            .build()
+        }
 
-        Painting.addPaint { mainPaint.render(it) }
+        if (!staminaManager.notOutOfPotions()) {
+            mainPaint.row(
+                paintTemplate.toBuilder()
+                    .label("Sip Stamina")
+                    .value { if(staminaManager.satisfiesStaminaState()) "No" else "Yes" }
+                    .build()
+            )
+        }
+
+        Painting.addPaint { mainPaint.build().render(it) }
     }
 
     fun formatMillisToCountdown(milliseconds: Long): String {
