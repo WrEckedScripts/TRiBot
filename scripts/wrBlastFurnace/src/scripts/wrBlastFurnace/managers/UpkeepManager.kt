@@ -69,7 +69,15 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun setNextCofferTopup(): Unit {
-        this.nextCofferTopupAmount = TribotRandom.uniform(10000, 200000)
+        val minAmount = 10000// 10k
+        val maxAmount = 200000// 200k
+        val stepSize = 1000// 1k
+
+        this.nextCofferTopupAmount = TribotRandom.uniform(
+            minAmount / stepSize, // 10k becomes 10
+            maxAmount / stepSize // 200k becomes 200
+        ) * stepSize // Example: 164 * 1000 = 164k
+
         Waiting.waitNormal(400, 45) // todo might fix resulting in 0 value in withdrawNode
     }
 
