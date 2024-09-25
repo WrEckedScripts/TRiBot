@@ -8,12 +8,12 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.DispenserManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 
 fun IParentNode.collectBarsNode(
     logger: Logger,
-    barManager: BarManager,
+    dispenserManager: DispenserManager,
     tripStateManager: TripStateManager
 ) = sequence {
     condition {
@@ -39,7 +39,7 @@ fun IParentNode.collectBarsNode(
             // Wait until the bars are ready
             Waiting.waitUntil {
                 Waiting.waitNormal(2262, 254)
-                barManager.dispenserHoldsBars()
+                dispenserManager.holdsBars()
             }
 
             Waiting.waitUntil {
@@ -68,7 +68,7 @@ fun IParentNode.collectBarsNode(
             Waiting.waitUntil {
                 // What about a random/player pref space bar spam
                 // needs to ensure we got make-all set.
-                MakeScreen.makeAll(tripStateManager.bar)
+                MakeScreen.makeAll(tripStateManager.bar.name())
 
                 val barsInInventoryCount = Query.inventory()
                     .nameContains("bar")

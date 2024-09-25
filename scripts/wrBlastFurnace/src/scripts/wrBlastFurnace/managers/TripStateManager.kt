@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.managers
 
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.banking.materials.Bar
 import scripts.wrBlastFurnace.banking.materials.Ore
 
 class TripStateManager(val logger: Logger) {
@@ -11,16 +12,12 @@ class TripStateManager(val logger: Logger) {
         "BANK_BARS" to true
     )
 
-    val baseOre = Ore("Iron ore", 28)
-    val coalOre = Ore("Coal", 28)
-    val bar = "Steel bar"
+    val baseOre = Ore("Iron ore", 28, 440)
+    val coalOre = Ore("Coal", 28, 453)
+    val bar = Bar("Steel bar", 2353)
 
     var tripCount: Int = 0
     var barsPerTrip: Int = 28
-
-    // Keep track of costs and gross profit
-    var oreSpent: Int = 0;
-    var barProfit: Int = 0;
 
     fun isCurrentState(state: String): Boolean? {
         return this.states[state]

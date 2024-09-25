@@ -1,12 +1,14 @@
 package scripts.wrBlastFurnace.behaviours.furnace.actions
 
 import org.tribot.script.sdk.ChatScreen
-import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
+import org.tribot.script.sdk.frameworks.behaviortree.perform
+import org.tribot.script.sdk.frameworks.behaviortree.selector
+import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.DispenserManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
 
@@ -14,7 +16,7 @@ fun IParentNode.payForemanNode(
     logger: Logger,
     upkeepManager: UpkeepManager,
     tripStateManager: TripStateManager,
-    barManager: BarManager
+    dispenserManager: DispenserManager
 ) = sequence {
     selector {
         perform {
@@ -36,8 +38,8 @@ fun IParentNode.payForemanNode(
 
                     upkeepManager.setLastPaidForemanAt(System.currentTimeMillis())
 
-                    logger.info("[Foreman] - dispenser: ${barManager.dispenserHoldsBars()}")
-                    if (barManager.dispenserHoldsBars()) {
+                    logger.info("[Foreman] - dispenser: ${dispenserManager.holdsBars()}")
+                    if (dispenserManager.holdsBars()) {
                         tripStateManager.resetCycle("COLLECT_BARS")
                     } else {
                         tripStateManager.resetCycle("PROCESS_COAL")

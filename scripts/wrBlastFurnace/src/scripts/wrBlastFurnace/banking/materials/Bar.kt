@@ -3,13 +3,9 @@ package scripts.wrBlastFurnace.banking.materials
 import org.tribot.script.sdk.pricing.Pricing
 import java.util.*
 
-class Ore(val name: String, val quantity: Int, val id: Int) {
+class Bar(val name: String, val id: Int) {
     fun name(): String {
         return this.name
-    }
-
-    fun quantity(): Int {
-        return this.quantity
     }
 
     fun price(): Optional<Int> {

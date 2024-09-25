@@ -14,7 +14,7 @@ import scripts.wrBlastFurnace.managers.*
 
 fun IParentNode.smeltBarsNode(
     logger: Logger,
-    barManager: BarManager,
+    dispenserManager: DispenserManager,
     tripStateManager: TripStateManager,
     cameraManager: CameraManager,
     staminaManager: StaminaManager,
@@ -42,7 +42,7 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { tripStateManager.isCurrentState("COLLECT_BARS") == true }
         sequence {
-            collectBarsNode(logger, barManager, tripStateManager)
+            collectBarsNode(logger, dispenserManager, tripStateManager)
             perform {
                 Lottery.execute(0.6) {
                     cameraManager.randomize(zoom = false)
@@ -60,7 +60,7 @@ fun IParentNode.smeltBarsNode(
      */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
-        condition { barManager.dispenserHoldsBars() }
+        condition { dispenserManager.holdsBars() }
         condition { Inventory.isFull() }
         sequence {
             ensureIsOpenNode(logger)
@@ -68,8 +68,8 @@ fun IParentNode.smeltBarsNode(
             sipStaminaPotion(logger, staminaManager, playerRunManager)
             withdrawItemNode(
                 logger,
-                tripStateManager.baseOre.name,
-                tripStateManager.baseOre.quantity,
+                tripStateManager.baseOre.name(),
+                tripStateManager.baseOre.quantity(),
                 true
             )
             perform {
@@ -89,7 +89,7 @@ fun IParentNode.smeltBarsNode(
      */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
-        condition { barManager.dispenserHoldsBars() }
+        condition { dispenserManager.holdsBars() }
         condition { Inventory.isEmpty() }
         sequence {
             loadOresNode(logger)
@@ -120,7 +120,7 @@ fun IParentNode.smeltBarsNode(
      */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
-        condition { barManager.dispenserHoldsBars() }
+        condition { dispenserManager.holdsBars() }
         condition { Inventory.isFull() }
         sequence {
             ensureIsOpenNode(logger)
@@ -128,8 +128,8 @@ fun IParentNode.smeltBarsNode(
             sipStaminaPotion(logger, staminaManager, playerRunManager)
             withdrawItemNode(
                 logger,
-                tripStateManager.coalOre.name,
-                tripStateManager.coalOre.quantity,
+                tripStateManager.coalOre.name(),
+                tripStateManager.coalOre.quantity(),
                 true
             )
             perform {
@@ -149,7 +149,7 @@ fun IParentNode.smeltBarsNode(
      */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
-        condition { barManager.dispenserHoldsBars() }
+        condition { dispenserManager.holdsBars() }
         condition { Inventory.isEmpty() }
         sequence {
             loadOresNode(logger)

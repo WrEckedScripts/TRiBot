@@ -8,7 +8,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.perform
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.managers.BarManager
+import scripts.wrBlastFurnace.managers.DispenserManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
 
@@ -16,7 +16,7 @@ fun IParentNode.topupCofferNode(
     logger: Logger,
     upkeepManager: UpkeepManager,
     tripStateManager: TripStateManager,
-    barManager: BarManager
+    dispenserManager: DispenserManager
 ) = sequence {
     // keep track of this, and whenever we top-up the coffer, let's pick a next at random number
     // as well as the amount per topup.
@@ -54,7 +54,7 @@ fun IParentNode.topupCofferNode(
                 Waiting.waitNormal(900, 120)
 
                 // Ensure we reset our cycle after we've done upkeep-ing with the coffer
-                if (barManager.dispenserHoldsBars()) {
+                if (dispenserManager.holdsBars()) {
                     tripStateManager.resetCycle("COLLECT_BARS")
                 } else {
                     tripStateManager.resetCycle(tripStateManager.getCurrentKey())

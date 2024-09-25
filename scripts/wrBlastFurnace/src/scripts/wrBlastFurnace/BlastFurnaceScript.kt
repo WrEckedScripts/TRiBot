@@ -29,7 +29,7 @@ import java.awt.Color
 import java.awt.Font
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.2.0",
+    name = "WrBlastFurnace Lite 1.2.7",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -106,7 +106,7 @@ class BlastFurnaceScript : TribotScript {
 
         val upkeepManager = UpkeepManager(logger)
 
-        val barManager = BarManager(logger)
+        val dispenserManager = DispenserManager(logger)
 
         val tripStateManager = TripStateManager(logger)
 
@@ -122,7 +122,7 @@ class BlastFurnaceScript : TribotScript {
             logger,
             System.currentTimeMillis(),
             tripStateManager,
-            barManager
+            dispenserManager
         )
 
         Lottery.initLogger(logger)
@@ -145,7 +145,7 @@ class BlastFurnaceScript : TribotScript {
         val blastFurnaceTree = getBlastTree(
             logger = logger,
             upkeepManager = upkeepManager,
-            barManager = barManager,
+            dispenserManager = dispenserManager,
             tripStateManager = tripStateManager,
             playerRunManager = playerRunManager,
             staminaManager = staminaManager,
@@ -162,7 +162,7 @@ class BlastFurnaceScript : TribotScript {
     private fun getBlastTree(
         logger: Logger,
         upkeepManager: UpkeepManager,
-        barManager: BarManager,
+        dispenserManager: DispenserManager,
         tripStateManager: TripStateManager,
         playerRunManager: PlayerRunManager,
         staminaManager: StaminaManager,
@@ -209,7 +209,7 @@ class BlastFurnaceScript : TribotScript {
                  */
                 selector {
                     condition { tripStateManager.isCurrentState("COLLECT_BARS") == false }
-                    condition { !barManager.dispenserHoldsBars() }
+                    condition { !dispenserManager.holdsBars() }
                     sequence {
                         selector {
                             condition { Inventory.isEmpty() }
@@ -236,7 +236,7 @@ class BlastFurnaceScript : TribotScript {
                         ensureIsOpenNode(logger)
                         bankNode(logger, true, false)
                         withdrawItemNode(logger, "Coins", 2500, true)
-                        payForemanNode(logger, upkeepManager, tripStateManager, barManager)
+                        payForemanNode(logger, upkeepManager, tripStateManager, dispenserManager)
                     }
                 }
 
@@ -252,7 +252,7 @@ class BlastFurnaceScript : TribotScript {
                         bankNode(logger, true, false)
 
                         withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
-                        topupCofferNode(logger, upkeepManager, tripStateManager, barManager)
+                        topupCofferNode(logger, upkeepManager, tripStateManager, dispenserManager)
 
                         ensureIsOpenNode(logger)
                         bankNode(logger, true, false)
@@ -266,7 +266,7 @@ class BlastFurnaceScript : TribotScript {
                     sequence {
                         smeltBarsNode(
                             logger,
-                            barManager,
+                            dispenserManager,
                             tripStateManager,
                             cameraManager,
                             staminaManager,
@@ -330,6 +330,26 @@ class BlastFurnaceScript : TribotScript {
                     .value {
                         progressionManager.estimatedPerHourTrips()
                     }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Gross earned")
+                    .value {
+                        progressionManager.grossProfit()
+                    }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Spent")
+                    .value { progressionManager.currentSpent() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Net earned")
+                    .value { progressionManager.netProfit() }
                     .build()
             )
 

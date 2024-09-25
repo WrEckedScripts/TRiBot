@@ -2,6 +2,7 @@ package scripts.wrBlastFurnace.managers
 
 import scripts.utils.Logger
 import scripts.utils.calculators.CachedPerHourCalculator
+import scripts.utils.formatters.Coins
 
 /**
  * Manager class that keeps track of various progression related aspects
@@ -14,7 +15,7 @@ class ProgressionManager(
     private val logger: Logger,
     private val startedAt: Long,
     private val tripStateManager: TripStateManager,
-    private val barManager: BarManager
+    private val dispenserManager: DispenserManager
 ) {
     private val tripCalculator = CachedPerHourCalculator(this.startedAt)
     private val barCalculator = CachedPerHourCalculator(this.startedAt)
@@ -34,6 +35,38 @@ class ProgressionManager(
             .plus("(${tripStateManager.tripCount * tripStateManager.barsPerTrip})")
 
         return value
+    }
+
+    fun currentSpentValue(): Int {
+        val coalsUsed = tripStateManager.coalOre.quantity() * tripStateManager.tripCount
+        val baseUsed = tripStateManager.baseOre.quantity() * tripStateManager.tripCount
+
+        val coalSpent = tripStateManager.coalOre.priceTimes(coalsUsed)
+        val baseSpent = tripStateManager.baseOre.priceTimes(baseUsed)
+
+        return coalSpent + baseSpent
+    }
+
+    fun currentSpent(): String {
+        val raw = this.currentSpentValue()
+
+        return "-".plus(Coins().format(raw))
+    }
+
+    fun grossProfitValue(): Int {
+        val barsCreated = tripStateManager.barsPerTrip * tripStateManager.tripCount
+        return tripStateManager.bar.priceTimes(barsCreated)
+    }
+
+    fun grossProfit(): String {
+        return Coins().format(
+            this.grossProfitValue()
+        )
+    }
+
+    fun netProfit(): String {
+        val rawSum = this.grossProfitValue() - this.currentSpentValue()
+        return Coins().format(rawSum)
     }
 
     fun estimatedPerHourTrips(): String {
