@@ -130,6 +130,9 @@ class BlastFurnaceScript : TribotScript {
                     moveToFurnaceNode(logger)
                 }
 
+                /**
+                 * When necessary, ensure we've paid the foreman to use the furnace
+                 */
                 selector {
                     condition { upkeepManager.havePaidForeman() }
                     condition { upkeepManager.playerHoldsEnoughCoins() }
@@ -142,6 +145,9 @@ class BlastFurnaceScript : TribotScript {
                     }
                 }
 
+                /**
+                 * Ensures the coffer remains filled.
+                 */
                 selector {
                     condition { upkeepManager.haveFilledCoffer() }
                     condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.nextCofferTopupAmount) }

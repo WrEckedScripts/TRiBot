@@ -17,7 +17,8 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * The upkeep managers is used to keep track of when to pay the foreman
  * and to calculate / determine the next coffer amount to topup for
- *
+ * todo, idea to separate the foreman and the coffer into a separate manager.
+ * - above lv 60, the foreman isn't needed anymore, so we should not need to load all this stuff in?
  */
 class UpkeepManager(val logger: Logger) {
     var lastPaidForemanAt: Long? = null
@@ -47,6 +48,8 @@ class UpkeepManager(val logger: Logger) {
         val cofferValue = GameState.getVarbit(5357)
         logger.error("CofferValue: ${cofferValue}")
 
+        //todo, we don't want to wait until the coffer fully depleted,
+        // so implement logic, to set a next topup at amount, similar to the nextCofferTopupAmount
         if (cofferValue <= 0) {
             setNextCofferTopup()
             return false
