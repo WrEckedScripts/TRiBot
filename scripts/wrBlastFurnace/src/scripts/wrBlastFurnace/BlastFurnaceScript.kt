@@ -11,6 +11,7 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.nexus.sdk.mouse.*
 import scripts.utils.Logger
+import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
 import scripts.utils.formatters.Coins
 import scripts.utils.formatters.Countdown
@@ -123,6 +124,8 @@ class BlastFurnaceScript : TribotScript {
             tripStateManager,
             barManager
         )
+
+        Lottery.initLogger(logger)
 
         /**
          * INITIALIZATION

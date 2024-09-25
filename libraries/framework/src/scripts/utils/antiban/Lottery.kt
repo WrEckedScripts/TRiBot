@@ -9,7 +9,7 @@ import kotlin.random.Random
 object Lottery {
     var logger: Logger? = null
 
-    fun setLogger(log: Logger) {
+    fun initLogger(log: Logger) {
         this.logger = log
     }
 
