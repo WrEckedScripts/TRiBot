@@ -34,12 +34,12 @@ fun IParentNode.collectBarsNode(
             // Wait until the bars are ready
             Waiting.waitUntil {
                 Waiting.waitNormal(600, 55)
-                !barManager.dispenserHoldsBars()
+                barManager.dispenserHoldsBars()
             }
 
             Waiting.waitUntil {
                 Waiting.waitNormal(800, 45)
-                dispenser.interact("Take")
+                dispenser.interact("Take") || dispenser.interact("Check")
             }
 
             Waiting.waitUntil {

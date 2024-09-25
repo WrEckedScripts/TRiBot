@@ -38,7 +38,17 @@ fun IParentNode.smeltBarsNode(
     }
 
     selector {
+        condition { tripStateManager.isCurrentState("PROCESS_BASE") == true || tripStateManager.isCurrentState("PROCESS_COAL") == true}
+        condition { barManager.dispenserHoldsBars() }
+        perform {
+            //todo, we should now collect if dispenser holds bars..
+            logger.error("CYCLE from ${tripStateManager.getCurrentKey()} as dispenser returns ${barManager.dispenserHoldsBars()}")
+        }
+    }
+
+    selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
+        condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isFull() }
         sequence {
             bankNode(logger, true)
@@ -53,6 +63,7 @@ fun IParentNode.smeltBarsNode(
 
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
+        condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isEmpty() }
         sequence {
             loadOresNode(logger)
@@ -66,6 +77,7 @@ fun IParentNode.smeltBarsNode(
 
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
+        condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isFull() } //can sometimes double bank, slight wait perhaps?
         sequence {
             bankNode(logger, true)
@@ -79,7 +91,8 @@ fun IParentNode.smeltBarsNode(
     }
 
     selector {
-        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
+        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true}
+        condition { barManager.dispenserHoldsBars() }
         condition { Inventory.isEmpty() } //can sometimes double bank, slight wait perhaps?
         sequence {
             loadOresNode(logger)

@@ -9,33 +9,31 @@ import scripts.utils.Logger
 class PlayerRunManager(val logger: Logger) {
     var enableAt: Int? = null
 
-    fun getCurrentRunEnery(): Int {
+    fun getCurrentRunEnergy(): Int {
         return MyPlayer.getRunEnergy()
     }
 
-    fun setNextRunEnablingThreshold(): Unit {
-        //todo extract to AntiBan like manager?
-        if (this.enableAt != null) {
-            return
-        }
-
+    fun setNextRunEnablingThreshold() {
         val antiBanValues = AntibanProperties.getPropsForCurrentChar()
         this.enableAt = TribotRandom.normal(antiBanValues.runEnergyMean, antiBanValues.runEnergyStd)
+
         logger.error("[PlayerRun] - next enabling at ${this.enableAt}")
     }
 
     fun shouldHaveRunEnabled(): Boolean {
-        return this.enableAt != null
-                && this.enableAt!! >= this.getCurrentRunEnery()
-                || this.getCurrentRunEnery() == 100
+        if (this.enableAt == null) {
+            return false
+        }
+
+        return this.getCurrentRunEnergy() == 100
+                || this.enableAt!! >= this.getCurrentRunEnergy()
     }
 
     fun enableRun(): Boolean {
         val beforeRunEnable = this.enableAt
         this.setNextRunEnablingThreshold()
-        logger.debug("[PlayerRun] - Enabled run at ${beforeRunEnable}, next re-enabling at ${this.enableAt}")
+        logger.info("[PlayerRun] - Enabled run at ${beforeRunEnable}, next re-enabling at ${this.enableAt}")
 
-        this.enableAt = null
         return Options.setRunEnabled(true)
     }
 }

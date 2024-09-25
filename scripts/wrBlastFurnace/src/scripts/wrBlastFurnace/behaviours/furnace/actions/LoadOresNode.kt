@@ -5,11 +5,13 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
+import org.tribot.script.sdk.pricing.Pricing
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.managers.TripStateManager
 
 fun IParentNode.loadOresNode(
-    logger: Logger
+    logger: Logger,
 ) = sequence {
     condition {
         Waiting.waitUntil {
@@ -30,6 +32,8 @@ fun IParentNode.loadOresNode(
         val inv = Waiting.waitUntil {
             Inventory.isEmpty()
         }
+
+        logger.info("[Conveyor] - Interacted: ${res} - Inventory cleared - ${inv}")
 
         res && inv
     }

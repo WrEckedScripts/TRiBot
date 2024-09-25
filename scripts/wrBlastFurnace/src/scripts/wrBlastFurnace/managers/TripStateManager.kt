@@ -18,6 +18,10 @@ class TripStateManager(val logger: Logger) {
     var tripCount: Int = 0
     var barsPerTrip: Int = 28
 
+    // Keep track of costs and gross profit
+    var oreSpent: Int = 0;
+    var barProfit: Int = 0;
+
     fun isCurrentState(state: String): Boolean? {
         return this.states[state]
     }
@@ -37,8 +41,9 @@ class TripStateManager(val logger: Logger) {
             // Update the next item to false (to start processing it)
             val nextIndex = (currentIndex + 1) % keys.size
             this.states[keys[nextIndex]] = false
+            logger.error("[State] - cycling state from ${currentKey} to ${nextIndex}")
 
-            if(nextIndex == 0){
+            if (nextIndex == 0) {
                 this.tripCount++
             }
 
@@ -50,8 +55,9 @@ class TripStateManager(val logger: Logger) {
         return false
     }
 
-    fun resetCycle(to: String){
-        for (key in this.states.keys){
+    fun resetCycle(to: String) {
+        logger.error("[State] - RESET state to: ${to}")
+        for (key in this.states.keys) {
             this.states[key] = true
         }
 

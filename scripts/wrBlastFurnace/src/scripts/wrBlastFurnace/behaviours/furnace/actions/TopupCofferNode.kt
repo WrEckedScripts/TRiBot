@@ -8,13 +8,15 @@ import org.tribot.script.sdk.frameworks.behaviortree.perform
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.managers.BarManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
 
 fun IParentNode.topupCofferNode(
     logger: Logger,
     upkeepManager: UpkeepManager,
-    tripStateManager: TripStateManager
+    tripStateManager: TripStateManager,
+    barManager: BarManager
 ) = sequence {
     // keep track of this, and whenever we top-up the coffer, let's pick a next at random number
     // as well as the amount per topup.
@@ -52,9 +54,12 @@ fun IParentNode.topupCofferNode(
                 ChatScreen.clickContinue()
                 Waiting.waitNormal(900, 120)
 
-                // Ensure we reset our cycle after we've done upkeeing with the coffer
-                //todo, i think we can remove this, now we separated banking and loading better.
-                tripStateManager.resetCycle("PROCESS_COAL")
+                // Ensure we reset our cycle after we've done upkeep-ing with the coffer
+                if (barManager.dispenserHoldsBars()) {
+                    tripStateManager.resetCycle("COLLECT_BARS")
+                } else {
+                    tripStateManager.resetCycle("PROCESS_COAL")
+                }
             }
     }
 

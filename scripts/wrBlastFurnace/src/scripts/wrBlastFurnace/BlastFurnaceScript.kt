@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace
 
 import org.tribot.script.sdk.Bank
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.painting.Painting
@@ -168,15 +169,14 @@ class BlastFurnaceScript : TribotScript {
                     moveToFurnaceNode(logger)
                 }
 
-                selector {
-                    condition { !playerRunManager.shouldHaveRunEnabled() }
-                    condition { Bank.isOpen() }
-                    condition {
-                        Waiting.waitUntil {
-                            playerRunManager.enableRun()
-                        }
-                    }
-                }
+//                selector {
+//                    condition { playerRunManager.shouldHaveRunEnabled() }
+//                    condition {
+//                        Waiting.waitUntil {
+//                            playerRunManager.enableRun()
+//                        }
+//                    }
+//                }
 
                 /**
                  * When necessary, ensure we've paid the foreman to use the furnace
@@ -188,7 +188,7 @@ class BlastFurnaceScript : TribotScript {
                     sequence {
                         bankNode(logger, true)
                         withdrawItemNode(logger, "Coins", 2500, true)
-                        payForemanNode(logger, upkeepManager, tripStateManager)
+                        payForemanNode(logger, upkeepManager, tripStateManager, barManager)
                     }
                 }
 
@@ -202,7 +202,7 @@ class BlastFurnaceScript : TribotScript {
                     sequence {
                         bankNode(logger, true)
                         withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
-                        topupCofferNode(logger, upkeepManager, tripStateManager)
+                        topupCofferNode(logger, upkeepManager, tripStateManager, barManager)
                         bankNode(logger, true)
                     }
                 }
