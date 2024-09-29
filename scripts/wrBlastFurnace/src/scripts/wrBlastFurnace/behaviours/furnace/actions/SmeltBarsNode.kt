@@ -120,7 +120,9 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
         condition { !meltingPotManager.containsCoalMoreThan(112) }
-        sequence {
+        condition {
+            //TODO after test round remove
+            logger.debug("MeltingPot:COAL: ${meltingPotManager.getCoalCount()}")
             logger.info("[Melting pot] - Contains enough coal, skipping coal filling to prevent overfilling..")
             tripStateManager.cycleStateFrom(
                 tripStateManager.getCurrentKey()

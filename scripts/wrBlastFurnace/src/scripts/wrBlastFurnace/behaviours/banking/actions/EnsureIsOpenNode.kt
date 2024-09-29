@@ -7,6 +7,8 @@ import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.Logger
 
+//Todo, refactor usage, since we dropped all of the custom code
+// Any implementation for refactoring, does need to be refactored to a condition { Bank.ensureOpen }
 fun IParentNode.ensureIsOpenNode(logger: Logger) = sequence {
     selector {
         condition {

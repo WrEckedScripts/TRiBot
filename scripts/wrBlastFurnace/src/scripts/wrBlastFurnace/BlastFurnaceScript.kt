@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace
 
 import org.tribot.script.sdk.Chatbox
+import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.ScriptListening
 import org.tribot.script.sdk.painting.Painting
@@ -23,7 +24,7 @@ import java.awt.Color
 import java.awt.Font
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.3.3",
+    name = "WrBlastFurnace Lite 1.3.4",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -123,6 +124,8 @@ class BlastFurnaceScript : TribotScript {
              */
             val tick = blastFurnaceTree.tick()
             logger.debug("[Ending] - Reason: $tick");
+
+        Login.logout()
 //        } catch (ex: Throwable) {
 //            logger.error(ex.message)
 //            logger.trace(ex)

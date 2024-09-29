@@ -1,12 +1,14 @@
 package scripts.wrBlastFurnace.behaviours.furnace
 
 import org.tribot.script.sdk.Chatbox
+import org.tribot.script.sdk.Equipment
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Options
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
+import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIceGlovesAreWorn
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.payForemanNode
@@ -47,7 +49,6 @@ fun getBlastTree(
                 }
             }
 
-            //TODO untested
             selector {
                 condition { !Chatbox.isOpen() && Options.isResizableModeEnabled() }
                 perform {
@@ -101,6 +102,19 @@ fun getBlastTree(
                         tripStateManager.isCurrentState("COLLECT_BARS") == false
                     }
                 }
+            }
+
+            /**
+             * So, now we're inside the BF area
+             * Let's make sure that we wear our ice gloves
+             * - If not, we should bank, withdraw and wear them
+             * - If this fails, then we can't run the BF script.
+             */
+            selector {
+                condition {
+                    Equipment.contains("Ice gloves")
+                }
+                ensureIceGlovesAreWorn(logger)
             }
 
             selector {

@@ -42,7 +42,6 @@ fun IParentNode.withdrawItemNode(
 
             // We will prevent early exiting, when running out of Stamina potions
             // But other items, need to be present, otherwise we will fail the script.
-            //todo untested as of 1.3.0
             if (!name.contains("potion")) {
                 ItemPresence.throwExceptionIfBankMissesItem(name)
             }
