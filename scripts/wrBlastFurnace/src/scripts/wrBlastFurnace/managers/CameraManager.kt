@@ -7,9 +7,8 @@ import scripts.utils.Logger
 class CameraManager(val logger: Logger) {
 
     fun initialize() {
-        // Set to mouse scrolling
-        Camera.setZoomMethod(Camera.ZoomMethod.MOUSE_SCROLL) //todo user pref?
-        Camera.setRotationMethod(Camera.RotationMethod.MOUSE) //todo user pref?
+        Camera.setZoomMethod(Camera.ZoomMethod.MOUSE_SCROLL) //todo user pref/gui
+        Camera.setRotationMethod(Camera.RotationMethod.MOUSE) //todo user pref/gui
 
         this.randomize()
     }

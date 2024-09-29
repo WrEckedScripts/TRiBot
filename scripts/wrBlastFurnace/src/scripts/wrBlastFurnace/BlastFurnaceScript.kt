@@ -3,7 +3,6 @@ package scripts.wrBlastFurnace
 import org.tribot.script.sdk.Chatbox
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.ScriptListening
-import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
@@ -24,7 +23,7 @@ import java.awt.Color
 import java.awt.Font
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.3.0",
+    name = "WrBlastFurnace Lite 1.3.3",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -79,6 +78,7 @@ class BlastFurnaceScript : TribotScript {
 
         val upkeepManager = UpkeepManager(logger)
         val dispenserManager = DispenserManager(logger)
+        val meltingPotManager = MeltingPotManager(logger)
         val tripStateManager = TripStateManager(logger)
 
         val playerRunManager = PlayerRunManager(logger)
@@ -104,29 +104,29 @@ class BlastFurnaceScript : TribotScript {
             playerRunManager
         )
 
-        try {
+//        try {
             val blastFurnaceTree = getBlastTree(
                 logger = logger,
                 upkeepManager = upkeepManager,
                 dispenserManager = dispenserManager,
+                meltingPotManager = meltingPotManager,
                 tripStateManager = tripStateManager,
                 playerRunManager = playerRunManager,
                 staminaManager = staminaManager,
                 cameraManager = cameraManager
             )
 
-            Chatbox.hide()
-            Waiting.wait(10000) //todo, can be removed
-            DiscordNotifier.notify(true)
+        Chatbox.hide() //todo GUI option + dedicated place within the tree.
 
             /**
              * Execute the behaviourTree until the final result is reached.
              */
             val tick = blastFurnaceTree.tick()
             logger.debug("[Ending] - Reason: $tick");
-        } catch (ex: Throwable) {
-            logger.error(ex.message)
-        }
+//        } catch (ex: Throwable) {
+//            logger.error(ex.message)
+//            logger.trace(ex)
+//        }
     }
 
     private fun initPaint(

@@ -1,7 +1,8 @@
 package scripts.wrBlastFurnace.behaviours.furnace
 
+import org.tribot.script.sdk.Chatbox
 import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Login
+import org.tribot.script.sdk.Options
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.progress.webhook.DiscordNotifier
@@ -19,6 +20,7 @@ fun getBlastTree(
     logger: Logger,
     upkeepManager: UpkeepManager,
     dispenserManager: DispenserManager,
+    meltingPotManager: MeltingPotManager,
     tripStateManager: TripStateManager,
     playerRunManager: PlayerRunManager,
     staminaManager: StaminaManager,
@@ -30,36 +32,28 @@ fun getBlastTree(
              * Ensures that we're logged in, after we get disconnected for example
              * - Main login action, is handled within the startupTree
              */
-            sequence {
-                condition { !Login.isLoggedIn() }
-                perform { Login.login() }
+//            loginNode(logger)
+
+            /**
+             * TODO, below untested parts, should be within a dedicated node/setup tree
+             *  - together with login logic.
+             */
+
+            //TODO untested
+            selector {
+                condition { Options.isResizableModeEnabled() }
+                perform {
+                    Options.setResizableModeType(Options.ResizableType.RESIZABLE_CLASSIC)
+                }
             }
 
-            /**
-             * @TODO implement a cycleFailSafeNode
-             * - That, based on a set of conditionals, resets the cycle back to a specific case
-             * - This should be taken the highest priority of the tree, by doing this at the top here
-             * - I believe it should do so.
-             */
-
-            /**
-             * @TODO implement a cycleFailSafeNode
-             * - That, based on a set of conditionals, resets the cycle back to a specific case
-             * - This should be taken the highest priority of the tree, by doing this at the top here
-             * - I believe it should do so.
-             */
-
-            /**
-             * @TODO include support for stopping script when no more resources in bank
-             * - IF re-stocking is disabled OR failed due to no GP
-             * - But for now, without re-stocking, it should gracefully stop.
-             */
-
-            /**
-             * @TODO include support for stopping script when no more resources in bank
-             * - IF re-stocking is disabled OR failed due to no GP
-             * - But for now, without re-stocking, it should gracefully stop.
-             */
+            //TODO untested
+            selector {
+                condition { !Chatbox.isOpen() && Options.isResizableModeEnabled() }
+                perform {
+                    Chatbox.hide()
+                }
+            }
 
             // Will send a screenshot every x minutes
             selector {
@@ -116,7 +110,7 @@ fun getBlastTree(
                     ensureIsOpenNode(logger)
                     bankNode(logger, true, false)
                     withdrawItemNode(logger, "Coins", 2500, true)
-                    payForemanNode(logger, upkeepManager, tripStateManager, dispenserManager)
+                    payForemanNode(logger, upkeepManager, tripStateManager)
                 }
             }
 
@@ -143,6 +137,7 @@ fun getBlastTree(
                     smeltBarsNode(
                         logger,
                         dispenserManager,
+                        meltingPotManager,
                         tripStateManager,
                         cameraManager,
                         staminaManager,

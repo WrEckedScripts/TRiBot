@@ -84,6 +84,7 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun setNextCofferTopup(): Unit {
+        //todo user pref / gui option
         val minAmount = 10000// 10k
         val maxAmount = 200000// 200k
         val stepSize = 1000// 1k

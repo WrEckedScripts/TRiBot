@@ -15,6 +15,7 @@ import scripts.wrBlastFurnace.managers.*
 fun IParentNode.smeltBarsNode(
     logger: Logger,
     dispenserManager: DispenserManager,
+    meltingPotManager: MeltingPotManager,
     tripStateManager: TripStateManager,
     cameraManager: CameraManager,
     staminaManager: StaminaManager,
@@ -112,6 +113,22 @@ fun IParentNode.smeltBarsNode(
     }
 
     /**
+     *  Given we are tasked to process coal
+     *  And the melting pot contains more than our threshold in terms of coal stock
+     *  We simply skip the coal task, to prevent any overfilling
+     */
+    selector {
+        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
+        condition { !meltingPotManager.containsCoalMoreThan(112) }
+        sequence {
+            logger.info("[Melting pot] - Contains enough coal, skipping coal filling to prevent overfilling..")
+            tripStateManager.cycleStateFrom(
+                tripStateManager.getCurrentKey()
+            )
+        }
+    }
+
+    /**
      * Given we are processing coal
      * And the dispenser is not holding bars
      * And our inventory is empty
@@ -126,6 +143,7 @@ fun IParentNode.smeltBarsNode(
             ensureIsOpenNode(logger)
             bankNode(logger, true, false)
             sipStaminaPotion(logger, staminaManager, playerRunManager)
+
             withdrawItemNode(
                 logger,
                 tripStateManager.coalOre.name(),

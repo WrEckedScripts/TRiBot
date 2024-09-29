@@ -45,7 +45,6 @@ class TripStateManager(val logger: Logger) {
             // Update the next item to false (to start processing it)
             val nextIndex = (currentIndex + 1) % keys.size
             this.states[keys[nextIndex]] = false
-            logger.error("[State] - cycling state from ${currentKey} to ${nextIndex}")
 
             if (nextIndex == 0) {
                 this.tripCount++
@@ -60,7 +59,6 @@ class TripStateManager(val logger: Logger) {
     }
 
     fun resetCycle(to: String) {
-        logger.error("[State] - Resetting cycle to ${to}")
         for (key in this.states.keys) {
             this.states[key] = true
         }
