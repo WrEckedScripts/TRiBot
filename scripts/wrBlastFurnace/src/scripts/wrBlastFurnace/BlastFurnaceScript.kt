@@ -114,31 +114,35 @@ class BlastFurnaceScript : TribotScript {
             Waiting.waitNormal(400, 50)
         }
 
-//        try {
-        val blastFurnaceTree = getBlastTree(
-            logger = logger,
-            upkeepManager = upkeepManager,
-            dispenserManager = dispenserManager,
-            meltingPotManager = meltingPotManager,
-            tripStateManager = tripStateManager,
-            playerRunManager = playerRunManager,
-            staminaManager = staminaManager,
-            cameraManager = cameraManager
-        )
+        try {
+            val blastFurnaceTree = getBlastTree(
+                logger = logger,
+                upkeepManager = upkeepManager,
+                dispenserManager = dispenserManager,
+                meltingPotManager = meltingPotManager,
+                tripStateManager = tripStateManager,
+                playerRunManager = playerRunManager,
+                staminaManager = staminaManager,
+                cameraManager = cameraManager
+            )
 
-        Chatbox.hide() //todo GUI option + dedicated place within the tree.
+            Chatbox.hide() //todo GUI option + dedicated place within the tree.
 
-        /**
-         * Execute the behaviourTree until the final result is reached.
-         */
-        val tick = blastFurnaceTree.tick()
-        logger.debug("[Ending] - Reason: $tick");
+            /**
+             * Execute the behaviourTree until the final result is reached.
+             */
+            val tick = blastFurnaceTree.tick()
+            logger.debug("[Ending] - Reason: $tick");
 
-        Login.logout()
-//        } catch (ex: Throwable) {
-//            logger.error(ex.message)
-//            logger.trace(ex)
-//        }
+        } catch (ex: Throwable) {
+            logger.error(ex.message)
+            ex.printStackTrace()
+        } finally {
+            //todo GUI option, upon error / running out, do we want to logout?
+            Waiting.waitUntil {
+                Login.logout()
+            }
+        }
     }
 
     private fun initPaint(
