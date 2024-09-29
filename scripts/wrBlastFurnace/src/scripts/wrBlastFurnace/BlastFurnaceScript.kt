@@ -1,9 +1,6 @@
 package scripts.wrBlastFurnace
 
-import org.tribot.script.sdk.Chatbox
-import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.MyPlayer
-import org.tribot.script.sdk.ScriptListening
+import org.tribot.script.sdk.*
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
@@ -24,7 +21,7 @@ import java.awt.Color
 import java.awt.Font
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.3.4",
+    name = "WrBlastFurnace Lite 1.3.6",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -105,25 +102,37 @@ class BlastFurnaceScript : TribotScript {
             playerRunManager
         )
 
+        //TODO gui option
+        val preferredWorld = 352
+        if (WorldHopper.getCurrentWorld() != preferredWorld) {
+            logger.debug("[World] - Hopping to W${preferredWorld}")
+            Waiting.waitUntil {
+                WorldHopper.hop(preferredWorld)
+            }
+
+            // Make sure, after hopping it's all loaded up
+            Waiting.waitNormal(400, 50)
+        }
+
 //        try {
-            val blastFurnaceTree = getBlastTree(
-                logger = logger,
-                upkeepManager = upkeepManager,
-                dispenserManager = dispenserManager,
-                meltingPotManager = meltingPotManager,
-                tripStateManager = tripStateManager,
-                playerRunManager = playerRunManager,
-                staminaManager = staminaManager,
-                cameraManager = cameraManager
-            )
+        val blastFurnaceTree = getBlastTree(
+            logger = logger,
+            upkeepManager = upkeepManager,
+            dispenserManager = dispenserManager,
+            meltingPotManager = meltingPotManager,
+            tripStateManager = tripStateManager,
+            playerRunManager = playerRunManager,
+            staminaManager = staminaManager,
+            cameraManager = cameraManager
+        )
 
         Chatbox.hide() //todo GUI option + dedicated place within the tree.
 
-            /**
-             * Execute the behaviourTree until the final result is reached.
-             */
-            val tick = blastFurnaceTree.tick()
-            logger.debug("[Ending] - Reason: $tick");
+        /**
+         * Execute the behaviourTree until the final result is reached.
+         */
+        val tick = blastFurnaceTree.tick()
+        logger.debug("[Ending] - Reason: $tick");
 
         Login.logout()
 //        } catch (ex: Throwable) {

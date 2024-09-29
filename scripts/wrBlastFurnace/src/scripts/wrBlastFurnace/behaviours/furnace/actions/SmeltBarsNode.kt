@@ -2,6 +2,7 @@ package scripts.wrBlastFurnace.behaviours.furnace.actions
 
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
@@ -21,6 +22,30 @@ fun IParentNode.smeltBarsNode(
     staminaManager: StaminaManager,
     playerRunManager: PlayerRunManager
 ) = sequence {
+
+    /**
+     * Ensures that we only allow full inventories, when it's either:
+     * - full of COAL
+     * - full of BASE ore (ex: Iron ore)
+     * - And we're not expected to bank
+     */
+    selector {
+        condition { Inventory.isEmpty() }
+        selector {
+            condition {
+                Query.inventory().nameEquals(tripStateManager.coalOre.name).count() == tripStateManager.coalOre.quantity
+            }
+            condition {
+                Query.inventory().nameEquals(tripStateManager.baseOre.name).count() == tripStateManager.baseOre.quantity
+            }
+        }
+        condition { tripStateManager.isCurrentState("BANK_BARS") == false }
+        sequence {
+            ensureIsOpenNode(logger)
+            bankNode(logger, true, false)
+        }
+    }
+
     selector {
         condition { tripStateManager.isCurrentState("BANK_BARS") == true }
         sequence {
