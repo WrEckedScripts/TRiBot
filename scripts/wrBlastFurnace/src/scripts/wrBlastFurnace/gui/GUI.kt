@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,7 +24,9 @@ class GUI(private val onStartScript: () -> Unit) {
     @Preview
     fun App() {
         MaterialTheme {
-            MainScreen()
+            Box {
+                MainScreen()
+            }
         }
     }
 
@@ -43,7 +46,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("General", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))  // Smaller font size
                     Spacer(modifier = Modifier.height(4.dp))  // Reduced spacer height
-                    GeneralSection(settings = Settings)
+                    GeneralSection()
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))  // Space between columns
@@ -54,7 +57,7 @@ class GUI(private val onStartScript: () -> Unit) {
                         style = MaterialTheme.typography.h6.copy(fontSize = 16.sp)
                     )  // Smaller font size
                     Spacer(modifier = Modifier.height(4.dp))  // Reduced spacer height
-                    PlayerProfileSection(settings = Settings)
+                    PlayerProfileSection()
                 }
             }
 
@@ -64,7 +67,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Coffer Upkeep", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))
                     Spacer(modifier = Modifier.height(4.dp))
-                    CofferUpkeepSection(settings = Settings)
+                    CofferUpkeepSection()
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -72,17 +75,40 @@ class GUI(private val onStartScript: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Progression", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))
                     Spacer(modifier = Modifier.height(4.dp))
-                    ProgressionSection(settings = Settings)
+                    ProgressionSection()
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+                Button(
+                    onClick = {
+                        // Alternatively, if running in a non-Android environment, use:
+                        println("")
+                        println("======START=======")
+                        println("barType: ${Settings.barType}")
+                        println("world: ${Settings.world}")
+                        println("staminaChecked: ${Settings.staminaChecked}")
+                        println("zoom: ${Settings.zoom}")
+                        println("scroll: ${Settings.scroll}")
+                        println("closingChecked: ${Settings.closingChecked}")
+                        println("chatbox: ${Settings.chatbox}")
+                        println("preWalkChecked: ${Settings.preWalkChecked}")
+                        println("minAmount: ${Settings.minAmount}")
+                        println("maxAmount: ${Settings.maxAmount}")
+                        println("discordUrl: ${Settings.discordUrl}")
+                        println("interval: ${Settings.interval}")
+                        println("======END=======")
+                    },
+                    modifier = Modifier.height(30.dp)
+                ) {
+                    Text("Verify", fontSize = 12.sp)
+                }
+
                 Button(onClick = { /* handle save */ }, modifier = Modifier.height(30.dp)) {
                     Text("Save", fontSize = 12.sp)
                 }
@@ -103,14 +129,14 @@ class GUI(private val onStartScript: () -> Unit) {
      */
 
     @Composable
-    fun GeneralSection(settings: Settings) {
+    fun GeneralSection() {
         val barTypes = mapOf(
             "Steel bar" to "Steel bar",
             "Iron bar" to "Iron bar",
             "Bronze bar" to "Bronze bar"
         )
 
-        var pickedBarType by remember { mutableStateOf(settings.barType) }
+        var pickedBarType by remember { mutableStateOf(Settings.barType) }
 
         Column {
 
@@ -120,7 +146,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 selectedKey = pickedBarType,
                 onOptionSelected = { selectedBarType ->
                     pickedBarType = selectedBarType
-                    settings.barType = selectedBarType
+                    Settings.barType = selectedBarType
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -128,12 +154,12 @@ class GUI(private val onStartScript: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
 
-            var world by remember { mutableStateOf(settings.world) }
+            var world by remember { mutableStateOf(Settings.world) }
             OutlinedTextField(
                 value = world,
                 onValueChange = { newWorld ->
                     world = newWorld
-                    settings.world = newWorld
+                    Settings.world = newWorld
                 },
                 label = { Text("World") },
                 modifier = Modifier.fillMaxWidth(),
@@ -143,13 +169,13 @@ class GUI(private val onStartScript: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
 
-            var staminaChecked by remember { mutableStateOf(settings.staminaChecked) }
+            var staminaChecked by remember { mutableStateOf(Settings.staminaChecked) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = staminaChecked,
                     onCheckedChange = { checked ->
                         staminaChecked = checked
-                        settings.staminaChecked = checked
+                        Settings.staminaChecked = checked
                     }
                 )
                 Text("Use stamina potions", fontSize = 12.sp)
@@ -158,14 +184,14 @@ class GUI(private val onStartScript: () -> Unit) {
     }
 
     @Composable
-    fun PlayerProfileSection(settings: Settings) {
+    fun PlayerProfileSection() {
         val zoomOptions = mapOf("mouse" to "Mouse", "keyboard" to "Keyboard")
         val scrollOptions = mapOf("mouse" to "Mouse", "keyboard" to "Keyboard")
         val chatboxOptions = mapOf("hidden" to "Hidden", "visible" to "Visible")
 
-        var selectedZoom by remember { mutableStateOf(settings.zoom) }
-        var selectedScroll by remember { mutableStateOf(settings.scroll) }
-        var selectedChatbox by remember { mutableStateOf(settings.chatbox) }
+        var selectedZoom by remember { mutableStateOf(Settings.zoom) }
+        var selectedScroll by remember { mutableStateOf(Settings.scroll) }
+        var selectedChatbox by remember { mutableStateOf(Settings.chatbox) }
 
         Column {
 
@@ -175,7 +201,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 selectedKey = selectedZoom,
                 onOptionSelected = { zoom ->
                     selectedZoom = zoom
-                    settings.zoom = zoom
+                    Settings.zoom = zoom
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -189,7 +215,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 selectedKey = selectedScroll,
                 onOptionSelected = { scroll ->
                     selectedScroll = scroll
-                    settings.scroll = scroll
+                    Settings.scroll = scroll
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -197,13 +223,13 @@ class GUI(private val onStartScript: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
 
-            var closingChecked by remember { mutableStateOf(settings.closingChecked) }
+            var closingChecked by remember { mutableStateOf(Settings.closingChecked) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = closingChecked,
                     onCheckedChange = { checked ->
                         closingChecked = checked
-                        settings.closingChecked = checked
+                        Settings.closingChecked = checked
                     }
                 )
                 Text("Use ESC to close bank windows", fontSize = 12.sp)
@@ -218,7 +244,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 selectedKey = selectedChatbox,
                 onOptionSelected = { chatbox ->
                     selectedChatbox = chatbox
-                    settings.chatbox = chatbox
+                    Settings.chatbox = chatbox
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -226,13 +252,13 @@ class GUI(private val onStartScript: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
 
-            var preWalkChecked by remember { mutableStateOf(settings.preWalkChecked) }
+            var preWalkChecked by remember { mutableStateOf(Settings.preWalkChecked) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = preWalkChecked,
                     onCheckedChange = { checked ->
                         preWalkChecked = checked
-                        settings.preWalkChecked = checked
+                        Settings.preWalkChecked = checked
                     }
                 )
                 Text("Pre-walk to dispenser", fontSize = 12.sp)
@@ -241,9 +267,9 @@ class GUI(private val onStartScript: () -> Unit) {
     }
 
     @Composable
-    fun CofferUpkeepSection(settings: Settings) {
-        var minAmount by remember { mutableStateOf(settings.minAmount) }
-        var maxAmount by remember { mutableStateOf(settings.maxAmount) }
+    fun CofferUpkeepSection() {
+        var minAmount by remember { mutableStateOf(Settings.minAmount) }
+        var maxAmount by remember { mutableStateOf(Settings.maxAmount) }
 
         Column {
 
@@ -251,7 +277,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 value = minAmount,
                 onValueChange = { newValue ->
                     minAmount = newValue
-                    settings.minAmount = newValue
+                    Settings.minAmount = newValue
                 },
                 label = { Text("Min amount") },
                 modifier = Modifier.fillMaxWidth(),
@@ -265,7 +291,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 value = maxAmount,
                 onValueChange = { newValue ->
                     maxAmount = newValue
-                    settings.maxAmount = newValue
+                    Settings.maxAmount = newValue
                 },
                 label = { Text("Max amount") },
                 modifier = Modifier.fillMaxWidth(),
@@ -275,9 +301,9 @@ class GUI(private val onStartScript: () -> Unit) {
     }
 
     @Composable
-    fun ProgressionSection(settings: Settings) {
-        var discordUrl by remember { mutableStateOf(settings.discordUrl) }
-        var interval by remember { mutableStateOf(settings.interval) }
+    fun ProgressionSection() {
+        var discordUrl by remember { mutableStateOf(Settings.discordUrl) }
+        var interval by remember { mutableStateOf(Settings.interval) }
 
         Column {
 
@@ -285,7 +311,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 value = discordUrl,
                 onValueChange = { newValue ->
                     discordUrl = newValue
-                    settings.discordUrl = newValue
+                    Settings.discordUrl = newValue
                 },
                 label = { Text("Discord URL") },
                 modifier = Modifier.fillMaxWidth(),
@@ -299,7 +325,7 @@ class GUI(private val onStartScript: () -> Unit) {
                 value = interval,
                 onValueChange = { newValue ->
                     interval = newValue
-                    settings.interval = newValue
+                    Settings.interval = newValue
                 },
                 label = { Text("Screenshot Interval (in minutes)") },
                 modifier = Modifier.fillMaxWidth(),
@@ -320,7 +346,7 @@ class GUI(private val onStartScript: () -> Unit) {
         onOptionSelected: (K) -> Unit,
         modifier: Modifier = Modifier
     ) {
-        var expanded by remember { mutableStateOf(false) }
+        var (expanded, setExpanded) = remember { mutableStateOf(false) }
         var selectedOption by remember { mutableStateOf(options[selectedKey]) }
 
         Box(modifier = modifier) {
@@ -343,16 +369,33 @@ class GUI(private val onStartScript: () -> Unit) {
                     .zIndex(1f)
             )
 
+            Box(
+                modifier = Modifier.matchParentSize()
+                    .zIndex(1.5f)
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.8f)
+                        .align(Alignment.BottomCenter)
+                        .clickable { setExpanded(!expanded) }
+                        .zIndex(1.75f)
+                        .alpha(0.3f)
+                ) {
+                    // Empty surface for click capturing
+                }
+            }
 
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false },
+                onDismissRequest = { setExpanded(false) },
                 modifier = Modifier.zIndex(2f)
             ) {
                 options.forEach { (key, value) ->
                     DropdownMenuItem(
                         onClick = {
                             selectedOption = value
+                            setExpanded(false)
                             onOptionSelected(key)
                             expanded = false
                         }
