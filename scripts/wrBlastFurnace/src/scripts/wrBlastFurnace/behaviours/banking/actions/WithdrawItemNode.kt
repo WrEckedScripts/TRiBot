@@ -58,18 +58,12 @@ fun IParentNode.withdrawItemNode(
 
             var inventoryHasItem = hasItemCount || hasItemStack
 
-            // Might ensure we have withdrawn before we close the bank.
-            //TODO, re-write, do not assume that we've withdrawn before, in fact, utilize actual state based waiting
-            // To ensure we double check to see if our inventory actually represents what we wanted to withdraw
-            // - could be with a timeout checking, to give the withdraw some time to update game state
-            // - ensure we query after withdrawing (as well) and not (only) before withdrawing like we do now.
             if (!inventoryHasItem) {
                 inventoryHasItem = Waiting.waitUntil {
                     Bank.withdraw(name, quantity)
                 }
             }
 
-            //todo, what if we don't have the ores withdrawn?
             if (closeBankWindow) {
                 Waiting.waitUntil {
                     Bank.close()

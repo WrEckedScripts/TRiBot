@@ -11,6 +11,7 @@ import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
+import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.*
 
 fun IParentNode.smeltBarsNode(
@@ -125,10 +126,10 @@ fun IParentNode.smeltBarsNode(
                 )
             }
             perform {
-                //TODO Randomly pick one of the touching tiles?
-                // - Could be GUI option to pre-walk
-                val preWalkTile = WorldTile(1939, 4963, 0)
-                LocalWalking.walkTo(preWalkTile)
+                if (Settings.preWalkChecked) {
+                    val preWalkTile = WorldTile(1939, 4963, 0)
+                    LocalWalking.walkTo(preWalkTile)
+                }
 
                 Lottery.execute(0.78) {
                     cameraManager.randomize(zoom = false)
@@ -146,9 +147,6 @@ fun IParentNode.smeltBarsNode(
         condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
         condition { !meltingPotManager.containsCoalMoreThan(112) }
         condition {
-            //TODO after test round remove
-            logger.debug("MeltingPot:COAL: ${meltingPotManager.getCoalCount()}")
-            logger.info("[Melting pot] - Contains enough coal, skipping coal filling to prevent overfilling..")
             tripStateManager.cycleStateFrom(
                 tripStateManager.getCurrentKey()
             )

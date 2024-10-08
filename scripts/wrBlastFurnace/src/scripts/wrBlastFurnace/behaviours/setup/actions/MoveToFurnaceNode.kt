@@ -1,7 +1,10 @@
 package scripts.wrBlastFurnace.behaviours.setup.actions
 
 import org.tribot.script.sdk.Waiting
-import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
+import org.tribot.script.sdk.frameworks.behaviortree.condition
+import org.tribot.script.sdk.frameworks.behaviortree.selector
+import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.walking.GlobalWalking
 import scripts.utils.Logger
@@ -13,15 +16,8 @@ import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidatio
  * so, this node is to be called upon when we're within the G.E. area
  * and we should move towards the mine cart trapdoor and interact on it.
  * await until we're at the Keldagrim location and from there move towards the furnace.
- * TODO, current set-up works, but does not properly adjust the camera, when walking.
  */
 fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
-    //if we're at the G.E.
-    // move to the minecart tile
-    // interact with the trapdoor
-
-    // since we will call this only when within the G.E area, initiate moving until we're within the keldagrim region
-
     selector {
         condition { !MoveToFurnaceValidation(logger).isNearTrapdoor() || !MoveToFurnaceValidation(logger).isWithinKeldagrim() }
         condition {

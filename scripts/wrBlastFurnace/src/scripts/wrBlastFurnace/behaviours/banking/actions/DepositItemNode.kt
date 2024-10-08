@@ -37,7 +37,6 @@ fun IParentNode.depositItemNode(
             status = Bank.depositInventory()
         }
 
-        //todo, what happens if we have less items than the quantity?
         if (!status && quantity != null) {
             status = Bank.deposit(itemName.toString(), quantity)
         }
