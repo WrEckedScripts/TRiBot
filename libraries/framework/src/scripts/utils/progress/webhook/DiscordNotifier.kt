@@ -16,12 +16,27 @@ import java.time.OffsetDateTime
 import javax.imageio.ImageIO
 
 object DiscordNotifier {
-    private var lastSent: Long? = null
+    private var url: String? = null
+    private var interval: Int = 15
+    private var enabled: Boolean = false
 
+    private var lastSent: Long? = null
     private var logger: Logger? = null
 
     fun initLogger(log: Logger) {
-        logger = log
+        this.logger = log
+    }
+
+    fun initConfig(url: String, interval: Int) {
+        this.url = url
+        this.interval = interval
+
+        if (this.url == "") {
+            this.logger?.error("[Discord] - Failed to parse webhook url from GUI, we're not going to send screenshots")
+        } else {
+            this.logger?.info("[Discord] - Enabled Discord notifications, we will be sending screenshots")
+            this.enabled = true
+        }
     }
 
     /**
@@ -32,24 +47,25 @@ object DiscordNotifier {
     }
 
     /**
-     * Determine if we're forcing a screenshot for sending, or that we're preventing it so we don't spam our discord
-     * Allows for timely updates, now HARDCODED to 15 minutes. But will need to be adjustable.
-     * @todo, adjustable webhook url + timing
-     *  - where the timing interval is in minutes
+     * Determine if we're forcing a screenshot for sending, or that we're preventing it so we don't spam the webhook
      */
     private fun shouldSend(force: Boolean = false): Boolean {
+        if (!this.enabled) {
+            return false
+        }
+
         if (force) {
             return true
         }
 
-        if (lastSent == null) {
+        if (this.lastSent == null) {
             return true
         }
 
         val currentTime = System.currentTimeMillis()
-        val nextTime = 60 * 15_000 // 15 minutes in milliseconds
+        val nextTime = 60 * (this.interval * 1_000)
 
-        return (currentTime - lastSent!!) >= nextTime
+        return (currentTime - this.lastSent!!) >= nextTime
     }
 
     private fun embed(message: String?, color: Int?): WebhookEmbed {
@@ -97,12 +113,16 @@ object DiscordNotifier {
             return
         }
 
+        if (!this.enabled || this.url.equals(null)) {
+            return
+        }
+
         WebhookClient.withUrl(
-            "https://discord.com/api/webhooks/1279066926953402419/VBj8I3sB4Scj73MoV_p1Ei-uUGOCW-b09swi6gKMNVC_o1MsL_eQDkOuyTH47-3a38w-"
+            this.url!!
         ).send(
             message(this.createScreenshot(), message, color)
         )
 
-        lastSent = System.currentTimeMillis()
+        this.lastSent = System.currentTimeMillis()
     }
 }

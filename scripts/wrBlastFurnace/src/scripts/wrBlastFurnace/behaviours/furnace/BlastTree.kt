@@ -1,9 +1,6 @@
 package scripts.wrBlastFurnace.behaviours.furnace
 
-import org.tribot.script.sdk.Chatbox
-import org.tribot.script.sdk.Equipment
-import org.tribot.script.sdk.Inventory
-import org.tribot.script.sdk.Options
+import org.tribot.script.sdk.*
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.progress.webhook.DiscordNotifier
@@ -16,6 +13,7 @@ import scripts.wrBlastFurnace.behaviours.furnace.actions.smeltBarsNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
+import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.*
 
 fun getBlastTree(
@@ -31,33 +29,53 @@ fun getBlastTree(
     repeatUntil(BehaviorTreeStatus.KILL) {
         sequence {
             /**
-             * Ensures that we're logged in, after we get disconnected for example
-             * - Main login action, is handled within the startupTree
+             * Ensures that we're logged in, after we get disconnected for example.
              */
-//            loginNode(logger)
+            selector {
+                condition { Login.isLoggedIn() }
+                condition {
+                    Login.login()
+                }
+            }
+
+            //World hopping
+            selector {
+                condition { Settings.getWorld() == WorldHopper.getCurrentWorld() }
+                condition {
+                    logger.debug("WorldHopping - Let's hop from ${WorldHopper.getCurrentWorld()} to ${Settings.getWorld()}")
+                    Waiting.waitUntil(5000) {
+                        WorldHopper.hop(Settings.getWorld())
+                    }
+                }
+            }
 
             /**
-             * TODO, below untested parts, should be within a dedicated node/setup tree
-             *  - together with login logic.
+             * Ensure that we're working in resizableMode
              */
-
-            //TODO untested
             selector {
+                condition { !Settings.getHideChatbox() }
                 condition { Options.isResizableModeEnabled() }
-                perform {
+                condition {
                     Options.setResizableModeType(Options.ResizableType.RESIZABLE_CLASSIC)
                 }
             }
 
+            /**
+             * Ensures the chatbox is closed (when in resizableMode)
+             */
             selector {
+                condition { !Settings.getHideChatbox() }
                 condition { !Chatbox.isOpen() && Options.isResizableModeEnabled() }
-                perform {
+                condition {
                     Chatbox.hide()
                 }
             }
 
             // Will send a screenshot every x minutes
             selector {
+                condition { !Settings.usesDiscord() }
+                //todo we need to pass through the interval somehow
+                // and get rid of the "perform" as this is always executed iirc.
                 perform {
                     DiscordNotifier.notify()
                 }

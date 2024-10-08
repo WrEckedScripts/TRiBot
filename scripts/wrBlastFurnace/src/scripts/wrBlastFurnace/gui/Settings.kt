@@ -1,19 +1,48 @@
 package scripts.wrBlastFurnace.gui
 
+import org.tribot.script.sdk.Camera
+
 object Settings {
     var barType: String = "Steel bar"
     var world: String = "352"
     var staminaChecked: Boolean = true
 
     var zoom: String = "mouse"
-    var scroll: String = "mouse"
-    var closingChecked: Boolean = true
+    var rotate: String = "mouse"
     var chatbox: String = "hidden"
     var preWalkChecked: Boolean = false
 
     var minAmount: String = "10000"
     var maxAmount: String = "200000"
 
-    var discordUrl: String = "https://webhook.discord.com/..."
-    var interval: String = "15"
+    var discordUrl: String = ""
+    var interval: String = "60"
+
+    fun getZoomMethod(): Camera.ZoomMethod {
+        if (this.zoom == "mouse") {
+            return Camera.ZoomMethod.MOUSE_SCROLL
+        }
+
+        return Camera.ZoomMethod.OPTIONS_TAB
+    }
+
+    fun getRotateMethod(): Camera.RotationMethod {
+        if (this.rotate == "mouse") {
+            return Camera.RotationMethod.MOUSE
+        }
+
+        return Camera.RotationMethod.KEYS
+    }
+
+    fun getHideChatbox(): Boolean {
+        return this.chatbox == "hidden"
+    }
+
+    fun getWorld(): Int {
+        return this.world.toInt()
+    }
+
+    fun usesDiscord(): Boolean {
+        return !(this.discordUrl == "" || this.interval == "")
+    }
 }

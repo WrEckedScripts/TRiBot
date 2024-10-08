@@ -1,6 +1,7 @@
 package scripts.wrBlastFurnace.gui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,7 +26,7 @@ class GUI(private val onStartScript: () -> Unit) {
     @Preview
     fun App() {
         MaterialTheme {
-            Box {
+            Box(modifier = Modifier.background(Color.White)) {
                 MainScreen()
             }
         }
@@ -94,8 +96,7 @@ class GUI(private val onStartScript: () -> Unit) {
                         println("world: ${Settings.world}")
                         println("staminaChecked: ${Settings.staminaChecked}")
                         println("zoom: ${Settings.zoom}")
-                        println("scroll: ${Settings.scroll}")
-                        println("closingChecked: ${Settings.closingChecked}")
+                        println("rotate: ${Settings.rotate}")
                         println("chatbox: ${Settings.chatbox}")
                         println("preWalkChecked: ${Settings.preWalkChecked}")
                         println("minAmount: ${Settings.minAmount}")
@@ -106,18 +107,18 @@ class GUI(private val onStartScript: () -> Unit) {
                     },
                     modifier = Modifier.height(30.dp)
                 ) {
-                    Text("Verify", fontSize = 12.sp)
+                    Text("Debug choices", fontSize = 12.sp)
                 }
 
-                Button(onClick = { /* handle save */ }, modifier = Modifier.height(30.dp)) {
-                    Text("Save", fontSize = 12.sp)
-                }
+//                Button(onClick = { /* handle save */ }, modifier = Modifier.height(30.dp)) {
+//                    Text("Save", fontSize = 12.sp)
+//                }
+//
+//                Button(onClick = { /* handle load */ }, modifier = Modifier.height(30.dp)) {
+//                    Text("Load", fontSize = 12.sp)
+//                }
 
-                Button(onClick = { /* handle load */ }, modifier = Modifier.height(30.dp)) {
-                    Text("Load", fontSize = 12.sp)
-                }
-
-                Button(onClick = { /* handle run */ }, modifier = Modifier.height(30.dp)) {
+                Button(onClick = { onStartScript() }, modifier = Modifier.height(30.dp)) {
                     Text("Run", fontSize = 12.sp)
                 }
             }
@@ -185,12 +186,12 @@ class GUI(private val onStartScript: () -> Unit) {
 
     @Composable
     fun PlayerProfileSection() {
-        val zoomOptions = mapOf("mouse" to "Mouse", "keyboard" to "Keyboard")
-        val scrollOptions = mapOf("mouse" to "Mouse", "keyboard" to "Keyboard")
+        val zoomOptions = mapOf("mouse" to "Mouse", "options" to "Options Tab")
+        val rotateOptions = mapOf("mouse" to "Mouse", "keyboard" to "Keyboard")
         val chatboxOptions = mapOf("hidden" to "Hidden", "visible" to "Visible")
 
         var selectedZoom by remember { mutableStateOf(Settings.zoom) }
-        var selectedScroll by remember { mutableStateOf(Settings.scroll) }
+        var selectedRotate by remember { mutableStateOf(Settings.rotate) }
         var selectedChatbox by remember { mutableStateOf(Settings.chatbox) }
 
         Column {
@@ -210,33 +211,17 @@ class GUI(private val onStartScript: () -> Unit) {
 
 
             DropdownMenu(
-                label = "Scroll",
-                options = scrollOptions,
-                selectedKey = selectedScroll,
-                onOptionSelected = { scroll ->
-                    selectedScroll = scroll
-                    Settings.scroll = scroll
+                label = "Rotate",
+                options = rotateOptions,
+                selectedKey = selectedRotate,
+                onOptionSelected = { rotate ->
+                    selectedRotate = rotate
+                    Settings.rotate = rotate
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-
-
-            var closingChecked by remember { mutableStateOf(Settings.closingChecked) }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = closingChecked,
-                    onCheckedChange = { checked ->
-                        closingChecked = checked
-                        Settings.closingChecked = checked
-                    }
-                )
-                Text("Use ESC to close bank windows", fontSize = 12.sp)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
 
             DropdownMenu(
                 label = "Chatbox",

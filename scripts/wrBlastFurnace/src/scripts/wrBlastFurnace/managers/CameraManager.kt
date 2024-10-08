@@ -3,12 +3,13 @@ package scripts.wrBlastFurnace.managers
 import org.tribot.script.sdk.Camera
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.gui.Settings
 
 class CameraManager(val logger: Logger) {
 
     fun initialize() {
-        Camera.setZoomMethod(Camera.ZoomMethod.MOUSE_SCROLL) //todo user pref/gui
-        Camera.setRotationMethod(Camera.RotationMethod.MOUSE) //todo user pref/gui
+        Camera.setZoomMethod(Settings.getZoomMethod())
+        Camera.setRotationMethod(Settings.getRotateMethod())
 
         this.randomize()
     }

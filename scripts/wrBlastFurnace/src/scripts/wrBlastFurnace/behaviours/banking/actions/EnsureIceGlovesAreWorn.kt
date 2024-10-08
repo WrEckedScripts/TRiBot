@@ -22,6 +22,9 @@ import scripts.utils.Logger
  * If both cases fail, the script will be terminated.
  */
 fun IParentNode.ensureIceGlovesAreWorn(logger: Logger) = sequence {
+    // In between world hops etc, this prevents early exit-ing the script
+    Waiting.waitNormal(650, 40)
+
     val presentInInventory = Query.inventory()
         .nameEquals("Ice gloves")
         .findFirst()

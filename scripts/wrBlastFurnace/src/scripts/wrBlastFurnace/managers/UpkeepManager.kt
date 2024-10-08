@@ -5,6 +5,7 @@ import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.gui.Settings
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -84,9 +85,8 @@ class UpkeepManager(val logger: Logger) {
     }
 
     fun setNextCofferTopup(): Unit {
-        //todo user pref / gui option
-        val minAmount = 10000// 10k
-        val maxAmount = 200000// 200k
+        val minAmount = Settings.minAmount.toInt() // 10k
+        val maxAmount = Settings.maxAmount.toInt() // 200k
         val stepSize = 1000// 1k
 
         this.nextCofferTopupAmount = TribotRandom.uniform(

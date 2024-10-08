@@ -1,6 +1,15 @@
 package scripts.wrBlastFurnace
 
-import org.tribot.script.sdk.*
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.application
+import org.tribot.script.sdk.Login
+import org.tribot.script.sdk.MyPlayer
+import org.tribot.script.sdk.ScriptListening
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
@@ -16,12 +25,15 @@ import scripts.utils.formatters.Countdown
 import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrBlastFurnace.behaviours.furnace.getBlastTree
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
+import scripts.wrBlastFurnace.gui.GUI
+import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.*
 import java.awt.Color
 import java.awt.Font
+import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.3.6",
+    name = "WrBlastFurnace Lite 1.3.8",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -55,14 +67,6 @@ class BlastFurnaceScript : TribotScript {
         val logger = Logger("WrBlastFurnace Lite")
 
         this.initializeMousePainter()
-
-        ScriptListening.addEndingListener {
-            DiscordNotifier.notify(
-                true,
-                "Instance ended, Your account (${MyPlayer.getUsername()}) is no longer running!",
-                0xFF1E61
-            )
-        }
 
         val playerMissesRequirements = EnsurePlayerHasRequirements(logger)
             .playerMissesRequirement()
@@ -102,16 +106,29 @@ class BlastFurnaceScript : TribotScript {
             playerRunManager
         )
 
-        //TODO gui option
-        val preferredWorld = 352
-        if (WorldHopper.getCurrentWorld() != preferredWorld) {
-            logger.debug("[World] - Hopping to W${preferredWorld}")
-            Waiting.waitUntil {
-                WorldHopper.hop(preferredWorld)
-            }
+        val guiClosed = CompletableFuture<Settings>()
 
-            // Make sure, after hopping it's all loaded up
-            Waiting.waitNormal(400, 50)
+        startGui(guiClosed)
+
+        guiClosed.thenAccept {
+            logger.debug("[GUI] - Completed, let's go blast furnacing!")
+
+            //todo need to handle when clicked "cancel" to stop the script, it now simply starts the script.
+        }
+
+        DiscordNotifier.initLogger(logger)
+
+        DiscordNotifier.initConfig(
+            Settings.discordUrl,
+            Settings.interval.toInt()
+        )
+
+        ScriptListening.addEndingListener {
+            DiscordNotifier.notify(
+                true,
+                "Instance ended, Your account (${MyPlayer.getUsername()}) is no longer running!",
+                0xFF1E61
+            )
         }
 
         try {
@@ -126,8 +143,6 @@ class BlastFurnaceScript : TribotScript {
                 cameraManager = cameraManager
             )
 
-            Chatbox.hide() //todo GUI option + dedicated place within the tree.
-
             /**
              * Execute the behaviourTree until the final result is reached.
              */
@@ -138,9 +153,33 @@ class BlastFurnaceScript : TribotScript {
             logger.error(ex.message)
             ex.printStackTrace()
         } finally {
-            //todo GUI option, upon error / running out, do we want to logout?
             Waiting.waitUntil {
                 Login.logout()
+            }
+        }
+    }
+
+    private fun startGui(guiClosed: CompletableFuture<Settings>) {
+        application(
+            exitProcessOnExit = false
+        ) {
+            val guiRunning = remember { mutableStateOf(true) }
+            if (guiRunning.value) {
+                Window(
+                    onCloseRequest = {
+                        guiRunning.value = false
+                        guiClosed.complete(Settings)
+                    },
+                    title = "WrBlastFurnace Lite GUI",
+                    resizable = true,
+                    state = WindowState(width = 400.dp, height = 625.dp)
+                ) {
+                    val gui = GUI(onStartScript = {
+                        guiRunning.value = false
+                        guiClosed.complete(Settings)
+                    })
+                    gui.App()
+                }
             }
         }
     }
