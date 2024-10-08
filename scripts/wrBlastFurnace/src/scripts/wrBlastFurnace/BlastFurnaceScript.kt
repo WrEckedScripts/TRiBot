@@ -33,7 +33,7 @@ import java.awt.Font
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.3.9",
+    name = "WrBlastFurnace Lite 1.4.0",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"

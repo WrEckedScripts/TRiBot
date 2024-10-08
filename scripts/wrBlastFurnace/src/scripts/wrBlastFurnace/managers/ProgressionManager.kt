@@ -28,10 +28,10 @@ class ProgressionManager(
     }
 
     fun currentTrips(): String {
-        val value = tripStateManager.tripCount.toString()
+        val value = Coins().format(tripStateManager.tripCount)
             .plus(" | ")
             .plus(" Bars ")
-            .plus("(${tripStateManager.tripCount * tripStateManager.barsPerTrip})")
+            .plus("(${Coins().format(tripStateManager.tripCount * tripStateManager.barsPerTrip)})")
 
         return value
     }
