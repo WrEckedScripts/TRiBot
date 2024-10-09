@@ -61,13 +61,18 @@ class BlastFurnaceScript : TribotScript {
         setupNotifications()
         setupHelpers()
 
-        val guiClosed = CompletableFuture<Settings>()
-        startGui(guiClosed)
+        val closed = CompletableFuture<Unit>()
+        val started = CompletableFuture<Unit>()
+        startGui(started, closed)
 
-        guiClosed.thenAccept {
+        started.thenAccept {
             logger.debug("[GUI] - Completed, let's go blast furnacing!")
 
             executeBlastFurnaceTree(logger, this.managers)
+        }
+
+        closed.thenAccept {
+            logger.debug("[GUI] - Closed, without starting, we'll meet again :)")
         }
     }
 
@@ -157,14 +162,14 @@ class BlastFurnaceScript : TribotScript {
         logger.debug("Player logged out successfully.")
     }
 
-    private fun startGui(guiClosed: CompletableFuture<Settings>) {
+    private fun startGui(guiStarted: CompletableFuture<Unit>, guiClosed: CompletableFuture<Unit>) {
         application(exitProcessOnExit = false) {
             val guiRunning = remember { mutableStateOf(true) }
             if (guiRunning.value) {
                 Window(
                     onCloseRequest = {
                         guiRunning.value = false
-                        guiClosed.complete(Settings)
+                        guiClosed.complete(Unit)
                     },
                     title = "WrBlastFurnace Lite GUI",
                     resizable = true,
@@ -172,7 +177,7 @@ class BlastFurnaceScript : TribotScript {
                 ) {
                     val gui = GUI(onStartScript = {
                         guiRunning.value = false
-                        guiClosed.complete(Settings)
+                        guiStarted.complete(Unit)
                     })
                     gui.App()
                 }
