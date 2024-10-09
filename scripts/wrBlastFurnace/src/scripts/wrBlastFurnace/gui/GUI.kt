@@ -19,6 +19,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import scripts.wrBlastFurnace.behaviours.furnace.bars.BronzeBar
+import scripts.wrBlastFurnace.behaviours.furnace.bars.IronBar
+import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
+import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
 
 class GUI(private val onStartScript: () -> Unit) {
 
@@ -132,10 +136,12 @@ class GUI(private val onStartScript: () -> Unit) {
     @Composable
     fun GeneralSection() {
         val barTypes = mapOf(
-            "Steel bar" to "Steel bar",
-            "Iron bar" to "Iron bar",
-            "Bronze bar" to "Bronze bar"
+            "Steel bar" to SteelBar(),
+            "Iron bar" to IronBar(),
+            "Bronze bar" to BronzeBar()
         )
+
+        val barOptions: Map<MeltableBar, String> = barTypes.values.associateWith { it.bar().name() }
 
         var pickedBarType by remember { mutableStateOf(Settings.barType) }
 
@@ -143,7 +149,7 @@ class GUI(private val onStartScript: () -> Unit) {
 
             DropdownMenu(
                 label = "Bar type",
-                options = barTypes,
+                options = barOptions,
                 selectedKey = pickedBarType,
                 onOptionSelected = { selectedBarType ->
                     pickedBarType = selectedBarType

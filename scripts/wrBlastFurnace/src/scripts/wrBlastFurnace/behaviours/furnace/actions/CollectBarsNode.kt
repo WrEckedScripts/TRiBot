@@ -73,7 +73,7 @@ fun IParentNode.collectBarsNode(
             // MakeScreen is open, move onto making the actual bars
             // We'll give this action 5 seconds to finish, otherwise we'd failed and need to redo the condition.
             Waiting.waitUntil(5000) {
-                MakeScreen.makeAll(tripStateManager.bar.name())
+                MakeScreen.makeAll(tripStateManager.meltableBar.bar().name())
 
                 val barsInInventoryCount = Query.inventory()
                     .nameContains("bar")

@@ -34,7 +34,8 @@ fun IParentNode.smeltBarsNode(
         condition { Inventory.isEmpty() }
         selector {
             condition {
-                Query.inventory().nameEquals(tripStateManager.coalOre.name).count() == tripStateManager.coalOre.quantity
+                Query.inventory().nameEquals(tripStateManager.secondaryOre?.name)
+                    .count() == tripStateManager.secondaryOre?.quantity
             }
             condition {
                 Query.inventory().nameEquals(tripStateManager.baseOre.name).count() == tripStateManager.baseOre.quantity
@@ -83,7 +84,7 @@ fun IParentNode.smeltBarsNode(
      * And the dispenser is not holding bars
      * And our inventory is full
      *
-     * We will withdraw a coal
+     * We will withdraw base ores
      */
     selector {
         condition { tripStateManager.isCurrentState("PROCESS_BASE") == true }
@@ -139,71 +140,76 @@ fun IParentNode.smeltBarsNode(
     }
 
     /**
-     *  Given we are tasked to process coal
-     *  And the melting pot contains more than our threshold in terms of coal stock
-     *  We simply skip the coal task, to prevent any overfilling
+     * Some bars do not use secondary materials. So for that, we do not always want to include this sequence
      */
-    selector {
-        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
-        condition { !meltingPotManager.containsCoalMoreThan(112) }
-        condition {
-            tripStateManager.cycleStateFrom(
-                tripStateManager.getCurrentKey()
-            )
-        }
-    }
-
-    /**
-     * Given we are processing coal
-     * And the dispenser is not holding bars
-     * And our inventory is empty
-     *
-     * We will withdraw a coal
-     */
-    selector {
-        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
-        condition { dispenserManager.holdsBars() }
-        condition { Inventory.isFull() }
-        sequence {
-            ensureIsOpenNode(logger)
-            bankNode(logger, true, false)
-            sipStaminaPotion(logger, staminaManager, playerRunManager)
-
-            withdrawItemNode(
-                logger,
-                tripStateManager.coalOre.name(),
-                tripStateManager.coalOre.quantity(),
-                true
-            )
-            perform {
-                Lottery.execute(0.6) {
-                    cameraManager.randomize(zoom = false)
-                }
-            }
-        }
-    }
-
-    /**
-     * Given we are processing coal
-     * And the dispenser is not holding bars
-     * And our inventory is not empty
-     *
-     * We will load our ores to the conveyor
-     */
-    selector {
-        condition { tripStateManager.isCurrentState("PROCESS_COAL") == true }
-        condition { dispenserManager.holdsBars() }
-        condition { Inventory.isEmpty() }
-        sequence {
-            loadOresNode(logger)
+    if (tripStateManager.states.containsKey("PROCESS_SECONDARY")) {
+        /**
+         *  Given we are tasked to process coal
+         *  And the melting pot contains more than our threshold in terms of coal stock
+         *  We simply skip the coal task, to prevent any overfilling
+         */
+        selector {
+            condition { tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
+            condition { !meltingPotManager.containsCoalMoreThan(112) }
             condition {
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
             }
-            perform {
-                Lottery.execute(0.6) {
-                    cameraManager.randomize(zoom = false)
+        }
+
+        /**
+         * Given we are processing coal
+         * And the dispenser is not holding bars
+         * And our inventory is empty
+         *
+         * We will withdraw secondary ores
+         */
+        selector {
+            condition { tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
+            condition { dispenserManager.holdsBars() }
+            condition { Inventory.isFull() }
+            sequence {
+                ensureIsOpenNode(logger)
+                bankNode(logger, true, false)
+                sipStaminaPotion(logger, staminaManager, playerRunManager)
+
+                withdrawItemNode(
+                    logger,
+                    tripStateManager.secondaryOre!!.name(),
+                    tripStateManager.secondaryOre.quantity(),
+                    true
+                )
+                perform {
+                    Lottery.execute(0.6) {
+                        cameraManager.randomize(zoom = false)
+                    }
+                }
+            }
+        }
+
+        /**
+         * Given we are processing coal
+         * And the dispenser is not holding bars
+         * And our inventory is not empty
+         *
+         * We will load our ores to the conveyor
+         */
+        selector {
+            condition { tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
+            condition { dispenserManager.holdsBars() }
+            condition { Inventory.isEmpty() }
+            sequence {
+                loadOresNode(logger)
+                condition {
+                    tripStateManager.cycleStateFrom(
+                        tripStateManager.getCurrentKey()
+                    )
+                }
+                perform {
+                    Lottery.execute(0.6) {
+                        cameraManager.randomize(zoom = false)
+                    }
                 }
             }
         }

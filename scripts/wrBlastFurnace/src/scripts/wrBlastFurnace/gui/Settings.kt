@@ -1,9 +1,10 @@
 package scripts.wrBlastFurnace.gui
 
 import org.tribot.script.sdk.Camera
+import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
 
 object Settings {
-    var barType: String = "Steel bar"
+    var barType: MeltableBar? = null
     var world: String = "352"
     var staminaChecked: Boolean = true
 

@@ -3,7 +3,7 @@ package scripts.wrBlastFurnace.banking.materials
 import org.tribot.script.sdk.pricing.Pricing
 import java.util.*
 
-class Bar(val name: String, val id: Int) {
+open class Bar(val name: String, val id: Int) {
     fun name(): String {
         return this.name
     }

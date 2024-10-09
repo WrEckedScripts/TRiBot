@@ -37,13 +37,15 @@ class ProgressionManager(
     }
 
     private fun currentSpentValue(): Int {
-        val coalsUsed = tripStateManager.coalOre.quantity() * tripStateManager.tripCount
-        val baseUsed = tripStateManager.baseOre.quantity() * tripStateManager.tripCount
+        val secondariesSpent = tripStateManager.secondaryOre?.let { secondary ->
+            val secondariesUsed = secondary.quantity() * tripStateManager.tripCount
+            secondary.priceTimes(secondariesUsed)
+        } ?: 0
 
-        val coalSpent = tripStateManager.coalOre.priceTimes(coalsUsed)
+        val baseUsed = tripStateManager.baseOre.quantity() * tripStateManager.tripCount
         val baseSpent = tripStateManager.baseOre.priceTimes(baseUsed)
 
-        return coalSpent + baseSpent
+        return secondariesSpent + baseSpent
     }
 
     fun currentSpent(): String {
@@ -54,7 +56,7 @@ class ProgressionManager(
 
     private fun grossProfitValue(): Int {
         val barsCreated = tripStateManager.barsPerTrip * tripStateManager.tripCount
-        return tripStateManager.bar.priceTimes(barsCreated)
+        return tripStateManager.meltableBar.bar().priceTimes(barsCreated)
     }
 
     fun grossProfit(): String {

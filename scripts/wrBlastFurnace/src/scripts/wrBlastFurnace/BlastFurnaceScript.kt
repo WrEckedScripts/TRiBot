@@ -33,7 +33,7 @@ import java.awt.Font
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.4.0",
+    name = "WrBlastFurnace Lite 1.4.1",
     description = "Smelts steel bars on the Blast Furnace",
     category = "Smithing",
     author = "WrEcked"
@@ -68,6 +68,10 @@ class BlastFurnaceScript : TribotScript {
 
         this.initializeMousePainter()
 
+        val guiClosed = CompletableFuture<Settings>()
+        startGui(guiClosed)
+
+        //TODO, not sure if we want this right here, probably best after logging in :)
         val playerMissesRequirements = EnsurePlayerHasRequirements(logger)
             .playerMissesRequirement()
 
@@ -94,8 +98,6 @@ class BlastFurnaceScript : TribotScript {
             tripStateManager,
         )
 
-        Lottery.initLogger(logger)
-
         /**
          * Initialise the basic paint
          */
@@ -106,15 +108,14 @@ class BlastFurnaceScript : TribotScript {
             playerRunManager
         )
 
-        val guiClosed = CompletableFuture<Settings>()
-
-        startGui(guiClosed)
-
         guiClosed.thenAccept {
             logger.debug("[GUI] - Completed, let's go blast furnacing!")
 
             //todo need to handle when clicked "cancel" to stop the script, it now simply starts the script.
         }
+
+        // Init singletons
+        Lottery.initLogger(logger)
 
         DiscordNotifier.initLogger(logger)
 
@@ -200,13 +201,13 @@ class BlastFurnaceScript : TribotScript {
             .row(PaintRows.runtime(paintTemplate.toBuilder()))
             .row(
                 paintTemplate.toBuilder()
-                    .label("Handle Coal")
-                    .value { progressionManager.indicateState("PROCESS_COAL") }
+                    .label("Handle Secondary")
+                    .value { progressionManager.indicateState("PROCESS_SECONDARY") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
-                    .label("Handle Ores")
+                    .label("Handle Base")
                     .value { progressionManager.indicateState("PROCESS_BASE") }
                     .build()
             )
