@@ -24,8 +24,9 @@ import scripts.wrBlastFurnace.behaviours.furnace.bars.IronBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
 
-class GUI(private val onStartScript: () -> Unit) {
-
+class GUI(
+    private val onStartScript: () -> Unit
+) {
     @Composable
     @Preview
     fun App() {

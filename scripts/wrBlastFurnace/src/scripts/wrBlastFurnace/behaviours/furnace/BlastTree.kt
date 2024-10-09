@@ -14,17 +14,11 @@ import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
 import scripts.wrBlastFurnace.gui.Settings
-import scripts.wrBlastFurnace.managers.*
+import scripts.wrBlastFurnace.managers.Container
 
 fun getBlastTree(
     logger: Logger,
-    upkeepManager: UpkeepManager,
-    dispenserManager: DispenserManager,
-    meltingPotManager: MeltingPotManager,
-    tripStateManager: TripStateManager,
-    playerRunManager: PlayerRunManager,
-    staminaManager: StaminaManager,
-    cameraManager: CameraManager
+    managers: Container
 ) = behaviorTree {
     repeatUntil(BehaviorTreeStatus.KILL) {
         sequence {
@@ -90,9 +84,9 @@ fun getBlastTree(
             }
 
             selector {
-                condition { playerRunManager.satisfiesRunExpectation() }
+                condition { managers.playerRunManager.satisfiesRunExpectation() }
                 perform {
-                    playerRunManager.enableRun()
+                    managers.playerRunManager.enableRun()
                 }
             }
 
@@ -105,8 +99,8 @@ fun getBlastTree(
              * Or any other partial cycle flow occurrence
              */
             selector {
-                condition { tripStateManager.isCurrentState("COLLECT_BARS") == false }
-                condition { !dispenserManager.holdsBars() }
+                condition { managers.tripStateManager.isCurrentState("COLLECT_BARS") == false }
+                condition { !managers.dispenserManager.holdsBars() }
                 sequence {
                     selector {
                         condition { Inventory.isEmpty() }
@@ -116,8 +110,8 @@ fun getBlastTree(
                         }
                     }
                     condition {
-                        tripStateManager.resetCycle("COLLECT_BARS")
-                        tripStateManager.isCurrentState("COLLECT_BARS") == false
+                        managers.tripStateManager.resetCycle("COLLECT_BARS")
+                        managers.tripStateManager.isCurrentState("COLLECT_BARS") == false
                     }
                 }
             }
@@ -136,25 +130,30 @@ fun getBlastTree(
             }
 
             selector {
-                condition { upkeepManager.havePaidForeman() }
-                condition { upkeepManager.playerHoldsEnoughCoins() }
+                condition { managers.upkeepManager.havePaidForeman() }
+                condition { managers.upkeepManager.playerHoldsEnoughCoins() }
                 sequence {
                     ensureIsOpenNode(logger)
                     bankNode(logger, true, false)
                     withdrawItemNode(logger, "Coins", 2500, true)
-                    payForemanNode(logger, upkeepManager, tripStateManager)
+                    payForemanNode(logger, managers.upkeepManager, managers.tripStateManager)
                 }
             }
 
             selector {
-                condition { upkeepManager.haveFilledCoffer() }
-                condition { upkeepManager.playerHoldsEnoughCoins(upkeepManager.getCofferTopupAmount()) }
+                condition { managers.upkeepManager.haveFilledCoffer() }
+                condition { managers.upkeepManager.playerHoldsEnoughCoins(managers.upkeepManager.getCofferTopupAmount()) }
                 sequence {
                     ensureIsOpenNode(logger)
                     bankNode(logger, true, false)
 
-                    withdrawItemNode(logger, "Coins", upkeepManager.getCofferTopupAmount(), true)
-                    topupCofferNode(logger, upkeepManager, tripStateManager, dispenserManager)
+                    withdrawItemNode(logger, "Coins", managers.upkeepManager.getCofferTopupAmount(), true)
+                    topupCofferNode(
+                        logger,
+                        managers.upkeepManager,
+                        managers.tripStateManager,
+                        managers.dispenserManager
+                    )
 
                     ensureIsOpenNode(logger)
                     bankNode(logger, true, false)
@@ -163,18 +162,10 @@ fun getBlastTree(
 
             selector {
                 condition { !MoveToFurnaceValidation(logger).isWithinBlastFurnaceArea() }
-                condition { !upkeepManager.haveFilledCoffer() }
-                condition { !upkeepManager.havePaidForeman() }
+                condition { !managers.upkeepManager.haveFilledCoffer() }
+                condition { !managers.upkeepManager.havePaidForeman() }
                 sequence {
-                    smeltBarsNode(
-                        logger,
-                        dispenserManager,
-                        meltingPotManager,
-                        tripStateManager,
-                        cameraManager,
-                        staminaManager,
-                        playerRunManager
-                    )
+                    smeltBarsNode(logger, managers)
                 }
             }
         }
