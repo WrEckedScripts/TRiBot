@@ -5,7 +5,7 @@ import scripts.wrBlastFurnace.gui.Settings
 
 class TripStateManager(val logger: Logger) {
 
-    val meltableBar = Settings.barType!!
+    val meltableBar = Settings.barType
     val states = meltableBar.states
     val baseOre = meltableBar.baseOre()
     val secondaryOre = meltableBar.secondaryOre()

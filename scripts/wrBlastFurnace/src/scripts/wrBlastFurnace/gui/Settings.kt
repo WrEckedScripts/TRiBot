@@ -5,7 +5,7 @@ import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
 
 object Settings {
-    var barType: MeltableBar? = SteelBar()
+    var barType: MeltableBar = SteelBar()
     var world: String = "352"
     var staminaChecked: Boolean = true
 

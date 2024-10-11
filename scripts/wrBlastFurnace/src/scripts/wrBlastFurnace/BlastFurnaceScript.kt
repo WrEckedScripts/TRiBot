@@ -25,7 +25,7 @@ import scripts.wrBlastFurnace.overlay.OverlayPainter
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.4.2",
+    name = "WrBlastFurnace Lite 1.4.3",
     description = "Smelts bronze, iron and steel bars on the Blast Furnace. Please visit the forums / our Discord for a detailed list of requirements and guidance.",
     category = "Smithing",
     author = "WrEcked"
@@ -43,29 +43,21 @@ class BlastFurnaceScript : TribotScript {
      */
     private fun setupHelpers() {
         Lottery.initLogger(this.logger)
-
-        DiscordNotifier.initLogger(this.logger)
-        DiscordNotifier.initConfig(Settings.discordUrl, Settings.interval.toInt())
     }
 
     override fun execute(args: String) {
         MousePainter().init()
 
-        OverlayPainter(
-            this.managers.progressionManager,
-            this.managers.upkeepManager,
-            this.managers.staminaManager,
-            this.managers.playerRunManager
-        ).init()
-
-        setupNotifications()
-        setupHelpers()
+        OverlayPainter(this.managers).init()
 
         val closed = CompletableFuture<Unit>()
         val started = CompletableFuture<Unit>()
         startGui(started, closed)
 
         started.thenAccept {
+            setupNotifications()
+            setupHelpers()
+
             logger.debug("[GUI] - Completed, let's go blast furnacing!")
 
             executeBlastFurnaceTree(logger, this.managers)
@@ -99,6 +91,9 @@ class BlastFurnaceScript : TribotScript {
     }
 
     private fun setupNotifications() {
+        DiscordNotifier.initLogger(this.logger)
+        DiscordNotifier.initConfig(Settings.discordUrl, Settings.interval.toInt())
+
         ScriptListening.addEndingListener {
             DiscordNotifier.notify(
                 true,

@@ -7,18 +7,13 @@ import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.formatters.Coins
 import scripts.utils.formatters.Countdown
-import scripts.wrBlastFurnace.managers.PlayerRunManager
-import scripts.wrBlastFurnace.managers.ProgressionManager
-import scripts.wrBlastFurnace.managers.StaminaManager
-import scripts.wrBlastFurnace.managers.UpkeepManager
+import scripts.wrBlastFurnace.gui.Settings
+import scripts.wrBlastFurnace.managers.Container
 import java.awt.Color
 import java.awt.Font
 
 class OverlayPainter(
-    private val progressionManager: ProgressionManager,
-    private val upkeepManager: UpkeepManager,
-    private val staminaManager: StaminaManager,
-    private val playerRunManager: PlayerRunManager
+    private val managers: Container
 ) {
     fun init() {
         val paintTemplate = PaintTextRow.builder()
@@ -29,35 +24,39 @@ class OverlayPainter(
         val mainPaint = BasicPaintTemplate.builder()
             .row(PaintRows.scriptName(paintTemplate.toBuilder()))
             .row(PaintRows.runtime(paintTemplate.toBuilder()))
-            .row(
+
+        if (managers.tripStateManager.secondaryOre != null) {
+            mainPaint.row(
                 paintTemplate.toBuilder()
                     .label("Handle Secondary")
-                    .value { progressionManager.indicateState("PROCESS_SECONDARY") }
+                    .value { managers.progressionManager.indicateState("PROCESS_SECONDARY") }
                     .build()
             )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Handle Base")
-                    .value { progressionManager.indicateState("PROCESS_BASE") }
-                    .build()
-            )
+        }
+
+        mainPaint.row(
+            paintTemplate.toBuilder()
+                .label("Handle Base")
+                .value { managers.progressionManager.indicateState("PROCESS_BASE") }
+                .build()
+        )
             .row(
                 paintTemplate.toBuilder()
                     .label("Collect Bars")
-                    .value { progressionManager.indicateState("COLLECT_BARS") }
+                    .value { managers.progressionManager.indicateState("COLLECT_BARS") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Bank Bars")
-                    .value { progressionManager.indicateState("BANK_BARS") }
+                    .value { managers.progressionManager.indicateState("BANK_BARS") }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Trips")
                     .value {
-                        progressionManager.currentTrips()
+                        managers.progressionManager.currentTrips()
                     }
                     .build()
             )
@@ -65,7 +64,7 @@ class OverlayPainter(
                 paintTemplate.toBuilder()
                     .label("Forecast")
                     .value {
-                        progressionManager.estimatedPerHourTrips()
+                        managers.progressionManager.estimatedPerHourTrips()
                     }
                     .build()
             )
@@ -73,20 +72,20 @@ class OverlayPainter(
                 paintTemplate.toBuilder()
                     .label("Gross earned")
                     .value {
-                        progressionManager.grossProfit()
+                        managers.progressionManager.grossProfit()
                     }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Spent")
-                    .value { progressionManager.currentSpent() }
+                    .value { managers.progressionManager.currentSpent() }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Net earned")
-                    .value { progressionManager.netProfit() }
+                    .value { managers.progressionManager.netProfit() }
                     .build()
             )
 
@@ -95,16 +94,20 @@ class OverlayPainter(
             .row(
                 paintTemplate.toBuilder()
                     .label("Total upkeep spent")
-                    .value { Coins().format(upkeepManager.totalSpent) }
+                    .value { Coins().format(managers.upkeepManager.totalSpent) }
                     .build()
             )
 
-        if (upkeepManager.shouldPayForeman()) {
+        if (managers.upkeepManager.shouldPayForeman()) {
             sidePaint
                 .row(
                     paintTemplate.toBuilder()
                         .label("Last foreman payment")
-                        .value { Countdown().fromMillis(upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()) }
+                        .value {
+                            Countdown().fromMillis(
+                                managers.upkeepManager.lastPaidForemanAt ?: System.currentTimeMillis()
+                            )
+                        }
                         .build()
                 )
         }
@@ -113,13 +116,13 @@ class OverlayPainter(
             .row(
                 paintTemplate.toBuilder()
                     .label("Sip Stamina")
-                    .value { if (staminaManager.satisfiesStaminaState()) "No" else "Yes" }
+                    .value { if (Settings.staminaChecked) "Yes" else "No" }
                     .build()
             )
             .row(
                 paintTemplate.toBuilder()
                     .label("Re-enable run at")
-                    .value(playerRunManager.getNextEnableAtValue().toString().plus("%"))
+                    .value(managers.playerRunManager.getNextEnableAtValue().toString().plus("%"))
                     .build()
             )
 

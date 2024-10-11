@@ -25,7 +25,7 @@ class PlayerRunManager(val logger: Logger) {
         val antiBanValues = AntibanProperties.getPropsForCurrentChar()
         this.enableAt = TribotRandom.normal(antiBanValues.runEnergyMean, antiBanValues.runEnergyStd)
 
-        logger.info("[PlayerRun] - We're going to (re-)enable running once your player's stamina passes +/- ${this.enableAt}")
+        logger.info("[PlayerRun] - We're going to (re-)enable running once your player's stamina reaches +/- ${this.enableAt}")
     }
 
     /**

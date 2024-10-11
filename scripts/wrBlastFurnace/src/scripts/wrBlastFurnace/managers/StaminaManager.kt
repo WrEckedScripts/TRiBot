@@ -6,9 +6,14 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
+import scripts.wrBlastFurnace.gui.Settings
 
 class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager) {
     private var minimumStaminaLevel: Int = TribotRandom.normal(15, 5)
+
+    private fun shouldSip(): Boolean {
+        return Settings.staminaChecked
+    }
 
     private fun isActive(): Boolean {
         return MyPlayer.isStaminaActive()
@@ -49,6 +54,10 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
     }
 
     fun satisfiesStaminaState(): Boolean {
+        if (!this.shouldSip()) {
+            return true
+        }
+
         if (this.isActive()) {
             return true
         }
