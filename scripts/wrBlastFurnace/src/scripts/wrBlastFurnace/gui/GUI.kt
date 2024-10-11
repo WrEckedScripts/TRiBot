@@ -169,7 +169,7 @@ class GUI(
                     world = newWorld
                     Settings.world = newWorld
                 },
-                label = { Text("World") },
+                label = { Text("World", fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
@@ -271,7 +271,7 @@ class GUI(
                     minAmount = newValue
                     Settings.minAmount = newValue
                 },
-                label = { Text("Min amount") },
+                label = { Text("Min amount", fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
@@ -285,7 +285,7 @@ class GUI(
                     maxAmount = newValue
                     Settings.maxAmount = newValue
                 },
-                label = { Text("Max amount") },
+                label = { Text("Max amount", fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
@@ -305,7 +305,7 @@ class GUI(
                     discordUrl = newValue
                     Settings.discordUrl = newValue
                 },
-                label = { Text("Discord URL") },
+                label = { Text("Discord URL", fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
@@ -319,7 +319,7 @@ class GUI(
                     interval = newValue
                     Settings.interval = newValue
                 },
-                label = { Text("Screenshot Interval (in minutes)") },
+                label = { Text("Screenshot Interval (in minutes)", fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
