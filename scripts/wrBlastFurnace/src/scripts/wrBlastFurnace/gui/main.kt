@@ -12,7 +12,7 @@ fun main() {
             onCloseRequest = ::exitApplication,
             title = "Testing > WrBlastFurnace Lite GUI",
             resizable = true,
-            state = WindowState(width = 400.dp, height = 625.dp)
+            state = WindowState(width = 520.dp, height = 550.dp)
         ) {
             val gui = GUI(onStartScript = { Log.debug("Script Start Mimic") })
             gui.App()

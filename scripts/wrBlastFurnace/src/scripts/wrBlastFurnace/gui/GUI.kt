@@ -1,12 +1,10 @@
 package scripts.wrBlastFurnace.gui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -15,6 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toAwtImage
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +24,9 @@ import scripts.wrBlastFurnace.behaviours.furnace.bars.BronzeBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.IronBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
+import java.awt.Desktop
+import java.io.File
+import java.net.URI
 
 class GUI(
     private val onStartScript: () -> Unit
@@ -42,54 +46,197 @@ class GUI(
         // State to track scroll position
         val scrollState = rememberScrollState()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-                .verticalScroll(scrollState)
-        ) {
-            // Using a Row to display two sections side by side
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("General", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))  // Smaller font size
-                    Spacer(modifier = Modifier.height(4.dp))
-                    GeneralSection()
+        val tabs = listOf(
+            Pair(
+                "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/logo.png",
+                "Welcome"
+            ),
+            Pair(null, "General"),
+            Pair(null, "Profiling"),
+            Pair(null, "Notifications")
+        )
+        var selectedTabIndex by remember { mutableStateOf(0) }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+            ) {
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    backgroundColor = Color.DarkGray,
+
+                    indicator = { tabPositions ->
+                        Box(
+                            modifier = Modifier
+                                .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                                .fillMaxHeight()
+                        )
+                    }
+                ) {
+                    tabs.forEachIndexed { index, tab ->
+                        Tab(
+                            text = {
+                                if (tab.first != null) {
+                                    LocalImage(tab.first!!, modifier = Modifier.height(40.dp))
+                                } else {
+                                    Text(
+                                        tab.second,
+                                        fontSize = 10.sp,
+                                        color = if (selectedTabIndex == index) Color(0xFFFF5757) else Color.White
+                                    )
+                                }
+
+                            },
+                            selected = selectedTabIndex == index,
+                            onClick = {
+                                selectedTabIndex = index
+                            }
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        "Player Profile",
-                        style = MaterialTheme.typography.h6.copy(fontSize = 16.sp)
-                    )  // Smaller font size
-                    Spacer(modifier = Modifier.height(4.dp))
-                    PlayerProfileSection()
+                val screenModifier = Modifier.padding(8.dp, 16.dp)
+                when (selectedTabIndex) {
+                    0 -> WelcomeScreen(screenModifier)
+                    1 -> GeneralScreen(screenModifier)
+                    2 -> ProfileScreen(screenModifier)
+                    3 -> NotificationScreen(screenModifier)
                 }
             }
+
+            if (selectedTabIndex != 0) {
+
+                FooterSection(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun LocalImage(path: String, modifier: Modifier = Modifier) {
+        val imagePath = File(path)
+
+        // Load the image bitmap from the file
+        val imageBitmap = loadImageBitmap(imagePath.inputStream())
+
+        // Return the Image composable
+        Image(
+            bitmap = imageBitmap.toAwtImage().toComposeImageBitmap(),
+            contentDescription = null,
+            modifier = modifier
+        )
+    }
+
+    @Composable
+    fun ClickableLocalImage(path: String, url: String, modifier: Modifier = Modifier) {
+        LocalImage(path, modifier.clickable {
+            openUrl(url)
+        })
+    }
+
+    @Composable
+    fun WelcomeScreen(modifier: Modifier = Modifier) {
+        Column(modifier = modifier) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column {
+                    Text("Welcome to WrBlastFurnace Lite!")
+                    Text(
+                        "" +
+                                "Your free script, to gain Smithing EXP and decent GP/hr! " +
+                                "\n\nYou can navigate via the top buttons to specify how you want me to perform the Blast Furnace activity on your account!" +
+                                "\n\nOnce you're set-up, hit 'Start' at the bottom and watch your account go!",
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ClickableLocalImage(
+                    path = "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/discord.jpg",
+                    url = "https://discord.gg/cYNU9mDp4c",
+                    modifier = modifier.height(48.dp)
+                )
+
+                Text("Get support, or simply connect with other users")
+            }
+        }
+    }
+
+    fun openUrl(url: String) {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(URI(url))
+            } catch (e: Exception) {
+                println("Error opening URL: $url")
+            }
+        } else {
+            println("URL opening is not supported, please go to $url")
+        }
+    }
+
+    @Composable
+    fun GeneralScreen(modifier: Modifier = Modifier) {
+        Column(modifier = modifier) {
+            Text("General", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))  // Smaller font size
+            Spacer(modifier = Modifier.height(4.dp))
+            GeneralSection()
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Coffer Upkeep", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))
-                    Spacer(modifier = Modifier.height(4.dp))
-                    CofferUpkeepSection()
-                }
+            Text("Coffer Upkeep", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))
+            Spacer(modifier = Modifier.height(4.dp))
+            CofferUpkeepSection()
+        }
+    }
 
-                Spacer(modifier = Modifier.width(8.dp))
+    @Composable
+    fun ProfileScreen(modifier: Modifier = Modifier) {
+        Column(modifier = modifier) {
+            Text(
+                "Player Profile",
+                style = MaterialTheme.typography.h6.copy(fontSize = 16.sp)
+            )  // Smaller font size
+            Spacer(modifier = Modifier.height(4.dp))
+            PlayerProfileSection()
+        }
+    }
 
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Progression", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))
-                    Spacer(modifier = Modifier.height(4.dp))
-                    ProgressionSection()
-                }
-            }
+    @Composable
+    fun NotificationScreen(modifier: Modifier = Modifier) {
+        Column(modifier = modifier) {
+            Text("Progression", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))
+            Spacer(modifier = Modifier.height(4.dp))
+            ProgressionSection()
+        }
+    }
 
-            Spacer(modifier = Modifier.height(16.dp))
+    @Composable
+    fun FooterSection(modifier: Modifier = Modifier) {
+
+        Box(modifier = modifier) {
+            Spacer(
+                modifier = Modifier.fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color.LightGray)
+            )
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
@@ -110,6 +257,10 @@ class GUI(
                         println("interval: ${Settings.interval}")
                         println("======END=======")
                     },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xFFFF5757),
+                        contentColor = Color.White
+                    ),
                     modifier = Modifier.height(30.dp)
                 ) {
                     Text("Debug choices", fontSize = 12.sp)
@@ -123,10 +274,53 @@ class GUI(
 //                    Text("Load", fontSize = 12.sp)
 //                }
 
-                Button(onClick = { onStartScript() }, modifier = Modifier.height(30.dp)) {
-                    Text("Run", fontSize = 12.sp)
+                Button(
+                    onClick = { onStartScript() },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff4bdb66),
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier.height(30.dp)
+                ) {
+                    Text("Start!", fontSize = 12.sp)
                 }
             }
+        }
+    }
+
+    @Composable
+    fun OldMain() {
+        Column {
+            // Using a Row to display two sections side by side
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f)) {
+                    //old general
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    // old player
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f)) {
+                    //old upkeep
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    // old progession
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //old buttons
         }
     }
 
