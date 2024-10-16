@@ -97,7 +97,7 @@ class GUI(
                     }
                 }
 
-                val screenModifier = Modifier.padding(8.dp, 16.dp)
+                val screenModifier = Modifier.padding(16.dp)
                 when (selectedTabIndex) {
                     0 -> WelcomeScreen(screenModifier)
                     1 -> GeneralScreen(screenModifier)
@@ -111,7 +111,8 @@ class GUI(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp)
+                        .background(Color.White)
                 )
             }
         }
@@ -145,7 +146,6 @@ class GUI(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(0.dp)
             ) {
                 Column(
                     modifier = modifier,
@@ -242,7 +242,7 @@ class GUI(
             )
 
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
