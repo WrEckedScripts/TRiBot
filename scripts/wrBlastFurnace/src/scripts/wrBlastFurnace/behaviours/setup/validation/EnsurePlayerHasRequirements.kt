@@ -11,7 +11,6 @@ class EnsurePlayerHasRequirements(val logger: Logger) {
         val requirements = mapOf(
             Skill.CRAFTING to 12,
             Skill.FIREMAKING to 16,
-            Skill.MAGIC to 33,
             Skill.THIEVING to 14
         )
 
