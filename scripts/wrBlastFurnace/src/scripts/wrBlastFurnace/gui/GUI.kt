@@ -107,7 +107,6 @@ class GUI(
             }
 
             if (selectedTabIndex != 0) {
-
                 FooterSection(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -146,16 +145,23 @@ class GUI(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(0.dp)
             ) {
-                Column {
-                    Text("Welcome to WrBlastFurnace Lite!")
+                Column(
+                    modifier = modifier,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LocalImage(
+                        "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/banner.png",
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
                     Text(
-                        "" +
-                                "Your free script, to gain Smithing EXP and decent GP/hr! " +
+                        text = "Your free script, to gain Smithing EXP and decent GP/hr! " +
                                 "\n\nYou can navigate via the top buttons to specify how you want me to perform the Blast Furnace activity on your account!" +
                                 "\n\nOnce you're set-up, hit 'Start' at the bottom and watch your account go!",
-                        fontSize = 14.sp
+                        fontSize = 12.sp
                     )
                 }
             }
