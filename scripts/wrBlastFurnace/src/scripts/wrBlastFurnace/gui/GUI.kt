@@ -52,23 +52,23 @@ class GUI(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("General", style = MaterialTheme.typography.h6.copy(fontSize = 16.sp))  // Smaller font size
-                    Spacer(modifier = Modifier.height(4.dp))  // Reduced spacer height
+                    Spacer(modifier = Modifier.height(4.dp))
                     GeneralSection()
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))  // Space between columns
+                Spacer(modifier = Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         "Player Profile",
                         style = MaterialTheme.typography.h6.copy(fontSize = 16.sp)
                     )  // Smaller font size
-                    Spacer(modifier = Modifier.height(4.dp))  // Reduced spacer height
+                    Spacer(modifier = Modifier.height(4.dp))
                     PlayerProfileSection()
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -159,7 +159,7 @@ class GUI(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
 
             var world by remember { mutableStateOf(Settings.world) }
@@ -174,7 +174,7 @@ class GUI(
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
 
             var staminaChecked by remember { mutableStateOf(Settings.staminaChecked) }
@@ -214,7 +214,7 @@ class GUI(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
 
             DropdownMenu(
@@ -228,7 +228,7 @@ class GUI(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             DropdownMenu(
                 label = "Chatbox",
@@ -241,7 +241,7 @@ class GUI(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
 
             var preWalkChecked by remember { mutableStateOf(Settings.preWalkChecked) }
@@ -276,7 +276,7 @@ class GUI(
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
 
             OutlinedTextField(
@@ -310,8 +310,7 @@ class GUI(
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
+            Spacer(modifier = Modifier.height(4.dp))
 
             OutlinedTextField(
                 value = interval,
@@ -319,7 +318,7 @@ class GUI(
                     interval = newValue
                     Settings.interval = newValue
                 },
-                label = { Text("Screenshot Interval (in minutes)", fontSize = 12.sp) },
+                label = { Text("Interval (minutes)", fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
             )
