@@ -48,7 +48,8 @@ class GUI(
 
         val tabs = listOf(
             Pair(
-                "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/logo.png",
+//                "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/logo.png",
+                null,
                 "Welcome"
             ),
             Pair(null, "General"),
@@ -152,10 +153,10 @@ class GUI(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LocalImage(
-                        "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/banner.png",
-                        modifier = Modifier.fillMaxWidth()
-                    )
+//                    LocalImage(
+//                        "scripts/wrBlastFurnace/build/resources/main/scripts/wrBlastFurnace/gui/assets/banner.png",
+//                        modifier = Modifier.fillMaxWidth()
+//                    )
 
                     Text(
                         text = "Your free script, to gain Smithing EXP and decent GP/hr! " +
@@ -172,11 +173,11 @@ class GUI(
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ClickableLocalImage(
-                    path = "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/discord.jpg",
-                    url = "https://discord.gg/cYNU9mDp4c",
-                    modifier = modifier.height(48.dp)
-                )
+//                ClickableLocalImage(
+//                    path = "scripts/wrBlastFurnace/build/resources/main/scripts/wrBlastFurnace/gui/assets/discord.jpg",
+//                    url = "https://discord.gg/cYNU9mDp4c",
+//                    modifier = modifier.height(48.dp)
+//                )
 
                 Text("Get support, or simply connect with other users")
             }
