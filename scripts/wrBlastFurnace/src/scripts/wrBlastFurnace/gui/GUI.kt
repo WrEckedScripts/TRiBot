@@ -13,19 +13,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import org.tribot.script.sdk.util.Resources
 import scripts.wrBlastFurnace.behaviours.furnace.bars.BronzeBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.IronBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
 import java.awt.Desktop
-import java.io.File
 import java.net.URI
 
 class GUI(
@@ -48,8 +46,7 @@ class GUI(
 
         val tabs = listOf(
             Pair(
-//                "scripts/wrBlastFurnace/src/scripts/wrBlastFurnace/gui/assets/logo.png",
-                null,
+                "logo.png",
                 "Welcome"
             ),
             Pair(null, "General"),
@@ -121,14 +118,11 @@ class GUI(
 
     @Composable
     fun LocalImage(path: String, modifier: Modifier = Modifier) {
-        val imagePath = File(path)
-
-        // Load the image bitmap from the file
-        val imageBitmap = loadImageBitmap(imagePath.inputStream())
+        val image = Resources.getImage("scripts/wrBlastFurnace/resources/$path")
 
         // Return the Image composable
         Image(
-            bitmap = imageBitmap.toAwtImage().toComposeImageBitmap(),
+            bitmap = image.toComposeImageBitmap(),
             contentDescription = null,
             modifier = modifier
         )
@@ -153,10 +147,10 @@ class GUI(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-//                    LocalImage(
-//                        "scripts/wrBlastFurnace/build/resources/main/scripts/wrBlastFurnace/gui/assets/banner.png",
-//                        modifier = Modifier.fillMaxWidth()
-//                    )
+                    LocalImage(
+                        "banner.png",
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Text(
                         text = "Your free script, to gain Smithing EXP and decent GP/hr! " +
@@ -173,11 +167,11 @@ class GUI(
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                ClickableLocalImage(
-//                    path = "scripts/wrBlastFurnace/build/resources/main/scripts/wrBlastFurnace/gui/assets/discord.jpg",
-//                    url = "https://discord.gg/cYNU9mDp4c",
-//                    modifier = modifier.height(48.dp)
-//                )
+                ClickableLocalImage(
+                    path = "discord.jpg",
+                    url = "https://discord.gg/cYNU9mDp4c",
+                    modifier = modifier.height(48.dp)
+                )
 
                 Text("Get support, or simply connect with other users")
             }
