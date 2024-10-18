@@ -5,6 +5,7 @@ include("libraries:framework")
 
 include("scripts:wrCombat")
 include("scripts:wrBlastFurnace")
+include("scripts:wrSkilling")
 include("scripts:wrCrafting")
 
 // Boilerplate

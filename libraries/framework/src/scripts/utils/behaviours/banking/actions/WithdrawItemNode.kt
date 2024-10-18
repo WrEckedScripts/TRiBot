@@ -1,4 +1,4 @@
-package scripts.wrBlastFurnace.behaviours.banking.actions
+package scripts.utils.behaviours.banking.actions
 
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Waiting
@@ -8,7 +8,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.behaviours.banking.validation.ItemPresence
+import scripts.utils.behaviours.banking.validation.ItemPresence
 
 /**
  * Only to be called after a bankNode() is called and finished.

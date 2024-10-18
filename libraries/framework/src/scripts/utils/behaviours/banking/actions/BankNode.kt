@@ -1,4 +1,4 @@
-package scripts.wrBlastFurnace.behaviours.banking.actions
+package scripts.utils.behaviours.banking.actions
 
 import org.tribot.script.sdk.Bank
 import org.tribot.script.sdk.Inventory

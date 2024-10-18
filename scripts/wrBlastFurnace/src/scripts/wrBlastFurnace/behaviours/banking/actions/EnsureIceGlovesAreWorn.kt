@@ -7,6 +7,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.behaviours.banking.actions.withdrawItemNode
 
 /**
  * Sequence to ensure that the player is wearing their ice gloves.

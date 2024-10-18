@@ -1,4 +1,4 @@
-package scripts.wrBlastFurnace.behaviours.banking.validation
+package scripts.utils.behaviours.banking.validation
 
 import org.tribot.script.sdk.query.Query
 

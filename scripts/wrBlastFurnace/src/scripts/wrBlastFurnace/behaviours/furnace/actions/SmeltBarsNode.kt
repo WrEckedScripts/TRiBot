@@ -7,9 +7,9 @@ import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
-import scripts.wrBlastFurnace.behaviours.banking.actions.bankNode
+import scripts.utils.behaviours.banking.actions.bankNode
+import scripts.utils.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
-import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
 import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.Container

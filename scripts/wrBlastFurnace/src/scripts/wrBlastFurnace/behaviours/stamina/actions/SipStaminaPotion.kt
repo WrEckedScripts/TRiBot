@@ -4,7 +4,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
-import scripts.wrBlastFurnace.behaviours.banking.actions.withdrawItemNode
+import scripts.utils.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.managers.PlayerRunManager
 import scripts.wrBlastFurnace.managers.StaminaManager
 
