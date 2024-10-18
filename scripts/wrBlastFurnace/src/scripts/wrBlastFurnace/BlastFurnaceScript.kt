@@ -25,7 +25,7 @@ import scripts.wrBlastFurnace.overlay.OverlayPainter
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.4.6",
+    name = "WrBlastFurnace Lite 1.4.7",
     description = "Smelts bronze, iron and steel bars on the Blast Furnace. Please visit the forums / our Discord for a detailed list of requirements and guidance.",
     category = "Smithing",
     author = "WrEcked"
