@@ -115,14 +115,8 @@ class OverlayPainter(
         sidePaint
             .row(
                 paintTemplate.toBuilder()
-                    .label("Sip Stamina")
-                    .value { if (Settings.staminaChecked) "Yes" else "No" }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Re-enable run at")
-                    .value(managers.playerRunManager.getNextEnableAtValue().toString().plus("%"))
+                    .label("Use Stamina's")
+                    .value { if (Settings.staminaChecked) "Enabled" else "Disabled" }
                     .build()
             )
 

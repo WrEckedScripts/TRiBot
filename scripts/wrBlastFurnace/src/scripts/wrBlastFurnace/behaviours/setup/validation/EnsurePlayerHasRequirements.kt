@@ -8,17 +8,17 @@ class EnsurePlayerHasRequirements(val logger: Logger) {
     var hasMissingRequirement: Boolean = false;
 
     fun playerMissesRequirement(): Boolean {
-        val requirements = mapOf(
-            Skill.CRAFTING to 12,
-            Skill.FIREMAKING to 16,
-            Skill.THIEVING to 14
-        )
-
-        for ((skill, level) in requirements) {
-            if (!this.hasMissingRequirement) {
-                this.hasMissingRequirement = this.missesRequirementFor(skill, level)
-            }
-        }
+//        val requirements = mapOf(
+//            Skill.CRAFTING to 12,
+//            Skill.FIREMAKING to 16,
+//            Skill.THIEVING to 14
+//        )
+//
+//        for ((skill, level) in requirements) {
+//            if (!this.hasMissingRequirement) {
+//                this.hasMissingRequirement = this.missesRequirementFor(skill, level)
+//            }
+//        }
 
         if (!this.hasMissingRequirement) {
             this.hasMissingRequirement = Quest.THE_GIANT_DWARF.state == Quest.State.NOT_STARTED
