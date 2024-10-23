@@ -47,7 +47,7 @@ fun IParentNode.collectBarsNode(
                 holdsBars
             }
 
-            Waiting.waitUntil {
+            val interaction = Waiting.waitUntil(15_000) {
                 val interacted = dispenser.interact("Take")
 
                 if (!interacted) {
@@ -68,6 +68,14 @@ fun IParentNode.collectBarsNode(
                 }
 
                 interacted && MakeScreen.isOpen()
+            }
+
+            if (interaction == false) {
+                logger.debug("Failed to interact for too long, skipping collection.")
+
+                tripStateManager.cycleStateFrom(
+                    tripStateManager.getCurrentKey()
+                )
             }
 
             // MakeScreen is open, move onto making the actual bars
