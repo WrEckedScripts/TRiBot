@@ -4,11 +4,32 @@ import scripts.utils.Logger
 
 class StateManager(val logger: Logger) {
 
-    val states: MutableMap<String, Boolean> = mutableMapOf(
+    val crafterStates: MutableMap<String, Boolean> = mutableMapOf(
         "WITHDRAW_SUPPLIES" to false,
         "CRAFT_LEATHER" to true,
         "WAITING" to true,
     )
+
+    val lighterStates: MutableMap<String, Boolean> = mutableMapOf(
+        "WITHDRAW_SUPPLIES" to false,
+        "LIGHTING_BONFIRE" to true,
+        "FEED_BONFIRE" to true,
+        "WAITING" to true,
+    )
+
+    private var states = crafterStates
+
+    // lil low-level way of re-using this stateManager between the different trees
+    fun changeStates(name: String) {
+        if (name == "craft") {
+            this.states = crafterStates
+        }
+
+        if (name == "fm") {
+            this.states = lighterStates
+        }
+    }
+
 
     fun isCurrentState(state: String): Boolean? {
         return this.states[state]
@@ -42,12 +63,14 @@ class StateManager(val logger: Logger) {
         return false
     }
 
-    fun resetCycle(to: String) {
+    fun resetCycle(to: String): Boolean {
         for (key in this.states.keys) {
             this.states[key] = true
         }
 
         this.states[to] = false
+
+        return true
     }
 
 }

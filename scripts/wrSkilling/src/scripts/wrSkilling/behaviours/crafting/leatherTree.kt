@@ -77,7 +77,6 @@ fun LeatherTree(
                     }
 
                     condition {
-
                         // Find needle and use it on a random Leather
                         Waiting.waitUntil(5000) {
                             Query.inventory()

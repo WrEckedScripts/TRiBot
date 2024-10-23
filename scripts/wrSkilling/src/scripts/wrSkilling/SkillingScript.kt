@@ -8,6 +8,7 @@ import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.mouse.MousePainter
 import scripts.wrSkilling.behaviours.crafting.LeatherTree
+import scripts.wrSkilling.behaviours.firemaking.BonfireTree
 import scripts.wrSkilling.managers.Container
 import scripts.wrSkilling.managers.StateManager
 
@@ -47,7 +48,30 @@ class SkillingScript : TribotScript {
 
         //TODO overlay
 
-        executeLeatherTree(logger, this.managers)
+        if (args == "craft") {
+            executeLeatherTree(logger, this.managers)
+        }
+
+        if (args == "fm") {
+            this.managers.stateManager.changeStates(args)
+            executeBonfireTree(logger, this.managers)
+        }
+    }
+
+    private fun executeBonfireTree(logger: Logger, managers: Container) {
+        if (!Login.isLoggedIn()) {
+            Waiting.waitUntil(5_000) {
+                Login.login()
+            }
+        }
+
+        val bonfireTree = BonfireTree(
+            logger = logger,
+            managers = managers
+        )
+
+        val tick = bonfireTree.tick()
+        logger.error("[Ending] - Reason: $tick")
     }
 
     private fun executeLeatherTree(logger: Logger, managers: Container) {
