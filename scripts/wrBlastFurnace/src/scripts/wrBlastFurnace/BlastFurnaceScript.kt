@@ -101,18 +101,12 @@ class BlastFurnaceScript : TribotScript {
         DiscordNotifier.initLogger(this.logger)
         DiscordNotifier.initConfig(Settings.discordUrl, Settings.interval.toInt())
 
-        ScriptListening.addEndingListener {
+        ScriptListening.addPreEndingListener {
             DiscordNotifier.notify(
                 true,
                 "Instance ended, Your account (${MyPlayer.getUsername()}) is no longer running!",
                 0xFF1E61
             )
-
-            /**
-             * Wait so we give the DiscordNotifier some time to grab a screenshot
-             * Before continue-ing to stop the script
-             */
-            Waiting.wait(4_000)
         }
     }
 
@@ -136,7 +130,6 @@ class BlastFurnaceScript : TribotScript {
 
         } catch (ex: Throwable) {
             handleExecutionError(logger, ex)
-
         } finally {
             safelyLogout(logger)
         }
