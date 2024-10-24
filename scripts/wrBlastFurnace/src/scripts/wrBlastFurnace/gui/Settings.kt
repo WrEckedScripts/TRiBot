@@ -14,8 +14,8 @@ object Settings {
     var chatbox: String = "hidden"
     var preWalkChecked: Boolean = false
 
-    var minAmount: String = "10000"
-    var maxAmount: String = "200000"
+    var minAmount: String = "150000"
+    var maxAmount: String = "3750000"
 
     var discordUrl: String = ""
     var interval: String = "60"

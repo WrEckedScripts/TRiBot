@@ -17,15 +17,9 @@ class PlayerRunManager(val logger: Logger) {
         return Options.isRunEnabled()
     }
 
-    fun getNextEnableAtValue(): Int? {
-        return this.enableAt
-    }
-
     fun setNextRunEnablingThreshold() {
         val antiBanValues = AntibanProperties.getPropsForCurrentChar()
         this.enableAt = TribotRandom.normal(antiBanValues.runEnergyMean, antiBanValues.runEnergyStd)
-
-        logger.info("[PlayerRun] - We're going to (re-)enable running once your player's stamina reaches +/- ${this.enableAt}")
     }
 
     /**
@@ -55,9 +49,7 @@ class PlayerRunManager(val logger: Logger) {
     }
 
     fun enableRun(): Boolean {
-        val beforeRunEnable = this.getCurrentRunEnergy()
         this.setNextRunEnablingThreshold()
-        logger.info("[PlayerRun] - We've enabled running at ${beforeRunEnable}, next re-enabling will happen once your stamina reaches +/- ${this.enableAt}")
 
         return Options.setRunEnabled(true)
     }
