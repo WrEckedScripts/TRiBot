@@ -11,11 +11,15 @@ import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
+import scripts.utils.failsafes.RepetitiveActionManager
 
 fun IParentNode.loadOresNode(
     logger: Logger,
+    repetitiveActionManager: RepetitiveActionManager
 ) = sequence {
     condition {
+        repetitiveActionManager.increment("load-ores", 15)
+
         Waiting.waitUntil {
             Waiting.waitNormal(475, 60)
             !Inventory.isEmpty()
@@ -24,15 +28,21 @@ fun IParentNode.loadOresNode(
         val conveyor = Query.gameObjects()
             .nameEquals("Conveyor belt")
             .findBestInteractable()
-            .get()
 
         val res = Waiting.waitUntil(TribotRandom.normal(1750, 55)) {
             if (Inventory.isEmpty()) {
                 return@waitUntil true
             }
 
-            val interacted = conveyor.interact("Put-ore-on")
+            val interacted = conveyor.map { belt ->
+                belt.interact("Put-ore-on")
+            }.orElse(false)
 
+            if (!interacted) {
+                logger.error("[Failure] - Failed to interact with 'conveyor', we will re-try")
+            }
+
+            // Handles the "first-time" putting ores on the conveyor.
             if (ChatScreen.isOpen()) {
                 ChatScreen.selectOption(
                     "Yes, and don't ask again."
@@ -51,7 +61,9 @@ fun IParentNode.loadOresNode(
             Inventory.isEmpty()
         }
 
-        logger.info("[Conveyor] - dropped off inventory full of ores")
+        if (res && inv) {
+            repetitiveActionManager.reset("load-ores")
+        }
 
         res && inv
     }

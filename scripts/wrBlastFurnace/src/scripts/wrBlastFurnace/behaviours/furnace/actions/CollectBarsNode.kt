@@ -8,20 +8,25 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.wrBlastFurnace.managers.DispenserManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 
 fun IParentNode.collectBarsNode(
     logger: Logger,
     dispenserManager: DispenserManager,
-    tripStateManager: TripStateManager
+    tripStateManager: TripStateManager,
+    repetitiveActionManager: RepetitiveActionManager
 ) = sequence {
     condition {
+        repetitiveActionManager.create("collect-bars", 15)
+
         val inventoryContainsBars = Query.inventory()
             .nameContains("bar")
             .count() > 0
 
         if (inventoryContainsBars) {
+            repetitiveActionManager.reset("collect-bars")
             tripStateManager.cycleStateFrom(
                 tripStateManager.getCurrentKey()
             )
@@ -106,6 +111,8 @@ fun IParentNode.collectBarsNode(
                 logger.error("[CollectBars] - We've failed to collect bars from the dispenser, re-trying...")
                 return@condition false
             }
+
+            repetitiveActionManager.reset("collect-bars")
 
             tripStateManager.cycleStateFrom(
                 tripStateManager.getCurrentKey()

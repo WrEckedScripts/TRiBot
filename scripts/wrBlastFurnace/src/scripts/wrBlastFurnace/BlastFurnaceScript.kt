@@ -14,8 +14,10 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
+import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.utils.progress.webhook.DiscordNotifier
+import scripts.wrBlastFurnace.behaviours.furnace.failsafes.SmithingArea
 import scripts.wrBlastFurnace.behaviours.furnace.getBlastTree
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
 import scripts.wrBlastFurnace.gui.GUI
@@ -25,7 +27,7 @@ import scripts.wrBlastFurnace.overlay.OverlayPainter
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.4.9",
+    name = "WrBlastFurnace Lite 1.5.0",
     description = "Smelts bronze, iron and steel bars on the Blast Furnace. Please visit the forums / our Discord for a detailed list of requirements and guidance.",
     category = "Smithing",
     author = "WrEcked"
@@ -43,6 +45,9 @@ class BlastFurnaceScript : TribotScript {
      */
     private fun setupHelpers() {
         Lottery.initLogger(this.logger)
+
+        SmithingArea.initLogger(this.logger)
+        SmithingArea.registerManager(this.managers)
     }
 
     override fun execute(args: String) {
@@ -77,6 +82,7 @@ class BlastFurnaceScript : TribotScript {
         val staminaManager = StaminaManager(logger, playerRunManager)
         val cameraManager = CameraManager(logger)
         val progressionManager = ProgressionManager(logger, System.currentTimeMillis(), tripStateManager)
+        val repetitiveActionManager = RepetitiveActionManager(logger)
 
         return Container(
             upkeepManager,
@@ -86,7 +92,8 @@ class BlastFurnaceScript : TribotScript {
             playerRunManager,
             staminaManager,
             cameraManager,
-            progressionManager
+            progressionManager,
+            repetitiveActionManager
         )
     }
 

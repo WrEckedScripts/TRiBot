@@ -10,6 +10,7 @@ import scripts.utils.antiban.Lottery
 import scripts.utils.behaviours.banking.actions.bankNode
 import scripts.utils.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
+import scripts.wrBlastFurnace.behaviours.furnace.failsafes.SmithingArea
 import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
 import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.Container
@@ -18,6 +19,20 @@ fun IParentNode.smeltBarsNode(
     logger: Logger,
     managers: Container
 ) = sequence {
+
+    /**
+     * Since the BF area, contains a Smithing area, which is fenced off,
+     * Given it could happen, that our Player somehow walks into this "trap"
+     * We need to escape this unusable area.
+     *
+     * @experimental Untested this, we need to add the correct WorldTiles and see if our player escapes the smithing room
+     */
+    selector {
+        condition { !SmithingArea.isInsideArea() }
+        condition {
+            SmithingArea.handleEscape()
+        }
+    }
 
     /**
      * Ensures that we only allow full inventories, when it's either:
@@ -66,7 +81,12 @@ fun IParentNode.smeltBarsNode(
     selector {
         condition { managers.tripStateManager.isCurrentState("COLLECT_BARS") == true }
         sequence {
-            collectBarsNode(logger, managers.dispenserManager, managers.tripStateManager)
+            collectBarsNode(
+                logger,
+                managers.dispenserManager,
+                managers.tripStateManager,
+                managers.repetitiveActionManager
+            )
             perform {
                 Lottery.execute(0.6) {
                     managers.cameraManager.randomize(zoom = false)
@@ -116,7 +136,7 @@ fun IParentNode.smeltBarsNode(
         condition { managers.dispenserManager.holdsBars() }
         condition { Inventory.isEmpty() }
         sequence {
-            loadOresNode(logger)
+            loadOresNode(logger, managers.repetitiveActionManager)
             condition {
                 managers.tripStateManager.cycleStateFrom(
                     managers.tripStateManager.getCurrentKey()
@@ -196,7 +216,7 @@ fun IParentNode.smeltBarsNode(
             condition { managers.dispenserManager.holdsBars() }
             condition { Inventory.isEmpty() }
             sequence {
-                loadOresNode(logger)
+                loadOresNode(logger, managers.repetitiveActionManager)
                 condition {
                     managers.tripStateManager.cycleStateFrom(
                         managers.tripStateManager.getCurrentKey()
