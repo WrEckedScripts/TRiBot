@@ -32,8 +32,20 @@ class GUI(
     @Composable
     @Preview
     fun App() {
-        MaterialTheme {
-            Box(modifier = Modifier.background(Color.White)) {
+        MaterialTheme(
+            colors = darkColors(
+                primary = Color(0xFF1E1E1E),       // Main background color (dark)
+                primaryVariant = Color(0xFF121212), // Darker background color
+                secondary = Color(0xFFFF5757),      // Accent color (e.g., buttons)
+                background = Color(0xFF121212),     // Background of the app
+                surface = Color.LightGray,              // Surfaces (e.g., cards, containers)
+                onPrimary = Color(0xFF1E1E1E),            // Text color on primary backgrounds
+                onSecondary = Color(0xFF1E1E1E),          // Text color on secondary backgrounds
+                onBackground = Color(0xFF1E1E1E),         // Text color on general backgrounds
+                onSurface = Color(0xFF1E1E1E)             // Text color on surfaces
+            )
+        ) {
+            Box(modifier = Modifier.background(Color.LightGray)) {
                 MainScreen()
             }
         }
@@ -110,7 +122,7 @@ class GUI(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp)
-                        .background(Color.White)
+                        .background(Color.LightGray)
                 )
             }
         }
@@ -566,7 +578,7 @@ class GUI(
                         .align(Alignment.BottomCenter)
                         .clickable { setExpanded(!expanded) }
                         .zIndex(1.75f)
-                        .alpha(0.3f)
+                        .alpha(0f)
                 ) {
                     // Empty surface for click capturing
                 }
