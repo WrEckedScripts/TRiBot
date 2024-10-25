@@ -19,7 +19,7 @@ fun IParentNode.collectBarsNode(
     repetitiveActionManager: RepetitiveActionManager
 ) = sequence {
     condition {
-        repetitiveActionManager.create("collect-bars", 15)
+        repetitiveActionManager.create("collect-bars", 5)
 
         val inventoryContainsBars = Query.inventory()
             .nameContains("bar")
@@ -52,36 +52,38 @@ fun IParentNode.collectBarsNode(
                 holdsBars
             }
 
-            val interaction = Waiting.waitUntil(15_000) {
-                val interacted = dispenser.interact("Take")
+            try {
+                Waiting.waitUntil(15_000) {
+                    val interacted = dispenser.interact("Take")
 
-                if (!interacted) {
-                    logger.error("Failed to interact with dispenser")
-                }
-
-                // Wait until game updates moving state
-                if (interacted) {
-                    Waiting.waitUntil { MyPlayer.isMoving() }
-                }
-
-                // Have some patience on the player moving to the dispenser.
-                if (interacted && MyPlayer.isMoving()) {
-                    Waiting.waitUntil {
-                        Waiting.waitNormal(500, 50)
-                        !MyPlayer.isMoving()
+                    if (!interacted) {
+                        logger.error("Failed to interact with dispenser")
+                        repetitiveActionManager.increment("collect-bars")
                     }
+
+                    // Wait until game updates moving state
+                    if (interacted) {
+                        Waiting.waitUntil { MyPlayer.isMoving() }
+                    }
+
+                    // Have some patience on the player moving to the dispenser.
+                    if (interacted && MyPlayer.isMoving()) {
+                        Waiting.waitUntil {
+                            Waiting.waitNormal(500, 50)
+                            !MyPlayer.isMoving()
+                        }
+                    }
+
+                    interacted && MakeScreen.isOpen()
                 }
-
-                interacted && MakeScreen.isOpen()
-            }
-
-            if (interaction == false) {
-                logger.debug("Failed to interact for too long, skipping collection.")
+            } catch (ex: RuntimeException) {
+                logger.error("Failed too many times to collect bars, gracefully skipping collection step.")
 
                 tripStateManager.cycleStateFrom(
                     tripStateManager.getCurrentKey()
                 )
             }
+
 
             // MakeScreen is open, move onto making the actual bars
             // We'll give this action 5 seconds to finish, otherwise we'd failed and need to redo the condition.
