@@ -25,69 +25,45 @@ class OverlayPainter(
             .row(PaintRows.scriptName(paintTemplate.toBuilder()))
             .row(PaintRows.runtime(paintTemplate.toBuilder()))
 
-        if (managers.tripStateManager.secondaryOre != null) {
-            mainPaint.row(
-                paintTemplate.toBuilder()
-                    .label("Handle Secondary")
-                    .value { managers.progressionManager.indicateState("PROCESS_SECONDARY") }
-                    .build()
-            )
-        }
-
         mainPaint.row(
             paintTemplate.toBuilder()
-                .label("Handle Base")
-                .value { managers.progressionManager.indicateState("PROCESS_BASE") }
+                .label("Stage")
+                .value {
+                    managers.tripStateManager.getCurrentKey()
+                }
+                .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Trips")
+                .value {
+                    managers.progressionManager.currentTrips()
+                }
+                .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Forecast")
+                .value {
+                    managers.progressionManager.estimatedPerHourTrips()
+                }
+                .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Gross earned")
+                .value {
+                    managers.progressionManager.grossProfit()
+                }
+                .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Spent")
+                .value { managers.progressionManager.currentSpent() }
+                .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Net earned")
+                .value { managers.progressionManager.netProfit() }
                 .build()
         )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Collect Bars")
-                    .value { managers.progressionManager.indicateState("COLLECT_BARS") }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Bank Bars")
-                    .value { managers.progressionManager.indicateState("BANK_BARS") }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Trips")
-                    .value {
-                        managers.progressionManager.currentTrips()
-                    }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Forecast")
-                    .value {
-                        managers.progressionManager.estimatedPerHourTrips()
-                    }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Gross earned")
-                    .value {
-                        managers.progressionManager.grossProfit()
-                    }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Spent")
-                    .value { managers.progressionManager.currentSpent() }
-                    .build()
-            )
-            .row(
-                paintTemplate.toBuilder()
-                    .label("Net earned")
-                    .value { managers.progressionManager.netProfit() }
-                    .build()
-            )
 
         val sidePaint = BasicPaintTemplate.builder()
             .location(PaintLocation.TOP_RIGHT_VIEWPORT)

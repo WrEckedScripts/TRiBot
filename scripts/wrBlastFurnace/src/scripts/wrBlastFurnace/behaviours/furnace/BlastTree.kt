@@ -10,6 +10,7 @@ import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIceGlovesAreWorn
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.payForemanNode
 import scripts.wrBlastFurnace.behaviours.furnace.actions.smeltBarsNode
+import scripts.wrBlastFurnace.behaviours.furnace.actions.smeltBarsWithBag
 import scripts.wrBlastFurnace.behaviours.furnace.actions.topupCofferNode
 import scripts.wrBlastFurnace.behaviours.setup.actions.moveToFurnaceNode
 import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidation
@@ -165,7 +166,11 @@ fun getBlastTree(
                 condition { !managers.upkeepManager.haveFilledCoffer() }
                 condition { !managers.upkeepManager.havePaidForeman() }
                 sequence {
-                    smeltBarsNode(logger, managers)
+                    if (Settings.coalBagChecked) {
+                        smeltBarsWithBag(logger, managers)
+                    } else {
+                        smeltBarsNode(logger, managers)
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ class TripStateManager(val logger: Logger) {
     val secondaryOre = meltableBar.secondaryOre()
 
     var tripCount: Int = 0
-    var barsPerTrip: Int = 28
+    var barsPerTrip: Int = 27
 
     fun isCurrentState(state: String): Boolean? {
         return this.states[state]
@@ -51,5 +51,10 @@ class TripStateManager(val logger: Logger) {
         }
 
         this.states[to] = false
+    }
+
+    fun removeSetup() {
+        logger.warn("removing PREFILL_COAL")
+        this.states.remove("PREFILL_COAL")
     }
 }

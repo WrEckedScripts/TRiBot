@@ -4,11 +4,16 @@ import scripts.wrBlastFurnace.banking.materials.Bar
 import scripts.wrBlastFurnace.banking.materials.Ore
 
 data class SteelBar(
-    override val states: MutableMap<String, Boolean> = mutableMapOf(
-        "PROCESS_SECONDARY" to false,
-        "PROCESS_BASE" to true,
+    override var states: MutableMap<String, Boolean> = mutableMapOf(
+//        "PROCESS_SECONDARY" to false,
+//        "PROCESS_BASE" to true,
+//        "COLLECT_BARS" to true,
+//        "BANK_BARS" to true
+        "PREFILL_COAL" to false,
+        "PREPARE_ORES" to true,
+        "PROCESS_ORES" to true,
         "COLLECT_BARS" to true,
-        "BANK_BARS" to true
+        "BANK_BARS" to true,
     )
 ) : MeltableBar {
     override fun bar(): Bar {
@@ -16,10 +21,10 @@ data class SteelBar(
     }
 
     override fun baseOre(): Ore {
-        return Ore("Iron ore", 28, 440)
+        return Ore("Iron ore", 27, 440)
     }
 
     override fun secondaryOre(): Ore {
-        return Ore("Coal", 28, 453)
+        return Ore("Coal", 27, 453)
     }
 }

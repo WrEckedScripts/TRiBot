@@ -384,16 +384,34 @@ class GUI(
             Spacer(modifier = Modifier.height(4.dp))
 
 
-            var staminaChecked by remember { mutableStateOf(Settings.staminaChecked) }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = staminaChecked,
-                    onCheckedChange = { checked ->
-                        staminaChecked = checked
-                        Settings.staminaChecked = checked
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        var staminaChecked by remember { mutableStateOf(Settings.staminaChecked) }
+                        Checkbox(
+                            checked = staminaChecked,
+                            onCheckedChange = { checked ->
+                                staminaChecked = checked
+                                Settings.staminaChecked = checked
+                            }
+                        )
+                        Text("Use stamina potions", fontSize = 12.sp)
                     }
-                )
-                Text("Use stamina potions", fontSize = 12.sp)
+                }
+
+                Column {
+                    var coalBagChecked by remember { mutableStateOf(Settings.coalBagChecked) }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = coalBagChecked,
+                            onCheckedChange = { checked ->
+                                coalBagChecked = checked
+                                Settings.coalBagChecked = checked
+                            }
+                        )
+                        Text("Use coal bag", fontSize = 12.sp)
+                    }
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ object Settings {
     var barType: MeltableBar = SteelBar()
     var world: String = "352"
     var staminaChecked: Boolean = true
+    var coalBagChecked: Boolean = true
 
     var zoom: String = "mouse"
     var rotate: String = "mouse"
