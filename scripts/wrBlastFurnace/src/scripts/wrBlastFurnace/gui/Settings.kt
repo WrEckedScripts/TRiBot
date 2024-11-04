@@ -13,7 +13,7 @@ object Settings {
     var zoom: String = "mouse"
     var rotate: String = "mouse"
     var chatbox: String = "hidden"
-    var preWalkChecked: Boolean = false
+    var preWalkChecked: Boolean = true
 
     var minAmount: String = "150000"
     var maxAmount: String = "3750000"
