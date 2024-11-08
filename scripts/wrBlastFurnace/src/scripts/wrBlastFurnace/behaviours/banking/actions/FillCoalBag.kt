@@ -1,31 +1,39 @@
 package scripts.wrBlastFurnace.behaviours.banking.actions
 
-import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.behaviours.banking.validation.ItemPresence
 
 fun IParentNode.fillCoalBag(logger: Logger) = sequence {
     condition {
-        logger.debug("[1] - FILLING COALBAG")
-        // In between world hops etc, this prevents early exit-ing the script
-        Waiting.waitNormal(650, 40)
+        ItemPresence.throwExceptionIfBankMissesItem("Coal")
 
         Waiting.waitUntil(4_000) {
-            Query.inventory()
+            val filled = Query.inventory()
                 .nameEquals("Coal bag")
                 .findFirst()
                 .map { it.click("Fill") }
-            logger.debug("[2] - COALBAG FILLED")
+                .orElse(false)
 
-            // Slight wait, to prevent spam checking
-            Waiting.waitNormal(700, 50)
+            // Slight wait, to prevent spam checking/clicking
+            Waiting.waitNormal(500, 50)
 
-            // Returns success/fail to the Waiting.
-            Inventory.contains("Coal bag")
+            // No idea if it's even possible to get the contents
+            // And since it can only click fill if it's fillable
+            // and given we know for sure we are holding the bag in inventory at this point.
+            // in case this returns false, it couldn't click the fill
+            // I assume its filled.
+            if (filled == false) {
+                logger.debug("Coal bag is already filled")
+                return@waitUntil true
+            }
+
+            logger.warn("Coal bag filled-state: $filled")
+            filled
         }
     }
 }
