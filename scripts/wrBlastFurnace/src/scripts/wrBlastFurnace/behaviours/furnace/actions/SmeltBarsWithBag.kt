@@ -7,10 +7,10 @@ import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.behaviours.banking.actions.bankNode
-import scripts.utils.behaviours.banking.actions.withdrawItemNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.emptyCoalBag
 import scripts.wrBlastFurnace.behaviours.banking.actions.ensureIsOpenNode
 import scripts.wrBlastFurnace.behaviours.banking.actions.fillCoalBag
+import scripts.wrBlastFurnace.behaviours.banking.actions.prepareInventoryNode
 import scripts.wrBlastFurnace.behaviours.furnace.failsafes.SmithingArea
 import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
 import scripts.wrBlastFurnace.gui.Settings
@@ -109,25 +109,32 @@ fun IParentNode.smeltBarsWithBag(
         sequence {
             ensureIsOpenNode(logger)
 
-            selector {
-                condition {
-                    Inventory.contains("Coal bag")
-                }
-                withdrawItemNode(
-                    logger,
-                    "Coal bag",
-                    1,
-                    false
-                )
-            }
+//            selector {
+//                condition {
+//                    Inventory.contains("Coal bag")
+//                }
+//                withdrawItemNode(
+//                    logger,
+//                    "Coal bag",
+//                    1,
+//                    false
+//                )
+//            }
 
             fillCoalBag(logger)
 
-            withdrawItemNode(
+            //TODO NEW - untested
+            prepareInventoryNode(
                 logger,
-                managers.tripStateManager.secondaryOre!!.name,
-                managers.tripStateManager.secondaryOre.quantity,
+                managers.tripStateManager.secondaryOre!!
             )
+
+            //OLD
+//            withdrawItemNode(
+//                logger,
+//                managers.tripStateManager.secondaryOre!!.name,
+//                managers.tripStateManager.secondaryOre.quantity,
+//            )
 
             // load our inventory coal
             loadOresNode(
@@ -161,29 +168,38 @@ fun IParentNode.smeltBarsWithBag(
         sequence {
             ensureIsOpenNode(logger)
 
-            selector {
-                condition {
-                    Inventory.contains("Coal bag")
-                }
-                withdrawItemNode(
-                    logger,
-                    "Coal bag",
-                    1,
-                    false
-                )
-            }
+//            selector {
+//                condition {
+//                    Inventory.contains("Coal bag")
+//                }
+//                withdrawItemNode(
+//                    logger,
+//                    "Coal bag",
+//                    1,
+//                    false
+//                )
+//            }
 
             sipStaminaPotion(
                 logger,
                 managers.staminaManager,
                 managers.playerRunManager
             )
+
             fillCoalBag(logger)
-            withdrawItemNode(
+
+            //TODO - NEW UNTESTED
+            prepareInventoryNode(
                 logger,
-                managers.tripStateManager.baseOre.name,
-                managers.tripStateManager.baseOre.quantity
+                managers.tripStateManager.baseOre
             )
+
+            //OLD
+//            withdrawItemNode(
+//                logger,
+//                managers.tripStateManager.baseOre.name,
+//                managers.tripStateManager.baseOre.quantity
+//            )
 
             condition {
                 managers.tripStateManager.cycleStateFrom(

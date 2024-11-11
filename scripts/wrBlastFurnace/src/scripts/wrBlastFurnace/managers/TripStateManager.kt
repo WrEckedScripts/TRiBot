@@ -4,14 +4,13 @@ import scripts.utils.Logger
 import scripts.wrBlastFurnace.gui.Settings
 
 class TripStateManager(val logger: Logger) {
-
     val meltableBar = Settings.barType
     val states = meltableBar.states
     val baseOre = meltableBar.baseOre()
     val secondaryOre = meltableBar.secondaryOre()
 
     var tripCount: Int = 0
-    var barsPerTrip: Int = 27
+    var barsPerTrip: Int = 27 //todo, adjust to base off of coal bag use or not
 
     fun isCurrentState(state: String): Boolean? {
         return this.states[state]

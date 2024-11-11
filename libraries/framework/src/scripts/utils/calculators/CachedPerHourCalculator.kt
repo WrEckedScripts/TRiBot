@@ -7,7 +7,6 @@ class CachedPerHourCalculator(val startedAt: Long) {
     private var lastComputedTime: Long = 0
     private val computationIntervalMillis: Long = 60 * 500 // 0.5 minute
 
-
     fun perHour(start: Int, current: Int): String {
         val currentAt = System.currentTimeMillis()
         val elapsedTimeMillis = currentAt - this.startedAt

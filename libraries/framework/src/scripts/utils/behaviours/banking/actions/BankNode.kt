@@ -6,6 +6,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
+import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
@@ -26,25 +27,33 @@ fun IParentNode.bankNode(
     close: Boolean = false
 ) = sequence {
     condition {
-        if (depositInventory) {
-            Bank.depositInventory()
-
+        //TODO, better approach to allow banking to not deposit needed items
+        if (Inventory.contains("Coal bag") && depositInventory) {
+            Query.inventory()
+                .nameNotEquals("Coal bag")
+                .findRandom()
+                .map {
+                    Waiting.waitUntil(3_000) {
+                        Bank.depositAll(it.id)
+                    }
+                }
+        } else if (depositInventory) {
             // Wait a maximum of 3 seconds to deposit our inventory
-            Waiting.waitUntil(3000) {
+            Waiting.waitUntil(3_000) {
                 val deposited = Bank.depositInventory()
                 Waiting.waitNormal(300, 30)
                 deposited
             }
+        }
 
-            Lottery.execute(0.06) {
-                MiniBreak.leave()
-            }
+        Lottery.execute(0.06) {
+            MiniBreak.leave()
+        }
 
-            // If somehow our inventory is still full, let's fail the condition.
-            if (Inventory.isFull()) {
-                logger.error("[Banking] - Failed to deposit inventory, re-trying")
-                return@condition false
-            }
+        // If somehow our inventory is still full, let's fail the condition.
+        if (Inventory.isFull()) {
+            logger.error("[Banking] - Failed to handle banking, re-trying")
+            return@condition false
         }
 
         return@condition true

@@ -2,7 +2,7 @@ package scripts.wrBlastFurnace.managers
 
 import scripts.utils.Logger
 import scripts.utils.calculators.CachedPerHourCalculator
-import scripts.utils.formatters.Coins
+import scripts.utils.formatters.Notator
 
 /**
  * Manager class that keeps track of various progression related aspects
@@ -19,21 +19,26 @@ class ProgressionManager(
     private val tripCalculator = CachedPerHourCalculator(this.startedAt)
     private val barCalculator = CachedPerHourCalculator(this.startedAt)
 
-    fun indicateState(stateName: String): String {
-        if (tripStateManager.isCurrentState(stateName) == false) {
-            return "<---|"
-        }
+    fun barsLabel(): String {
+        val current = tripStateManager.tripCount.times(tripStateManager.barsPerTrip)
+        val formatted = Notator.format(current)
+        val perHour = this.barCalculator.perHour(0, current)
 
-        return ""
+        return formatted
+            .plus(" (")
+            .plus(perHour)
+            .plus(" p/h)")
     }
 
-    fun currentTrips(): String {
-        val value = Coins().format(tripStateManager.tripCount)
-            .plus(" | ")
-            .plus(" Bars ")
-            .plus("(${Coins().format(tripStateManager.tripCount * tripStateManager.barsPerTrip)})")
+    fun tripsLabel(): String {
+        val current = tripStateManager.tripCount
+        val formatted = Notator.format(current)
+        val perHour = this.tripCalculator.perHour(0, current)
 
-        return value
+        return formatted
+            .plus(" (")
+            .plus(perHour)
+            .plus(" p/h)")
     }
 
     private fun currentSpentValue(): Int {
@@ -51,7 +56,7 @@ class ProgressionManager(
     fun currentSpent(): String {
         val raw = this.currentSpentValue()
 
-        return "-".plus(Coins().format(raw))
+        return "-".plus(Notator.format(raw))
     }
 
     private fun grossProfitValue(): Int {
@@ -60,29 +65,13 @@ class ProgressionManager(
     }
 
     fun grossProfit(): String {
-        return Coins().format(
+        return Notator.format(
             this.grossProfitValue()
         )
     }
 
     fun netProfit(): String {
         val rawSum = this.grossProfitValue() - this.currentSpentValue()
-        return Coins().format(rawSum)
-    }
-
-    fun estimatedPerHourTrips(): String {
-        return "Trips ".plus(tripsPerHour())
-            .plus(" p/hr")
-            .plus(" | Bars ")
-            .plus(barsPerHour())
-            .plus(" p/hr")
-    }
-
-    private fun tripsPerHour(): String {
-        return this.tripCalculator.perHour(0, tripStateManager.tripCount)
-    }
-
-    private fun barsPerHour(): String {
-        return this.barCalculator.perHour(0, tripStateManager.tripCount * tripStateManager.barsPerTrip)
+        return Notator.format(rawSum)
     }
 }
