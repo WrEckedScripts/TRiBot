@@ -17,6 +17,7 @@ import scripts.utils.antiban.Lottery
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.utils.progress.webhook.DiscordNotifier
+import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
 import scripts.wrBlastFurnace.behaviours.furnace.failsafes.SmithingArea
 import scripts.wrBlastFurnace.behaviours.furnace.getBlastTree
 import scripts.wrBlastFurnace.behaviours.setup.validation.EnsurePlayerHasRequirements
@@ -27,7 +28,7 @@ import scripts.wrBlastFurnace.overlay.OverlayPainter
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.6.2",
+    name = "WrBlastFurnace Lite 1.6.3",
     description = "Smelts bronze, iron and steel bars on the Blast Furnace. Please visit the forums / our Discord for a detailed list of requirements and guidance.",
     category = "Smithing",
     author = "WrEcked"
@@ -67,6 +68,16 @@ class BlastFurnaceScript : TribotScript {
 
             if (Settings.coalBagChecked) {
                 logger.debug("using coal bag")
+            }
+
+            if (Settings.coalBagChecked && !Settings.barType.equals(SteelBar())) {
+                logger.error("Sorry, currently using a coal-bag is only supported when smithing Steel bars..")
+                throw Exception("Can't use coal bag when smelting ${Settings.barType.bar().name()}")
+            }
+
+            if (Settings.coalBagChecked == false && Settings.barType.equals(SteelBar())) {
+                logger.error("Sorry, currently using a coal-bag is required for smelting Steel bars..")
+                throw Exception("Can't smelt Steel bars without a coal bag.")
             }
 
             executeBlastFurnaceTree(logger, this.managers)
