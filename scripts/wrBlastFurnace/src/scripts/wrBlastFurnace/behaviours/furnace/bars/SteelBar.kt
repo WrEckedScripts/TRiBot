@@ -34,8 +34,9 @@ data class SteelBar(
 
     override fun secondaryOre(): Ore {
         var quantity = 28
-        if (Settings.coalBagChecked)
+        if (Settings.coalBagChecked) {
             quantity = 27
+        }
 
         return Ore("Coal", quantity, 453)
     }
