@@ -5,8 +5,8 @@ import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
-import scripts.utils.formatters.Coins
 import scripts.utils.formatters.Countdown
+import scripts.utils.formatters.Notator
 import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.Container
 import java.awt.Color
@@ -36,14 +36,14 @@ class OverlayPainter(
             paintTemplate.toBuilder()
                 .label("Trips")
                 .value {
-                    managers.progressionManager.currentTrips()
+                    managers.progressionManager.tripsLabel()
                 }
                 .build()
         ).row(
             paintTemplate.toBuilder()
-                .label("Forecast")
+                .label("Bars")
                 .value {
-                    managers.progressionManager.estimatedPerHourTrips()
+                    managers.progressionManager.barsLabel()
                 }
                 .build()
         ).row(
@@ -70,7 +70,7 @@ class OverlayPainter(
             .row(
                 paintTemplate.toBuilder()
                     .label("Total upkeep spent")
-                    .value { Coins().format(managers.upkeepManager.totalSpent) }
+                    .value { Notator.format(managers.upkeepManager.totalSpent) }
                     .build()
             )
 
@@ -93,6 +93,18 @@ class OverlayPainter(
                 paintTemplate.toBuilder()
                     .label("Use Stamina's")
                     .value { if (Settings.staminaChecked) "Enabled" else "Disabled" }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Coal bag")
+                    .value { if (Settings.coalBagChecked) "Enabled" else "Disabled" }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Pre-walk")
+                    .value { if (Settings.preWalkChecked) "Enabled" else "Disabled" }
                     .build()
             )
 

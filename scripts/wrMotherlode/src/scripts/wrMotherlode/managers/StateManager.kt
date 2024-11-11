@@ -1,16 +1,22 @@
-package scripts.wrBlastFurnace.managers
+package scripts.wrMotherlode.managers
 
 import scripts.utils.Logger
-import scripts.wrBlastFurnace.gui.Settings
+import scripts.utils.debug.LastActionTracker
 
-class TripStateManager(val logger: Logger) {
-    val meltableBar = Settings.barType
-    val states = meltableBar.states
-    val baseOre = meltableBar.baseOre()
-    val secondaryOre = meltableBar.secondaryOre()
+class StateManager(val logger: Logger) {
+    private val states: MutableMap<String, Boolean> = mutableMapOf(
+        "MINING" to false,
+        "REPAIRING" to true,
+        "FILLING" to true,
+        "REPAIRING" to true,
+        "COLLECTING" to true,
+    )
 
-    var tripCount: Int = 0
-    var barsPerTrip: Int = 27 //todo, adjust to base off of coal bag use or not
+    fun moveToNextState(): Boolean {
+        return this.cycleStateFrom(
+            this.getCurrentKey()
+        )
+    }
 
     fun isCurrentState(state: String): Boolean? {
         return this.states[state]
@@ -33,9 +39,10 @@ class TripStateManager(val logger: Logger) {
             this.states[keys[nextIndex]] = false
 
             if (nextIndex == 0) {
-                this.tripCount++
+                logger.debug("Tripstate +1")
             }
 
+            LastActionTracker.track("state")
             return true
         } else {
             logger.error("[State] - No state found...")
@@ -44,16 +51,14 @@ class TripStateManager(val logger: Logger) {
         return false
     }
 
-    fun resetCycle(to: String) {
+    fun resetCycle(to: String): Boolean {
         for (key in this.states.keys) {
             this.states[key] = true
         }
 
         this.states[to] = false
+
+        return true
     }
 
-    fun removeSetup() {
-        logger.warn("removing PREFILL_COAL")
-        this.states.remove("PREFILL_COAL")
-    }
 }

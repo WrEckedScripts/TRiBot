@@ -12,6 +12,10 @@ class Ore(val name: String, val quantity: Int, val id: Int) {
         return this.quantity
     }
 
+    fun id(): Int {
+        return this.id
+    }
+
     fun price(): Optional<Int> {
         return Pricing.lookupPrice(this.id)
     }
