@@ -11,6 +11,7 @@ import org.tribot.script.sdk.tasks.BankTask
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
+import scripts.utils.antiban.WaitingFatiqueResolver
 import scripts.utils.debug.LastActionTracker
 import scripts.wrMotherlode.banking.actions.ensureMineReadyInventory
 import scripts.wrMotherlode.behaviours.motherlode.actions.fillHopperNode
@@ -52,12 +53,12 @@ fun getMineTree(
                         }
 
                         if (brokenStrut.tile.isOnMinimap || brokenStrut.tile.isVisible) {
-                            Waiting.waitUntil {
+                            Waiting.waitUntil(20_000, 5_000 + WaitingFatiqueResolver.getMilliseconds()) {
                                 brokenStrut.interact("Hammer")
 
                                 LastActionTracker.track("click")
 
-                                Waiting.waitNormal(3_000, 245)
+                                Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
 
                                 Query.gameObjects()
                                     .actionContains("Hammer")
@@ -65,7 +66,7 @@ fun getMineTree(
                                     .isEmpty
                             }
                         } else {
-                            Waiting.waitUntil {
+                            Waiting.waitUntil(15_000, 2_000 + WaitingFatiqueResolver.getMilliseconds()) {
                                 LocalWalking.walkTo(brokenStrut.tile)
 
                                 MyPlayer.getTile() != brokenStrut.tile
@@ -91,6 +92,8 @@ fun getMineTree(
                                 logger.debug("Walking to oresack")
                                 LocalWalking.walkTo(oreSackTile)
 
+                                Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
+
                                 MyPlayer.getTile() != oreSackTile.tile
                             }
                         }
@@ -106,7 +109,7 @@ fun getMineTree(
 
                             LastActionTracker.track("click")
 
-                            Waiting.waitNormal(3_500, 1_123)
+                            Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
                             Inventory.getFilledSlots() > 2 // any better solution?
                         }
 
@@ -125,6 +128,8 @@ fun getMineTree(
                             if (!bankTask.isSatisfied() || Inventory.getFilledSlots() > 2) {
                                 bankTask.execute()
                             }
+
+                            Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
 
                             bankTask.isSatisfied()
                         }
@@ -171,6 +176,8 @@ fun getMineTree(
                                     .forEach {
                                         it.click("Drop")
                                     }
+
+                                Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
 
                                 !Inventory.contains("Pay-dirt")
                             }

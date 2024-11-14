@@ -5,6 +5,8 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
+import scripts.utils.antiban.RuntimeTracker
+import scripts.utils.antiban.WaitingFatiqueResolver
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.wrMotherlode.behaviours.motherlode.getMineTree
@@ -16,7 +18,7 @@ import scripts.wrMotherlode.overlay.OverlayPainter
 
 
 @TribotScriptManifest(
-    name = "WrMotherlodeMine Lite 1.0.0",
+    name = "WrMotherlodeMine Lite 1.1.0",
     description = "Plays the Motherlode mine for Mining experience and Golden Nuggets",
     category = "Mining",
     author = "WrEcked"
@@ -84,6 +86,11 @@ class MotherlodeMineScript : TribotScript {
     override fun execute(args: String) {
         MousePainter().init()
         OverlayPainter(this.managers).init()
+
+        RuntimeTracker.init()
+        RuntimeTracker.initLogger(this.logger)
+
+        WaitingFatiqueResolver.initLogger(this.logger)
 
         executeMineTree(logger, this.managers)
     }
