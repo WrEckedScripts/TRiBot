@@ -1,5 +1,6 @@
 package scripts.utils.antiban
 
+import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.antiban.AntibanProperties
 import scripts.utils.Logger
 import kotlin.math.PI
@@ -8,7 +9,9 @@ import kotlin.math.ln
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-object WaitingFatiqueResolver {
+object FatiqueResolver {
+    val defaultSpeed = Mouse.getSpeed()
+
     var minProp: Double = 450.0
     var maxProp: Double = 1250.0
     var sdProp: Double = 90.0
@@ -33,6 +36,23 @@ object WaitingFatiqueResolver {
         if (sd != null) {
             this.sdProp = sd
         }
+    }
+
+    private fun adjustMouseSpeed(runtime: Int? = null, currentHour: Int? = null) {
+        var runtimeValue = runtime
+        var currentHourValue = currentHour
+
+        if (runtime == null) {
+            runtimeValue = RuntimeTracker.hours()
+        }
+        if (currentHour == null) {
+            currentHourValue = RuntimeTracker.currentHour()
+        }
+
+        val factor = getFactor(runtimeValue!!, currentHourValue!!)
+
+        this.logger?.warn("[Fatique] - Changing MouseSpeed ${Mouse.getSpeed()} -> ${(this.defaultSpeed / factor).toInt()}")
+        Mouse.setSpeed((this.defaultSpeed / factor).toInt())
     }
 
     private fun calculateDelay(mean: Double, sd: Double = (this.maxProp - this.minProp) / 10.0): Pair<Int, Int> {
@@ -84,6 +104,11 @@ object WaitingFatiqueResolver {
                 ).first
             }}"
         )
+
+        Lottery.execute(probability = Random.nextDouble(0.62, 0.84)) {
+            this.adjustMouseSpeed(runtimeValue, currentHourValue)
+        }
+
         return calculateDelay(adjustedMean, adjustedSd).first
     }
 

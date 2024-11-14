@@ -1,12 +1,13 @@
 package scripts.wrMotherlode
 
+import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
+import scripts.utils.antiban.FatiqueResolver
 import scripts.utils.antiban.RuntimeTracker
-import scripts.utils.antiban.WaitingFatiqueResolver
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.wrMotherlode.behaviours.motherlode.getMineTree
@@ -18,7 +19,7 @@ import scripts.wrMotherlode.overlay.OverlayPainter
 
 
 @TribotScriptManifest(
-    name = "WrMotherlodeMine Lite 1.1.0",
+    name = "WrMotherlodeMine Lite 1.2.0",
     description = "Plays the Motherlode mine for Mining experience and Golden Nuggets",
     category = "Mining",
     author = "WrEcked"
@@ -90,7 +91,9 @@ class MotherlodeMineScript : TribotScript {
         RuntimeTracker.init()
         RuntimeTracker.initLogger(this.logger)
 
-        WaitingFatiqueResolver.initLogger(this.logger)
+        FatiqueResolver.initLogger(this.logger)
+
+        Mouse.setSpeed(110)
 
         executeMineTree(logger, this.managers)
     }

@@ -9,7 +9,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
-import scripts.utils.antiban.WaitingFatiqueResolver
+import scripts.utils.antiban.FatiqueResolver
 import kotlin.random.Random
 
 fun IParentNode.walkToVeinsNode(logger: Logger) = sequence {
@@ -22,7 +22,7 @@ fun IParentNode.walkToVeinsNode(logger: Logger) = sequence {
             )
 
             if (veinTile.isVisible || veinTile.isOnMinimap) {
-                Waiting.waitUntil(15_000 + WaitingFatiqueResolver.getMilliseconds()) {
+                Waiting.waitUntil(15_000 + FatiqueResolver.getMilliseconds()) {
                     !MyPlayer.isMoving()
                 }
 

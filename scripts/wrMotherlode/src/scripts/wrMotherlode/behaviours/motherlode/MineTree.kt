@@ -11,7 +11,7 @@ import org.tribot.script.sdk.tasks.BankTask
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
-import scripts.utils.antiban.WaitingFatiqueResolver
+import scripts.utils.antiban.FatiqueResolver
 import scripts.utils.debug.LastActionTracker
 import scripts.wrMotherlode.banking.actions.ensureMineReadyInventory
 import scripts.wrMotherlode.behaviours.motherlode.actions.fillHopperNode
@@ -53,12 +53,12 @@ fun getMineTree(
                         }
 
                         if (brokenStrut.tile.isOnMinimap || brokenStrut.tile.isVisible) {
-                            Waiting.waitUntil(20_000, 5_000 + WaitingFatiqueResolver.getMilliseconds()) {
+                            Waiting.waitUntil(20_000, 5_000 + FatiqueResolver.getMilliseconds()) {
                                 brokenStrut.interact("Hammer")
 
                                 LastActionTracker.track("click")
 
-                                Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
+                                Waiting.wait(FatiqueResolver.getMilliseconds())
 
                                 Query.gameObjects()
                                     .actionContains("Hammer")
@@ -66,7 +66,7 @@ fun getMineTree(
                                     .isEmpty
                             }
                         } else {
-                            Waiting.waitUntil(15_000, 2_000 + WaitingFatiqueResolver.getMilliseconds()) {
+                            Waiting.waitUntil(15_000, 2_000 + FatiqueResolver.getMilliseconds()) {
                                 LocalWalking.walkTo(brokenStrut.tile)
 
                                 MyPlayer.getTile() != brokenStrut.tile
@@ -92,7 +92,7 @@ fun getMineTree(
                                 logger.debug("Walking to oresack")
                                 LocalWalking.walkTo(oreSackTile)
 
-                                Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
+                                Waiting.wait(FatiqueResolver.getMilliseconds())
 
                                 MyPlayer.getTile() != oreSackTile.tile
                             }
@@ -109,7 +109,7 @@ fun getMineTree(
 
                             LastActionTracker.track("click")
 
-                            Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
+                            Waiting.wait(FatiqueResolver.getMilliseconds())
                             Inventory.getFilledSlots() > 2 // any better solution?
                         }
 
@@ -129,7 +129,7 @@ fun getMineTree(
                                 bankTask.execute()
                             }
 
-                            Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
+                            Waiting.wait(FatiqueResolver.getMilliseconds())
 
                             bankTask.isSatisfied()
                         }
@@ -177,7 +177,7 @@ fun getMineTree(
                                         it.click("Drop")
                                     }
 
-                                Waiting.wait(WaitingFatiqueResolver.getMilliseconds())
+                                Waiting.wait(FatiqueResolver.getMilliseconds())
 
                                 !Inventory.contains("Pay-dirt")
                             }
