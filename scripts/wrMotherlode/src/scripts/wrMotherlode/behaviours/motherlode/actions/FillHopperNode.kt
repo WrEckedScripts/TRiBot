@@ -21,6 +21,8 @@ fun IParentNode.fillHopperNode(
     managers: Container
 ) = sequence {
     condition {
+        managers.repetitiveActionManager.increment("fill-hopper", 15)
+
         // Walk towards the hopper, if we should
         val hopperTile = WorldTile(3750, 5673, 0)
         if (!hopperTile.isVisible || !hopperTile.isOnMinimap) {
@@ -32,7 +34,7 @@ fun IParentNode.fillHopperNode(
         }
 
         // Fill the hopper
-        Waiting.waitUntil(15_000) {
+        val filled = Waiting.waitUntil(15_000) {
             logger.info("FILL HOPPER")
             Query.gameObjects()
                 .nameEquals("Hopper")
@@ -62,6 +64,12 @@ fun IParentNode.fillHopperNode(
 
             !Inventory.contains("Pay-dirt")
         }
+
+        if (filled) {
+            managers.repetitiveActionManager.reset("fill-hopper")
+        }
+
+        filled
     }
     // Ensure we've dropped off our inventory
     condition {

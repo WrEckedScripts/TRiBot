@@ -33,7 +33,7 @@ fun IParentNode.mineVeinsNode(
 
         val vein = Query.gameObjects()
             .nameEquals("Ore vein")
-            .findClosestByPathDistance()
+            .findBestInteractable()
 
         if (vein.isPresent) {
             interacted = vein

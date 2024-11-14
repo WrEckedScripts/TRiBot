@@ -19,7 +19,7 @@ import scripts.wrMotherlode.overlay.OverlayPainter
 
 
 @TribotScriptManifest(
-    name = "WrMotherlodeMine Lite 1.2.0",
+    name = "WrMotherlodeMine Lite 1.2.1",
     description = "Plays the Motherlode mine for Mining experience and Golden Nuggets",
     category = "Mining",
     author = "WrEcked"
