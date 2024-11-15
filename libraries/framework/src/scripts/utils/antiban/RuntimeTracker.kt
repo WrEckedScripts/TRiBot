@@ -22,7 +22,7 @@ object RuntimeTracker {
         return (this.calculate() / 3600000.0).toInt()
     }
 
-    // Usable for fatique per time of day
+    // Usable for Fatigue per time of day
     fun currentHour(): Int {
         this.logger?.debug("[RuntimeTracker] - currentHour: ${LocalDateTime.now().hour}")
         return LocalDateTime.now().hour

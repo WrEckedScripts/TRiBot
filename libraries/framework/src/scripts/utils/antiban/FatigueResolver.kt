@@ -108,13 +108,13 @@ object FatigueResolver {
         val adjustedMean = ((this.minProp + this.maxProp) / 2) * factor
         val adjustedSd = sd * factor
 
-        // Override any props, for unhandled waits by us, to still ensure our fatique system is in effect.
+        // Override any props, for unhandled waits by us, to still ensure our Fatigue system is in effect.
         AntibanProperties.Props().waitingMaxModifier = this.maxProp
         AntibanProperties.Props().waitingMinModifier = this.minProp
         AntibanProperties.Props().waitingNormalDistStdModifier = adjustedSd
 
         this.logger?.warn(
-            "[Fatique] - factor: ${factor} | mean: ${adjustedMean} | sd: ${adjustedSd} | calculatedDelay: ${
+            "[Fatigue] - factor: ${factor} | mean: ${adjustedMean} | sd: ${adjustedSd} | calculatedDelay: ${
                 calculateDelay(
                     adjustedMean,
                     adjustedSd
@@ -130,20 +130,20 @@ object FatigueResolver {
     }
 
     /**
-     * Calculates the fatique factor in play, based off the time of day and the time running the bot.
+     * Calculates the Fatigue factor in play, based off the time of day and the time running the bot.
      */
     private fun getFactor(
         runtime: Int,
         currentHour: Int
     ): Double {
         val timeOfDayModifier = when {
-            currentHour in 4..10 -> Random.nextDouble(0.6, 0.85) // Early morning - focused
+            currentHour in 5..10 -> Random.nextDouble(0.6, 0.85) // Early morning - focused
             currentHour in 11..17 -> Random.nextDouble(0.95, 1.05) // Daytime - standard
-            currentHour in 18..21 -> Random.nextDouble(1.15, 1.3) // Early evening - getting tired
+            currentHour in 18..23 -> Random.nextDouble(1.15, 1.3) // Early evening - getting tired
             else -> Random.nextDouble(1.3, 1.45) // Night - tired
         }
 
-        val runtimeFatique = when {
+        val runtimeFatigue = when {
             runtime < 2.0 -> Random.nextDouble(0.85, 1.05) // First two hours - fully alert
             runtime < 6.0 -> Random.nextDouble(1.05, 1.25) // 2 tot 6 hours - normal
             runtime < 10.0 -> Random.nextDouble(1.25, 1.35) // 6 to 10 hours - getting tired
@@ -151,6 +151,6 @@ object FatigueResolver {
             else -> Random.nextDouble(1.5, 1.6) // After 10 hours - tired
         }
 
-        return timeOfDayModifier * runtimeFatique
+        return timeOfDayModifier * runtimeFatigue
     }
 }
