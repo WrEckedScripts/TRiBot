@@ -6,6 +6,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.behaviours.banking.validation.ItemPresence
 
 fun IParentNode.fillCoalBag(logger: Logger) = sequence {
@@ -20,7 +21,7 @@ fun IParentNode.fillCoalBag(logger: Logger) = sequence {
                 .orElse(false)
 
             // Slight wait, to prevent spam checking/clicking
-            Waiting.waitNormal(500, 50)
+            Waiting.wait(FatigueResolver.getMilliseconds())
 
             // No idea if it's even possible to get the contents
             // And since it can only click fill if it's fillable

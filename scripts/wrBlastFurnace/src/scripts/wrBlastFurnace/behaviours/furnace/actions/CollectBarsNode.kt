@@ -8,6 +8,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.wrBlastFurnace.managers.DispenserManager
 import scripts.wrBlastFurnace.managers.TripStateManager
@@ -42,14 +43,12 @@ fun IParentNode.collectBarsNode(
 //            }
 
             Waiting.waitUntil {
-                val holdsBars = dispenserManager.holdsBars()
-
-                if (!holdsBars) {
-                    Waiting.waitNormal(2062, 254)
+                if (!dispenserManager.holdsBars()) {
+                    Waiting.wait(FatigueResolver.getMilliseconds() * 2)
                 }
 
                 Waiting.waitNormal(150, 75)
-                holdsBars
+                dispenserManager.holdsBars()
             }
 
             try {
@@ -69,7 +68,7 @@ fun IParentNode.collectBarsNode(
                     // Have some patience on the player moving to the dispenser.
                     if (interacted && MyPlayer.isMoving()) {
                         Waiting.waitUntil {
-                            Waiting.waitNormal(500, 50)
+                            Waiting.wait(FatigueResolver.getMilliseconds())
                             !MyPlayer.isMoving()
                         }
                     }
@@ -99,7 +98,7 @@ fun IParentNode.collectBarsNode(
                 if (!succeeded) {
                     // Slight delay before we re-run this waiting lambda.
                     // Could fix any game loading delays, where the inventory wasn't updated yet.
-                    Waiting.waitNormal(175, 45)
+                    Waiting.wait(FatigueResolver.getMilliseconds())
                 }
 
                 succeeded

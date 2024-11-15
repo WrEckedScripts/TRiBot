@@ -13,6 +13,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
@@ -28,7 +29,7 @@ import scripts.wrBlastFurnace.overlay.OverlayPainter
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.6.3",
+    name = "WrBlastFurnace Lite 1.7.0",
     description = "Smelts bronze, iron and steel bars on the Blast Furnace. Please visit the forums / our Discord for a detailed list of requirements and guidance.",
     category = "Smithing",
     author = "WrEcked"
@@ -49,6 +50,8 @@ class BlastFurnaceScript : TribotScript {
 
         SmithingArea.initLogger(this.logger)
         SmithingArea.registerManager(this.managers)
+
+        FatigueResolver.initLogger(this.logger)
     }
 
     override fun execute(args: String) {

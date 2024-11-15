@@ -5,6 +5,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.WorldTile
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.wrBlastFurnace.managers.Container
 
@@ -43,7 +44,7 @@ object SmithingArea {
             .map { gate -> gate.interact("Open") }
 
         val escaped = Waiting.waitUntil(15_000) {
-            Waiting.waitNormal(2_000, 540)
+            Waiting.wait(FatigueResolver.getMilliseconds() * 2)
             !this.isInsideArea()
         }
 

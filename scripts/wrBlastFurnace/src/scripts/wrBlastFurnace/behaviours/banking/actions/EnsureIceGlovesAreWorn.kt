@@ -7,6 +7,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.behaviours.banking.actions.withdrawItemNode
 
 /**
@@ -45,7 +46,7 @@ fun IParentNode.ensureIceGlovesAreWorn(logger: Logger) = sequence {
                 .map { it.click("Wear") }
 
             // Slight wait, to prevent spam checking
-            Waiting.waitNormal(300, 50)
+            Waiting.wait(FatigueResolver.getMilliseconds())
 
             // Returns success/fail to the Waiting.
             Equipment.contains("Ice gloves")

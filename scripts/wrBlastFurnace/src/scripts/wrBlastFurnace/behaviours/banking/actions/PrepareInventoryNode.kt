@@ -7,6 +7,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.tasks.Amount
 import org.tribot.script.sdk.tasks.BankTask
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.wrBlastFurnace.banking.materials.Ore
 import scripts.wrBlastFurnace.gui.Settings
 
@@ -38,6 +39,7 @@ fun IParentNode.prepareInventoryNode(
         }
 
         Waiting.waitUntil(30_000) {
+            Waiting.wait(FatigueResolver.getMilliseconds())
             builtTask.isSatisfied()
         }
     }

@@ -7,6 +7,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 
 fun IParentNode.emptyCoalBag(logger: Logger) = sequence {
     // In between world hops etc, this prevents early exit-ing the script
@@ -20,7 +21,7 @@ fun IParentNode.emptyCoalBag(logger: Logger) = sequence {
                 .map { it.click("Empty") }
 
             // Slight wait, to prevent spam checking
-            Waiting.waitNormal(900, 50)
+            Waiting.wait(FatigueResolver.getMilliseconds())
 
             // Returns success/fail to the Waiting.
             Inventory.contains("Coal")

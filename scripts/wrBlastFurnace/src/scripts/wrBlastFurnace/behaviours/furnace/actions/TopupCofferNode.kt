@@ -8,6 +8,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.perform
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.wrBlastFurnace.managers.DispenserManager
 import scripts.wrBlastFurnace.managers.TripStateManager
 import scripts.wrBlastFurnace.managers.UpkeepManager
@@ -49,20 +50,15 @@ fun IParentNode.topupCofferNode(
                     ChatScreen.isClickContinueOpen()
                 }
 
-                Waiting.waitNormal(1100, 120)
+                Waiting.wait(FatigueResolver.getMilliseconds())
                 ChatScreen.clickContinue()
-                Waiting.waitNormal(900, 120)
+                Waiting.wait(FatigueResolver.getMilliseconds())
 
                 // Randomize values for next time
                 upkeepManager.setNextCofferTopup()
                 upkeepManager.setNextCofferTopupThreshold()
 
-                // Ensure we reset our cycle after we've done upkeep-ing with the coffer
-//                if (dispenserManager.holdsBars()) {
-//                    tripStateManager.resetCycle("COLLECT_BARS")
-//                } else {
-                    tripStateManager.resetCycle(tripStateManager.getCurrentKey())
-//                }
+                tripStateManager.resetCycle(tripStateManager.getCurrentKey())
             }
     }
 

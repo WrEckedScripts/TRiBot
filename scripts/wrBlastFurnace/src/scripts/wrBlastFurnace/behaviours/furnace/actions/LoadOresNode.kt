@@ -7,8 +7,8 @@ import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
-import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
 import scripts.utils.failsafes.RepetitiveActionManager
@@ -22,7 +22,7 @@ fun IParentNode.loadOresNode(
 
         Waiting.waitUntil {
             logger.debug("[1] - LOADORES - ${Inventory.getFilledSlots()}")
-            Waiting.waitNormal(475, 60)
+            Waiting.wait(FatigueResolver.getMilliseconds())
             Inventory.getFilledSlots() > 1
         }
 
@@ -32,7 +32,7 @@ fun IParentNode.loadOresNode(
 
         logger.debug("[2] - LOADORES - conveyorPresent: ${conveyor.isPresent}")
 
-        val res = Waiting.waitUntil(TribotRandom.normal(1750, 55)) {
+        val res = Waiting.waitUntil(FatigueResolver.getMilliseconds()) {
             if (Inventory.getFilledSlots() < 2) {
                 logger.debug("[3] - LOADORES - slots below 2 ({${Inventory.getFilledSlots()}}) returning 'TRUE'")
                 return@waitUntil true
@@ -61,7 +61,7 @@ fun IParentNode.loadOresNode(
         }
 
         val inv = Waiting.waitUntil {
-            Waiting.waitNormal(1200, 120)
+            Waiting.wait(FatigueResolver.getMilliseconds())
             Inventory.getFilledSlots() == 1
         }
 
