@@ -1,6 +1,5 @@
 package scripts.wrBlastFurnace.managers
 
-import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
@@ -26,9 +25,6 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
     }
 
     fun sipStamina(): Boolean {
-        val currentMouseSpeed = Mouse.getSpeed()
-        Mouse.setSpeed(currentMouseSpeed + TribotRandom.normal(95, 19))
-
         Query.inventory()
             .nameContains("Stamina potion")
             .findRandom()
@@ -41,12 +37,11 @@ class StaminaManager(val logger: Logger, val playerRunManager: PlayerRunManager)
                 // - deposit specific potion
                 Waiting.waitUntil {
                     val clicked = it.click()
-                    Waiting.waitNormal(120, 25)
+                    Waiting.waitNormal(240, 25)
                     clicked
                 }
             }
 
-        Mouse.setSpeed(currentMouseSpeed)
         this.minimumStaminaLevel = TribotRandom.normal(17, 4)
 
         return this.isActive()

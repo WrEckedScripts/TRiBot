@@ -39,7 +39,7 @@ fun IParentNode.prepareInventoryNode(
         }
 
         Waiting.waitUntil(30_000) {
-            Waiting.wait(FatigueResolver.getMilliseconds())
+            Waiting.wait(FatigueResolver.getMilliseconds() * 3)
             builtTask.isSatisfied()
         }
     }

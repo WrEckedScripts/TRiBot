@@ -8,6 +8,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
 
@@ -34,7 +35,9 @@ fun IParentNode.bankNode(
                 .findRandom()
                 .map {
                     Waiting.waitUntil(3_000) {
-                        Bank.depositAll(it.id)
+                        val deposited = Bank.depositAll(it.id)
+                        Waiting.wait(FatigueResolver.getMilliseconds() * 2)
+                        deposited
                     }
                 }
         } else if (depositInventory) {
