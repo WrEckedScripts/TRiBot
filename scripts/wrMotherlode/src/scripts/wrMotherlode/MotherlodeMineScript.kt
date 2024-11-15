@@ -94,7 +94,7 @@ class MotherlodeMineScript : TribotScript {
 
         Mouse.setSpeed(110)
 
-        FatiqueResolver.initLogger(this.logger)
+        FatigueResolver.initLogger(this.logger)
 
         Mouse.setSpeed(110)
 
