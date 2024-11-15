@@ -14,6 +14,7 @@ import scripts.wrBlastFurnace.behaviours.furnace.failsafes.SmithingArea
 import scripts.wrBlastFurnace.behaviours.stamina.actions.sipStaminaPotion
 import scripts.wrBlastFurnace.gui.Settings
 import scripts.wrBlastFurnace.managers.Container
+import kotlin.random.Random
 
 fun IParentNode.smeltBarsNode(
     logger: Logger,
@@ -71,7 +72,7 @@ fun IParentNode.smeltBarsNode(
                 )
             }
             perform {
-                Lottery.execute(1.0) {
+                Lottery.execute(Random.nextDouble(0.62, 0.84)) {
                     managers.cameraManager.randomize(zoom = false)
                 }
             }
@@ -88,7 +89,7 @@ fun IParentNode.smeltBarsNode(
                 managers.repetitiveActionManager
             )
             perform {
-                Lottery.execute(0.6) {
+                Lottery.execute(Random.nextDouble(0.62, 0.84)) {
                     managers.cameraManager.randomize(zoom = false)
                 }
             }
@@ -123,7 +124,7 @@ fun IParentNode.smeltBarsNode(
 //                true
 //            )
             perform {
-                Lottery.execute(0.6) {
+                Lottery.execute(Random.nextDouble(0.62, 0.84)) {
                     managers.cameraManager.randomize(zoom = false)
                 }
             }
@@ -208,7 +209,7 @@ fun IParentNode.smeltBarsNode(
 //                    true
 //                )
                 perform {
-                    Lottery.execute(0.6) {
+                    Lottery.execute(Random.nextDouble(0.62, 0.84)) {
                         managers.cameraManager.randomize(zoom = false)
                     }
                 }
@@ -234,7 +235,7 @@ fun IParentNode.smeltBarsNode(
                     )
                 }
                 perform {
-                    Lottery.execute(0.6) {
+                    Lottery.execute(Random.nextDouble(0.62, 0.84)) {
                         managers.cameraManager.randomize(zoom = false)
                     }
                 }

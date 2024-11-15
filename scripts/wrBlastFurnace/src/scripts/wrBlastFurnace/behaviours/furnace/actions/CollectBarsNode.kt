@@ -38,7 +38,7 @@ fun IParentNode.collectBarsNode(
                 .get()
 
             // Randomize pre-hover
-//            Lottery.execute(0.6) {
+//            Lottery.execute(Random.nextDouble(0.62, 0.84)) {
 //                dispenser.hover()
 //            }
 

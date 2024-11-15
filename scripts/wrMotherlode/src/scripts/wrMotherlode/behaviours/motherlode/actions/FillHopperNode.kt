@@ -15,6 +15,7 @@ import scripts.utils.antiban.Lottery
 import scripts.utils.debug.LastActionTracker
 import scripts.wrMotherlode.managers.Container
 import kotlin.jvm.optionals.getOrNull
+import kotlin.random.Random
 
 fun IParentNode.fillHopperNode(
     logger: Logger,
@@ -43,7 +44,7 @@ fun IParentNode.fillHopperNode(
 
             LastActionTracker.track("click")
 
-            Lottery.execute(0.6) {
+            Lottery.execute(Random.nextDouble(0.80, 0.95)) {
                 Mouse.leaveScreen()
             }
 
