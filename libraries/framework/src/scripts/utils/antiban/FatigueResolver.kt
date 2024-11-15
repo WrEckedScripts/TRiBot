@@ -11,7 +11,7 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 object FatigueResolver {
-    val defaultSpeed = Mouse.getSpeed()
+    val currentSpeed = Mouse.getSpeed()
 
     var minProp: Double = 450.0
     var maxProp: Double = 1250.0
@@ -64,7 +64,7 @@ object FatigueResolver {
 
         val factor = getFactor(runtimeValue!!, currentHourValue!!)
 
-        val coercedInSpeed = (this.defaultSpeed / factor).toInt()
+        val coercedInSpeed = (this.currentSpeed / factor).toInt()
             .coerceIn(
                 this.getMinMaxMouseSpeeds().first,
                 this.getMinMaxMouseSpeeds().second
