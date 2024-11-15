@@ -2,6 +2,7 @@ package scripts.utils.antiban
 
 import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.antiban.AntibanProperties
+import org.tribot.script.sdk.antiban.PlayerPreferences
 import scripts.utils.Logger
 import kotlin.math.PI
 import kotlin.math.cos
@@ -16,6 +17,18 @@ object FatiqueResolver {
     var maxProp: Double = 1250.0
     var sdProp: Double = 90.0
     var logger: Logger? = null
+
+    private fun getMinMaxMouseSpeeds(): Pair<Int, Int> {
+        val min = PlayerPreferences.preference(ProfilingPreferences.MIN_MOUSE_SPEED.key) { g ->
+            g.uniform(80, 110)
+        }
+
+        val max = PlayerPreferences.preference(ProfilingPreferences.MAX_MOUSE_SPEED.key) { g ->
+            g.uniform(130, 160)
+        }
+
+        return Pair(min, max)
+    }
 
     fun initLogger(log: Logger) {
         this.logger = log
@@ -51,8 +64,12 @@ object FatiqueResolver {
 
         val factor = getFactor(runtimeValue!!, currentHourValue!!)
 
-        this.logger?.warn("[Fatique] - Changing MouseSpeed ${Mouse.getSpeed()} -> ${(this.defaultSpeed / factor).toInt()}")
-        Mouse.setSpeed((this.defaultSpeed / factor).toInt())
+        val coercedInSpeed = (this.defaultSpeed / factor).toInt()
+            .coerceIn(
+                this.getMinMaxMouseSpeeds().first,
+                this.getMinMaxMouseSpeeds().second
+            )
+        Mouse.setSpeed(coercedInSpeed)
     }
 
     private fun calculateDelay(mean: Double, sd: Double = (this.maxProp - this.minProp) / 10.0): Pair<Int, Int> {

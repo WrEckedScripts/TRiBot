@@ -13,11 +13,13 @@ import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.FatiqueResolver
 import scripts.utils.debug.LastActionTracker
+import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrMotherlode.banking.actions.ensureMineReadyInventory
 import scripts.wrMotherlode.behaviours.motherlode.actions.fillHopperNode
 import scripts.wrMotherlode.behaviours.motherlode.actions.mineVeinsNode
 import scripts.wrMotherlode.behaviours.motherlode.actions.walkToVeinsNode
 import scripts.wrMotherlode.managers.Container
+import scripts.wrMotherlode.overlay.ResourceCounter
 import kotlin.jvm.optionals.getOrNull
 
 fun getMineTree(
@@ -34,6 +36,12 @@ fun getMineTree(
                 condition {
                     logger.debug("login condition")
                     Login.login()
+                }
+            }
+
+            selector {
+                perform {
+                    DiscordNotifier.notify(message = "${MyPlayer.getUsername()} is going strong at the Motherlode")
                 }
             }
 
@@ -197,6 +205,7 @@ fun getMineTree(
                     mineVeinsNode(logger, managers)
                     condition {
                         logger.debug("Moving ${managers.stateManager.getCurrentKey()} to the next.")
+                        ResourceCounter.increment("Pay-dirt", Inventory.getCount("Pay-dirt"))
                         managers.stateManager.moveToNextState()
                     }
                 }

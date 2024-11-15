@@ -7,12 +7,16 @@ import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.input.Mouse
+import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatiqueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.debug.LastActionTracker
 import scripts.wrMotherlode.managers.Container
+import scripts.wrMotherlode.overlay.ResourceCounter
+import java.awt.Color
+import java.awt.Graphics
 
 fun IParentNode.mineVeinsNode(
     logger: Logger,
@@ -21,7 +25,7 @@ fun IParentNode.mineVeinsNode(
     condition {
         if (Inventory.getEmptySlots() == 0) {
             logger.debug("Our inventory is full! moving to next state.")
-
+            ResourceCounter.increment("Pay-dirt", Inventory.getCount("Pay-dirt"))
             managers.stateManager.moveToNextState()
 
             return@condition true
@@ -37,7 +41,20 @@ fun IParentNode.mineVeinsNode(
 
         if (vein.isPresent) {
             interacted = vein
-                .map { oreVein -> oreVein.interact("Mine") }
+                .map { oreVein ->
+
+                    //TODO remove
+                    Painting.addPaint { g: Graphics ->
+                        g.color = Color.green
+                        val boundsToDraw = oreVein.tile.bounds
+
+                        if (boundsToDraw.isPresent) {
+                            g.drawPolygon(boundsToDraw.get())
+                        }
+                    }
+
+                    oreVein.interact("Mine")
+                }
                 .orElse(false)
 
             Waiting.wait(FatiqueResolver.getMilliseconds())
@@ -60,6 +77,7 @@ fun IParentNode.mineVeinsNode(
         }
 
         if (Inventory.getCount("Pay-dirt") >= managers.sackManager.getRemainingSpace()) {
+            ResourceCounter.increment("Pay-dirt", Inventory.getCount("Pay-dirt"))
             logger.debug("We mined enough, early stopping mining")
 
             managers.stateManager.moveToNextState()

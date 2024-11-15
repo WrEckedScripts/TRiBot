@@ -11,7 +11,8 @@ object ResourceCounter {
         "Mithril ore" to 0,
         "Adamantite ore" to 0,
         "Runite ore" to 0,
-        "Golden nugget" to 0
+        "Golden nugget" to 0,
+        "Pay-dirt" to 0
     )
 
     private val resourceIdMap = mapOf(

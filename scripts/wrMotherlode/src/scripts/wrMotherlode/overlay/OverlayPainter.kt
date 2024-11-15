@@ -7,6 +7,7 @@ import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.debug.LastActionTracker
 import scripts.utils.formatters.Countdown
+import scripts.utils.formatters.Notator
 import scripts.wrMotherlode.managers.Container
 import java.awt.Color
 import java.awt.Font
@@ -96,6 +97,11 @@ class OverlayPainter(
                 paintTemplate.toBuilder()
                     .label("Golden nuggets")
                     .value { ResourceCounter.getResourceCount("Golden nugget") }
+                    .build()
+            ).row(
+                paintTemplate.toBuilder()
+                    .label("Pay-dirt")
+                    .value { Notator.format(ResourceCounter.getResourceCount("Pay-dirt")) }
                     .build()
             )
 
