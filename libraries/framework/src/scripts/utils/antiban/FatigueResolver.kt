@@ -10,7 +10,7 @@ import kotlin.math.ln
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-object FatiqueResolver {
+object FatigueResolver {
     val defaultSpeed = Mouse.getSpeed()
 
     var minProp: Double = 450.0

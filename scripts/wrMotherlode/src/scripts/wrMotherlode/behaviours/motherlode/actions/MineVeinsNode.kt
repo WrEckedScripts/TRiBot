@@ -10,7 +10,7 @@ import org.tribot.script.sdk.input.Mouse
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.utils.antiban.FatiqueResolver
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.debug.LastActionTracker
 import scripts.wrMotherlode.managers.Container
@@ -57,7 +57,7 @@ fun IParentNode.mineVeinsNode(
                 }
                 .orElse(false)
 
-            Waiting.wait(FatiqueResolver.getMilliseconds())
+            Waiting.wait(FatigueResolver.getMilliseconds())
         }
 
         if (interacted) {
@@ -68,9 +68,9 @@ fun IParentNode.mineVeinsNode(
             }
 
             // Give the script 3 seconds to start animating, otherwise we should fail
-            if (Waiting.waitUntilAnimating(3_000 + FatiqueResolver.getMilliseconds())) {
+            if (Waiting.waitUntilAnimating(3_000 + FatigueResolver.getMilliseconds())) {
                 // If we're animating, let's wait until we're not anymore.
-                Waiting.waitUntil(35_000, 10_000 + FatiqueResolver.getMilliseconds()) {
+                Waiting.waitUntil(35_000, 10_000 + FatigueResolver.getMilliseconds()) {
                     !MyPlayer.isAnimating()
                 }
             }
@@ -92,7 +92,7 @@ fun IParentNode.mineVeinsNode(
 //
 //            Inventory.getEmptySlots() == 0
 //        }
-        Waiting.wait(FatiqueResolver.getMilliseconds())
+        Waiting.wait(FatigueResolver.getMilliseconds())
         Inventory.getEmptySlots() == 0
     }
 }

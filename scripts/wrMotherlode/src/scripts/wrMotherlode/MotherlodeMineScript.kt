@@ -6,7 +6,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
-import scripts.utils.antiban.FatiqueResolver
+import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.RuntimeTracker
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter

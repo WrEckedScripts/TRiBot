@@ -10,7 +10,7 @@ import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
-import scripts.utils.antiban.FatiqueResolver
+import scripts.utils.antiban.FatigueResolver
 import java.awt.Color
 import java.awt.Graphics
 import kotlin.random.Random
@@ -35,7 +35,7 @@ fun IParentNode.walkToVeinsNode(logger: Logger) = sequence {
             }
 
             if (veinTile.isVisible || veinTile.isOnMinimap) {
-                Waiting.waitUntil(15_000 + FatiqueResolver.getMilliseconds()) {
+                Waiting.waitUntil(15_000 + FatigueResolver.getMilliseconds()) {
                     !MyPlayer.isMoving()
                 }
 
