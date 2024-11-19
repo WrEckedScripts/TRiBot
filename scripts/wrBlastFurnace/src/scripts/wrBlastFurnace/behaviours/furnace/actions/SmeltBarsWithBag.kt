@@ -122,7 +122,7 @@ fun IParentNode.smeltBarsWithBag(
 //                )
 //            }
 
-            fillCoalBag(logger)
+            fillCoalBag(logger, managers)
 
             //TODO NEW - untested
             prepareInventoryNode(
@@ -187,7 +187,7 @@ fun IParentNode.smeltBarsWithBag(
                 managers.playerRunManager
             )
 
-            fillCoalBag(logger)
+            fillCoalBag(logger, managers)
 
             //TODO - NEW UNTESTED
             prepareInventoryNode(

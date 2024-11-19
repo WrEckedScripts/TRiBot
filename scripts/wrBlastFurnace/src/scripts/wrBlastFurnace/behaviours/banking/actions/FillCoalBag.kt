@@ -8,10 +8,15 @@ import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.behaviours.banking.validation.ItemPresence
+import scripts.wrBlastFurnace.managers.Container
 
-fun IParentNode.fillCoalBag(logger: Logger) = sequence {
+fun IParentNode.fillCoalBag(
+    logger: Logger,
+    managers: Container
+) = sequence {
     condition {
-        ItemPresence.throwExceptionIfBankMissesItem("Coal")
+        ItemPresence.throwExceptionIfBankMissesItem("Coal", 27)
+        managers.repetitiveActionManager.create("fill-coalbag", 6)
 
         Waiting.waitUntil(4_000) {
             val filled = Query.inventory()
@@ -34,6 +39,7 @@ fun IParentNode.fillCoalBag(logger: Logger) = sequence {
             }
 
             logger.warn("Coal bag filled-state: $filled")
+            managers.repetitiveActionManager.reset("fill-coalbag")
             filled
         }
     }
