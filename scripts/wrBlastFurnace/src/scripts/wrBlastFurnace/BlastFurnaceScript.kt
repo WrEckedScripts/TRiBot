@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import org.jetbrains.skia.Color
 import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.ScriptListening
@@ -29,7 +30,7 @@ import scripts.wrBlastFurnace.overlay.OverlayPainter
 import java.util.concurrent.CompletableFuture
 
 @TribotScriptManifest(
-    name = "WrBlastFurnace Lite 1.7.2",
+    name = "WrBlastFurnace Lite 1.7.3",
     description = "Smelts bronze, iron and steel bars on the Blast Furnace. Please visit the forums / our Discord for a detailed list of requirements and guidance.",
     category = "Smithing",
     author = "WrEcked"
@@ -164,6 +165,7 @@ class BlastFurnaceScript : TribotScript {
 
     private fun handleExecutionError(logger: Logger, ex: Throwable) {
         logger.error("Error occurred during execution: ${ex.message}")
+        DiscordNotifier.notify(true, ex.message, Color.YELLOW)
         ex.printStackTrace()
     }
 

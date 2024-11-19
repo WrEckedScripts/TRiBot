@@ -10,11 +10,11 @@ object ItemPresence {
     fun throwExceptionIfBankMissesItem(name: String, quantity: Int? = null) {
         val bankItemCount = Query.bank()
             .nameEquals(name)
-            .count()
+            .sumStacks()
 
         if (quantity != null) {
             if (bankItemCount < quantity) {
-                throw Exception("We do not have enough stock of ${name}")
+                throw Exception("We do not have enough stock of ${name} got ${bankItemCount} need ${quantity}")
             }
         }
 
