@@ -38,8 +38,9 @@ fun IParentNode.ensureMineReadyInventory(
                 }
 
                 val bankTask = BankTask.builder()
-                    .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
-                    .addInvItem(2347, Amount.of(1))
+//                    .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
+                    .addInvItem(11920, Amount.of(1)) // Dragon Pickaxe
+                    .addInvItem(2347, Amount.of(1)) // Hammer
                     // Pay-dirt, although not bankable, we should accept them, this avoids trying to bank them.
                     .addInvItem(12011, Amount.range(0, 26))
                     .build()

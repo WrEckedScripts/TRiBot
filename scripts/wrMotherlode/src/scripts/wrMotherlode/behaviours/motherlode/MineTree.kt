@@ -128,7 +128,8 @@ fun getMineTree(
 
                         // BEGIN: bankLootNode
                         val bankTask = BankTask.builder()
-                            .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
+//                            .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
+                            .addInvItem(11920, Amount.of(1)) // Dragon Pickaxe
                             .addInvItem(2347, Amount.of(1)) // Hammer
                             .build()
 
