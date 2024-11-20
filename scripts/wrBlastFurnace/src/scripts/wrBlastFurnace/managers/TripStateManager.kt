@@ -4,33 +4,45 @@ import scripts.utils.Logger
 import scripts.wrBlastFurnace.gui.Settings
 
 class TripStateManager(val logger: Logger) {
-    val meltableBar = Settings.barType
-    val states = meltableBar.states
-    val baseOre = meltableBar.baseOre()
-    val secondaryOre = meltableBar.secondaryOre()
+    var meltableBar = Settings.barType
+    var states = meltableBar.states()
+    var baseOre = meltableBar.baseOre()
+    var secondaryOre = meltableBar.secondaryOre()
 
     var tripCount: Int = 0
-    var barsPerTrip: Int = 27 //todo, adjust to base off of coal bag use or not
+    var barsPerTrip: Int = meltableBar.quantity()
+
+    /**
+     * Given this manager is initialised before the GUI. Let's allow reloading or parameters.
+     * This way, any future GUI changes are properly reflected.
+     */
+    fun reload() {
+        meltableBar = Settings.barType
+        states = meltableBar.states()
+        baseOre = meltableBar.baseOre()
+        secondaryOre = meltableBar.secondaryOre()
+        barsPerTrip = meltableBar.quantity()
+    }
 
     fun isCurrentState(state: String): Boolean? {
-        return this.states[state]
+        return states[state]
     }
 
     fun getCurrentKey(): String {
-        return this.states.entries.first { !it.value }.key
+        return states.entries.first { !it.value }.key
     }
 
     fun cycleStateFrom(currentKey: String): Boolean {
-        val keys = this.states.keys.toList()
+        val keys = states.keys.toList()
         val currentIndex = keys.indexOf(currentKey)
 
         if (currentIndex != -1) {
             // Update the current item to true (processed)
-            this.states[keys[currentIndex]] = true
+            states[keys[currentIndex]] = true
 
             // Update the next item to false (to start processing it)
             val nextIndex = (currentIndex + 1) % keys.size
-            this.states[keys[nextIndex]] = false
+            states[keys[nextIndex]] = false
 
             if (nextIndex == 0) {
                 this.tripCount++
@@ -45,15 +57,10 @@ class TripStateManager(val logger: Logger) {
     }
 
     fun resetCycle(to: String) {
-        for (key in this.states.keys) {
-            this.states[key] = true
+        for (key in states.keys) {
+            states[key] = true
         }
 
-        this.states[to] = false
-    }
-
-    fun removeSetup() {
-        logger.warn("removing PREFILL_COAL")
-        this.states.remove("PREFILL_COAL")
+        states[to] = false
     }
 }

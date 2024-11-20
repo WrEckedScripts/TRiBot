@@ -114,7 +114,8 @@ fun IParentNode.smeltBarsNode(
             //TODO NEW - UNTESTED
             prepareInventoryNode(
                 logger,
-                managers.tripStateManager.baseOre
+                managers.tripStateManager.baseOre,
+                managers
             )
             //OLD
 //            withdrawItemNode(
@@ -165,29 +166,29 @@ fun IParentNode.smeltBarsNode(
     /**
      * Some bars do not use secondary materials. So for that, we do not always want to include this sequence
      */
-    if (managers.tripStateManager.states.containsKey("PROCESS_SECONDARY")) {
-        /**
-         *  Given we are tasked to process coal
-         *  And the melting pot contains more than our threshold in terms of coal stock
-         *  We simply skip the coal task, to prevent any overfilling
-         */
-        selector {
-            condition { managers.tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
-            condition { !managers.meltingPotManager.containsCoalMoreThan(112) }
-            condition {
-                managers.tripStateManager.cycleStateFrom(
-                    managers.tripStateManager.getCurrentKey()
-                )
-            }
-        }
-
-        /**
-         * Given we are processing coal
-         * And the dispenser is not holding bars
-         * And our inventory is empty
-         *
-         * We will withdraw secondary ores
-         */
+//    if (managers.tripStateManager.states.containsKey("PROCESS_SECONDARY") && managers.tripStateManager.secondaryOre!!.name.equals("Coal")) {
+//        /**
+//         *  Given we are tasked to process coal
+//         *  And the melting pot contains more than our threshold in terms of coal stock
+//         *  We simply skip the coal task, to prevent any overfilling
+//         */
+//        selector {
+//            condition { managers.tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
+//            condition { !managers.meltingPotManager.containsCoalMoreThan(112) }
+//            condition {
+//                managers.tripStateManager.cycleStateFrom(
+//                    managers.tripStateManager.getCurrentKey()
+//                )
+//            }
+//        }
+//
+//        /**
+//         * Given we are processing coal
+//         * And the dispenser is not holding bars
+//         * And our inventory is empty
+//         *
+//         * We will withdraw secondary ores
+//         */
         selector {
             condition { managers.tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
             condition { managers.dispenserManager.holdsBars() }
@@ -199,7 +200,8 @@ fun IParentNode.smeltBarsNode(
                 //NEW
                 prepareInventoryNode(
                     logger,
-                    managers.tripStateManager.secondaryOre!!
+                    managers.tripStateManager.secondaryOre!!,
+                    managers
                 )
                 //OLD
 //                withdrawItemNode(
@@ -215,31 +217,31 @@ fun IParentNode.smeltBarsNode(
                 }
             }
         }
-
-        /**
-         * Given we are processing coal
-         * And the dispenser is not holding bars
-         * And our inventory is not empty
-         *
-         * We will load our ores to the conveyor
-         */
-        selector {
-            condition { managers.tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
-            condition { managers.dispenserManager.holdsBars() }
-            condition { Inventory.isEmpty() }
-            sequence {
-                loadOresNode(logger, managers.repetitiveActionManager)
-                condition {
-                    managers.tripStateManager.cycleStateFrom(
-                        managers.tripStateManager.getCurrentKey()
-                    )
-                }
-                perform {
-                    Lottery.execute(Random.nextDouble(0.62, 0.84)) {
-                        managers.cameraManager.randomize(zoom = false)
-                    }
-                }
-            }
-        }
-    }
+//
+//        /**
+//         * Given we are processing coal
+//         * And the dispenser is not holding bars
+//         * And our inventory is not empty
+//         *
+//         * We will load our ores to the conveyor
+//         */
+//        selector {
+//            condition { managers.tripStateManager.isCurrentState("PROCESS_SECONDARY") == true }
+//            condition { managers.dispenserManager.holdsBars() }
+//            condition { Inventory.isEmpty() }
+//            sequence {
+//                loadOresNode(logger, managers.repetitiveActionManager)
+//                condition {
+//                    managers.tripStateManager.cycleStateFrom(
+//                        managers.tripStateManager.getCurrentKey()
+//                    )
+//                }
+//                perform {
+//                    Lottery.execute(Random.nextDouble(0.62, 0.84)) {
+//                        managers.cameraManager.randomize(zoom = false)
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

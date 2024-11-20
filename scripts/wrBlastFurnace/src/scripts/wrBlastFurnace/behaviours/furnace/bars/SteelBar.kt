@@ -4,40 +4,44 @@ import scripts.wrBlastFurnace.banking.materials.Bar
 import scripts.wrBlastFurnace.banking.materials.Ore
 import scripts.wrBlastFurnace.gui.Settings
 
-data class SteelBar(
-    override var states: MutableMap<String, Boolean> = mutableMapOf(
-        //TODO, we need to dynamically determine the states, so both flows work
-        // Now, it's hard-coded to only work with coal bags in the new smeltNode
-//        "PROCESS_SECONDARY" to false,
-//        "PROCESS_BASE" to true,
-//        "COLLECT_BARS" to true,
-//        "BANK_BARS" to true
-        "PREFILL_COAL" to false,
-        "PREPARE_ORES" to true,
-        "PROCESS_ORES" to true,
-        "COLLECT_BARS" to true,
-        "BANK_BARS" to true,
-    )
-) : MeltableBar {
+object SteelBar : MeltableBar {
+    override fun states(): MutableMap<String, Boolean> {
+        if (Settings.coalBagChecked) {
+            return mutableMapOf(
+                "PREFILL_COAL" to false,
+                "PREPARE_ORES" to true,
+                "PROCESS_ORES" to true,
+                "COLLECT_BARS" to true,
+                "BANK_BARS" to true,
+            )
+        }
+
+        return mutableMapOf(
+            "PROCESS_SECONDARY" to false,
+            "PROCESS_BASE" to true,
+            "COLLECT_BARS" to true,
+            "BANK_BARS" to true
+        )
+    }
+
     override fun bar(): Bar {
         return Bar("Steel bar", 2353)
     }
 
     override fun baseOre(): Ore {
-        var quantity = 28
-        if (Settings.coalBagChecked) {
-            quantity = 27
-        }
-
-        return Ore("Iron ore", quantity, 440)
+        return Ore("Iron ore", this.quantity(), 440)
     }
 
     override fun secondaryOre(): Ore {
-        var quantity = 28
-        if (Settings.coalBagChecked) {
-            quantity = 27
-        }
 
-        return Ore("Coal", quantity, 453)
+        return Ore("Coal", this.quantity(), 453)
+    }
+
+    override fun quantity(): Int {
+        return if (Settings.coalBagChecked) {
+            27
+        } else {
+            28
+        }
     }
 }

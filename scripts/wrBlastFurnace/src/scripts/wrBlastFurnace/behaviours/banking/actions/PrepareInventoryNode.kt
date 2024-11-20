@@ -10,6 +10,7 @@ import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.wrBlastFurnace.banking.materials.Ore
 import scripts.wrBlastFurnace.gui.Settings
+import scripts.wrBlastFurnace.managers.Container
 
 /**
  * Node that ensures we have a inventory prepared for our next ore trip
@@ -17,9 +18,11 @@ import scripts.wrBlastFurnace.gui.Settings
  */
 fun IParentNode.prepareInventoryNode(
     logger: Logger,
-    ore: Ore
+    ore: Ore,
+    managers: Container
 ) = sequence {
     condition {
+        managers.repetitiveActionManager.increment("prepare-inventory", 3)
         val usingCoalBag = Settings.coalBagChecked
 
         val task = BankTask.builder()
@@ -38,9 +41,15 @@ fun IParentNode.prepareInventoryNode(
             builtTask.execute()
         }
 
-        Waiting.waitUntil(30_000) {
-            Waiting.wait(FatigueResolver.getMilliseconds() * 3)
+        val satisfied = Waiting.waitUntil(FatigueResolver.getMilliseconds() * 6) {
+            Waiting.wait(FatigueResolver.getMilliseconds())
             builtTask.isSatisfied()
         }
+
+        if (satisfied) {
+            managers.repetitiveActionManager.reset("prepare-inventory")
+        }
+
+        satisfied
     }
 }

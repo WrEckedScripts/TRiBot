@@ -344,9 +344,9 @@ class GUI(
     @Composable
     fun GeneralSection() {
         val barTypes = mapOf(
-            "Steel bar" to SteelBar(),
-            "Iron bar" to IronBar(),
-            "Bronze bar" to BronzeBar()
+            "Steel bar" to SteelBar,
+            "Iron bar" to IronBar,
+            "Bronze bar" to BronzeBar
         )
 
         val barOptions: Map<MeltableBar, String> = barTypes.values.associateWith { it.bar().name() }

@@ -68,20 +68,17 @@ class BlastFurnaceScript : TribotScript {
             setupNotifications()
             setupHelpers()
 
+            this.managers.tripStateManager.reload()
+
             logger.debug("[GUI] - Completed, let's go blast furnacing!")
 
             if (Settings.coalBagChecked) {
                 logger.debug("using coal bag")
             }
 
-            if (Settings.coalBagChecked && !Settings.barType.equals(SteelBar())) {
-                logger.error("Sorry, currently using a coal-bag is only supported when smithing Steel bars..")
-                throw Exception("Can't use coal bag when smelting ${Settings.barType.bar().name()}")
-            }
-
-            if (Settings.coalBagChecked == false && Settings.barType.equals(SteelBar())) {
-                logger.error("Sorry, currently using a coal-bag is required for smelting Steel bars..")
-                throw Exception("Can't smelt Steel bars without a coal bag.")
+            if (Settings.coalBagChecked && !Settings.barType.equals(SteelBar)) {
+                logger.error("Sorry, currently using a coal-bag is only supported when smithing Steel bars, turning this option off")
+                Settings.coalBagChecked = false
             }
 
             executeBlastFurnaceTree(logger, this.managers)

@@ -16,7 +16,7 @@ fun IParentNode.fillCoalBag(
 ) = sequence {
     condition {
         ItemPresence.throwExceptionIfBankMissesItem("Coal", 27)
-        managers.repetitiveActionManager.create("fill-coalbag", 6)
+        managers.repetitiveActionManager.increment("fill-coalbag", 6)
 
         Waiting.waitUntil(4_000) {
             val filled = Query.inventory()

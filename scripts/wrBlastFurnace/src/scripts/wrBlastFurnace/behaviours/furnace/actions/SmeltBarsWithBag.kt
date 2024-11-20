@@ -127,7 +127,8 @@ fun IParentNode.smeltBarsWithBag(
             //TODO NEW - untested
             prepareInventoryNode(
                 logger,
-                managers.tripStateManager.secondaryOre!!
+                managers.tripStateManager.secondaryOre!!,
+                managers
             )
 
             //OLD
@@ -192,7 +193,8 @@ fun IParentNode.smeltBarsWithBag(
             //TODO - NEW UNTESTED
             prepareInventoryNode(
                 logger,
-                managers.tripStateManager.baseOre
+                managers.tripStateManager.baseOre,
+                managers
             )
 
             //OLD
