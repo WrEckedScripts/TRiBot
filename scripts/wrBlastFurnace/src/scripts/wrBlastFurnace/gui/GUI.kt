@@ -18,7 +18,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import org.tribot.script.sdk.Log
 import org.tribot.script.sdk.util.Resources
+import org.tribot.script.sdk.util.ScriptSettings
 import scripts.wrBlastFurnace.behaviours.furnace.bars.BronzeBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.IronBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
@@ -250,7 +252,8 @@ class GUI(
 
             Row(
                 modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.Bottom
             ) {
                 Button(
                     onClick = {
@@ -274,26 +277,51 @@ class GUI(
                         backgroundColor = Color(0xFFFF5757),
                         contentColor = Color.White
                     ),
-                    modifier = Modifier.height(30.dp)
+                    modifier = Modifier.height(50.dp)
                 ) {
                     Text("Debug choices", fontSize = 12.sp)
                 }
 
-//                Button(onClick = { /* handle save */ }, modifier = Modifier.height(30.dp)) {
-//                    Text("Save", fontSize = 12.sp)
-//                }
-//
-//                Button(onClick = { /* handle load */ }, modifier = Modifier.height(30.dp)) {
-//                    Text("Load", fontSize = 12.sp)
-//                }
+                var profileName by remember { mutableStateOf("lastRun") }
+                Column(modifier = Modifier.width(150.dp)) {
+                    TextField(
+                        value = profileName,
+                        onValueChange = { newValue ->
+                            profileName = newValue
+                        },
+                        textStyle = MaterialTheme.typography.body1.copy(fontSize = 15.sp),
+                        modifier = Modifier.height(50.dp)
+                    )
+                }
 
                 Button(
-                    onClick = { onStartScript() },
+                    onClick = {
+                        println(profileName)
+                        ScriptSettings.getDefault()
+                            .load(
+                                profileName, Settings.toSerializable().javaClass
+                            ).ifPresent { s ->
+                                Log.warn("Loaded settings, not seeing the GUI reflect these? Switch a tab.")
+                                Settings.fromSerializable(s)
+                            }
+                    }, colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xffecb650),
+                        contentColor = Color.White
+                    ), modifier = Modifier.height(50.dp)
+                ) {
+                    Text("Load", fontSize = 12.sp)
+                }
+
+                Button(
+                    onClick = {
+                        ScriptSettings.getDefault().save(profileName, Settings.toSerializable())
+                        onStartScript()
+                    },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xff4bdb66),
                         contentColor = Color.White
                     ),
-                    modifier = Modifier.height(30.dp)
+                    modifier = Modifier.height(50.dp)
                 ) {
                     Text("Start!", fontSize = 12.sp)
                 }

@@ -1,6 +1,8 @@
 package scripts.wrBlastFurnace.gui
 
 import org.tribot.script.sdk.Camera
+import scripts.wrBlastFurnace.behaviours.furnace.bars.BronzeBar
+import scripts.wrBlastFurnace.behaviours.furnace.bars.IronBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.MeltableBar
 import scripts.wrBlastFurnace.behaviours.furnace.bars.SteelBar
 
@@ -47,5 +49,42 @@ object Settings {
 
     fun usesDiscord(): Boolean {
         return !(this.discordUrl == "" || this.interval == "")
+    }
+
+    fun toSerializable(): SerializableSettings {
+        return SerializableSettings(
+            barType = this.barType::class.java.simpleName,
+            world = this.world,
+            staminaChecked = this.staminaChecked,
+            coalBagChecked = this.coalBagChecked,
+            zoom = this.zoom,
+            rotate = this.rotate,
+            chatbox = this.chatbox,
+            preWalkChecked = this.preWalkChecked,
+            minAmount = this.minAmount,
+            maxAmount = this.maxAmount,
+            discordUrl = this.discordUrl,
+            interval = this.interval
+        )
+    }
+
+    fun fromSerializable(serializableSettings: SerializableSettings) {
+        this.barType = when (serializableSettings.barType) {
+            "SteelBar" -> SteelBar
+            "IronBar" -> IronBar
+            "BronzeBar" -> BronzeBar
+            else -> throw IllegalArgumentException("Unknown bar type: ${serializableSettings.barType}")
+        }
+        this.world = serializableSettings.world
+        this.staminaChecked = serializableSettings.staminaChecked
+        this.coalBagChecked = serializableSettings.coalBagChecked
+        this.zoom = serializableSettings.zoom
+        this.rotate = serializableSettings.rotate
+        this.chatbox = serializableSettings.chatbox
+        this.preWalkChecked = serializableSettings.preWalkChecked
+        this.minAmount = serializableSettings.minAmount
+        this.maxAmount = serializableSettings.maxAmount
+        this.discordUrl = serializableSettings.discordUrl
+        this.interval = serializableSettings.interval
     }
 }
