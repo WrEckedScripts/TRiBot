@@ -6,8 +6,8 @@ import scripts.wrBlastFurnace.banking.materials.Ore
 object BronzeBar : MeltableBar {
     override fun states(): MutableMap<String, Boolean> {
         return mutableMapOf(
-            "PROCESS_SECONDARY" to true,
-            "PROCESS_BASE" to false,
+            "PROCESS_SECONDARY" to false,
+            "PROCESS_BASE" to true,
             "COLLECT_BARS" to true,
             "BANK_BARS" to true
         )
