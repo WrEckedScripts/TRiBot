@@ -8,6 +8,7 @@ import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.RuntimeTracker
+import scripts.utils.debug.LastActionTracker
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.utils.progress.webhook.DiscordNotifier
@@ -20,7 +21,7 @@ import scripts.wrMotherlode.overlay.OverlayPainter
 
 
 @TribotScriptManifest(
-    name = "WrMotherlodeMine Lite 1.3.0",
+    name = "WrMotherlodeMine Lite 1.4.0",
     description = "Plays the Motherlode mine for Mining experience and Golden Nuggets",
     category = "Mining",
     author = "WrEcked"
@@ -98,6 +99,7 @@ class MotherlodeMineScript : TribotScript {
 
         Mouse.setSpeed(110)
 
+        LastActionTracker.track("state")
         executeMineTree(logger, this.managers)
     }
 }

@@ -20,7 +20,7 @@ fun IParentNode.ensureMineReadyInventory(
         sequence {
             condition {
                 // Only if the sack is full.
-                if (!managers.sackManager.needsFilling()) {
+                if (!managers.sackManager.canBeFilled()) {
                     Waiting.waitUntil {
                         logger.debug("We are going to drop our inventory and start collecting")
                         Query.inventory()

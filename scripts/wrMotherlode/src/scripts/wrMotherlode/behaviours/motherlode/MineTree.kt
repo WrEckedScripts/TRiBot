@@ -1,5 +1,6 @@
 package scripts.wrMotherlode.behaviours.motherlode
 
+import org.tribot.api2007.Camera
 import org.tribot.script.sdk.Inventory
 import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.MyPlayer
@@ -9,6 +10,7 @@ import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.tasks.Amount
 import org.tribot.script.sdk.tasks.BankTask
 import org.tribot.script.sdk.types.WorldTile
+import org.tribot.script.sdk.util.TribotRandom
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
@@ -92,6 +94,13 @@ fun getMineTree(
                 condition { managers.stateManager.isCurrentState("COLLECTING") }
                 sequence {
                     condition {
+                        // Check if we should be looting.
+                        if (managers.sackManager.canBeFilled()) {
+                            logger.debug("Sack isn't full yet, skipping collection..")
+                            managers.stateManager.moveToNextState()
+                            return@condition true
+                        }
+
                         // BEGIN: walkToSackNode
                         val oreSackTile = WorldTile(3749, 5659, 0)
 
@@ -144,12 +153,7 @@ fun getMineTree(
                         }
                         //END
 
-                        // Check if there's any more to be looted
-                        // If the remaining space, is not between 1..108 it's false (inversed to true)
-                        // and we're done looting :)
-                        // todo, needs changing, if we go for varbit.
-//                        if (managers.sackManager.getRemainingSpace() !in 1..108) {
-                        if (!managers.sackManager.needsFilling()) {
+                        if (managers.sackManager.isEmpty()) {
                             logger.warn("We got more loot to grab!")
                             return@condition false
                         }
@@ -162,7 +166,7 @@ fun getMineTree(
             }
 
             selector {
-                condition { managers.sackManager.needsFilling() }
+                condition { managers.sackManager.canBeFilled() }
                 sequence {
                     condition {
                         logger.info("resetting state to collect")
@@ -176,7 +180,7 @@ fun getMineTree(
                 sequence {
                     fillHopperNode(logger, managers)
                     selector {
-                        condition { !managers.sackManager.needsFilling() }
+                        condition { !managers.sackManager.canBeFilled() }
                         condition {
                             logger.debug("Emptying inventory of any pay-dirt")
                             Waiting.waitUntil {
@@ -201,6 +205,10 @@ fun getMineTree(
             selector {
                 condition { managers.stateManager.isCurrentState("MINING") }
                 sequence {
+                    perform {
+                        Camera.setCameraAngle(TribotRandom.normal(95, 5))
+                        Camera.setCameraRotation(TribotRandom.normal(340, 10))
+                    }
                     ensureMineReadyInventory(logger, managers)
                     walkToVeinsNode(logger)
                     mineVeinsNode(logger, managers)

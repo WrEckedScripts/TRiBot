@@ -55,7 +55,7 @@ fun IParentNode.fillHopperNode(
             // ensure we drop the remainder
             // todo, curious if this is correctly calculated once the wheels aren't spinning..
             //  we could also listen for the chat..
-            if (!managers.sackManager.needsFilling()) {
+            if (!managers.sackManager.canBeFilled()) {
                 Query.inventory()
                     .nameEquals("Pay-dirt")
                     .forEach {
