@@ -55,6 +55,14 @@ class BlastFurnaceScript : TribotScript {
         FatigueResolver.initLogger(this.logger)
     }
 
+    private fun setupRepetitionPrevention() {
+        this.managers.repetitiveActionManager.create("load-ores", 5)
+        this.managers.repetitiveActionManager.create("fill-coalbag", 6)
+        this.managers.repetitiveActionManager.create("collect-bars", 5)
+
+        logger.info("Initialized repetition prevention")
+    }
+
     override fun execute(args: String) {
         MousePainter().init()
 
@@ -67,6 +75,7 @@ class BlastFurnaceScript : TribotScript {
         started.thenAccept {
             setupNotifications()
             setupHelpers()
+            setupRepetitionPrevention()
 
             this.managers.tripStateManager.reload()
 

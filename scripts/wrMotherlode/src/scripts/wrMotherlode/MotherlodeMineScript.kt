@@ -97,7 +97,11 @@ class MotherlodeMineScript : TribotScript {
 
         FatigueResolver.initLogger(this.logger)
 
-        Mouse.setSpeed(110)
+        //TODO do not commit.
+        DiscordNotifier.initConfig(
+            "https://discord.com/api/webhooks/1279066926953402419/VBj8I3sB4Scj73MoV_p1Ei-uUGOCW-b09swi6gKMNVC_o1MsL_eQDkOuyTH47-3a38w-",
+            60
+        )
 
         LastActionTracker.track("state")
         executeMineTree(logger, this.managers)

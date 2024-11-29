@@ -1,4 +1,4 @@
-package scripts.wrMotherlode.overlay
+package scripts.wrCannonBalls.overlay
 
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
@@ -8,7 +8,7 @@ import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.debug.LastActionTracker
 import scripts.utils.formatters.Countdown
 import scripts.utils.formatters.Notator
-import scripts.wrMotherlode.managers.Container
+import scripts.wrCannonBalls.managers.Container
 import java.awt.Color
 import java.awt.Font
 
@@ -26,13 +26,6 @@ class OverlayPainter(
             .row(PaintRows.runtime(paintTemplate.toBuilder()))
 
         mainPaint.row(
-            paintTemplate.toBuilder()
-                .label("Currently")
-                .value {
-                    managers.stateManager.getCurrentKey()
-                }
-                .build()
-        ).row(
             paintTemplate.toBuilder()
                 .label("Last Clicked")
                 .value {
@@ -60,48 +53,24 @@ class OverlayPainter(
         sidePaint
             .row(
                 paintTemplate.toBuilder()
-                    .label("Coal")
+                    .label("Cannonballs")
                     .value {
-                        ResourceCounter.getPaintLabelFor("Coal")
+                        ResourceCounter.getPaintLabelFor("Cannonball")
                     }
                     .build()
-            ).row(
+            )
+            .row(
                 paintTemplate.toBuilder()
-                    .label("Gold")
+                    .label("Bars used")
                     .value {
-                        ResourceCounter.getPaintLabelFor("Gold ore")
+                        ResourceCounter.getPaintLabelFor("Steel bar")
                     }
                     .build()
-            ).row(
+            )
+            .row(
                 paintTemplate.toBuilder()
-                    .label("Mithril")
-                    .value {
-                        ResourceCounter.getPaintLabelFor("Mithril ore")
-                    }
-                    .build()
-            ).row(
-                paintTemplate.toBuilder()
-                    .label("Adamantite")
-                    .value {
-                        ResourceCounter.getPaintLabelFor("Adamantite ore")
-                    }
-                    .build()
-            ).row(
-                paintTemplate.toBuilder()
-                    .label("Runite")
-                    .value {
-                        ResourceCounter.getPaintLabelFor("Runite ore")
-                    }
-                    .build()
-            ).row(
-                paintTemplate.toBuilder()
-                    .label("Golden nuggets")
-                    .value { ResourceCounter.getResourceCount("Golden nugget") }
-                    .build()
-            ).row(
-                paintTemplate.toBuilder()
-                    .label("Pay-dirt")
-                    .value { Notator.format(ResourceCounter.getResourceCount("Pay-dirt")) }
+                    .label("Trips")
+                    .value { Notator.format(ResourceCounter.getResourceCount("Trips")) }
                     .build()
             )
 

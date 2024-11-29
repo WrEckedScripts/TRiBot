@@ -2,6 +2,7 @@ package scripts.utils.antiban
 
 import scripts.utils.Logger
 import java.time.LocalDateTime
+import kotlin.math.ceil
 
 object RuntimeTracker {
     var startedAt: Long? = null
@@ -20,6 +21,11 @@ object RuntimeTracker {
     fun hours(): Int {
         this.logger?.debug("[RuntimeTracker] - hours: ${(this.calculate() / 3600000.0).toInt()}")
         return (this.calculate() / 3600000.0).toInt()
+    }
+
+    fun minutes(): Int {
+        this.logger?.debug("[RuntimeTracker] - minutes: ${ceil((this.calculate() % 3600000) / 60000.0).toInt()}")
+        return ceil((this.calculate() % 3600000) / 60000.0).toInt()
     }
 
     // Usable for Fatigue per time of day

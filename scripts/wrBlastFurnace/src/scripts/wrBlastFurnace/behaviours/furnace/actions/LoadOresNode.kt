@@ -18,7 +18,7 @@ fun IParentNode.loadOresNode(
     repetitiveActionManager: RepetitiveActionManager
 ) = sequence {
     condition {
-        repetitiveActionManager.increment("load-ores", 15)
+        repetitiveActionManager.increment("load-ores", 5)
 
         Waiting.waitUntil {
             logger.debug("[1] - LOADORES - ${Inventory.getFilledSlots()}")
