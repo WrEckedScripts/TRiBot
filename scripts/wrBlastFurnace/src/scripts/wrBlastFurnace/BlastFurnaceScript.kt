@@ -14,7 +14,6 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
-import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
@@ -52,7 +51,7 @@ class BlastFurnaceScript : TribotScript {
         SmithingArea.initLogger(this.logger)
         SmithingArea.registerManager(this.managers)
 
-        FatigueResolver.initLogger(this.logger)
+//        FatigueResolver.initLogger(this.logger)
     }
 
     private fun setupRepetitionPrevention() {

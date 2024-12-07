@@ -22,6 +22,9 @@ fun IParentNode.prepareInventoryNode(
     managers: Container
 ) = sequence {
     condition {
+        // We always prep our inventory after we fill our coalbag, so let's reset it here.
+        managers.repetitiveActionManager.reset("fill-coalbag")
+
         managers.repetitiveActionManager.increment("prepare-inventory", 3)
         val usingCoalBag = Settings.coalBagChecked
 

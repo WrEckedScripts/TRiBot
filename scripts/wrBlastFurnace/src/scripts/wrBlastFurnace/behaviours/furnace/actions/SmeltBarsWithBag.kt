@@ -144,7 +144,7 @@ fun IParentNode.smeltBarsWithBag(
                 managers.repetitiveActionManager
             )
             // Empty coal bag
-            emptyCoalBag(logger)
+            emptyCoalBag(logger, managers)
             // load our coal bag inventory
             loadOresNode(
                 logger,
@@ -228,7 +228,7 @@ fun IParentNode.smeltBarsWithBag(
                 managers.repetitiveActionManager
             )
 
-            emptyCoalBag(logger)
+            emptyCoalBag(logger, managers)
 
             // Put Coal ores (from coal bag)
             loadOresNode(

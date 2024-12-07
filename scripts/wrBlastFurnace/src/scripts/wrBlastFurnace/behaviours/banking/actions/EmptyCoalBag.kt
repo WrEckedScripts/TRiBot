@@ -8,13 +8,16 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
+import scripts.wrBlastFurnace.managers.Container
 
-fun IParentNode.emptyCoalBag(logger: Logger) = sequence {
-    // In between world hops etc, this prevents early exit-ing the script
-    Waiting.waitNormal(650, 40)
-
+fun IParentNode.emptyCoalBag(logger: Logger, managers: Container) = sequence {
     condition {
-        Waiting.waitUntil(3_000) {
+        managers.repetitiveActionManager.increment("empty-coalbag", 6)
+
+        // In between world hops etc, this prevents early exit-ing the script
+        Waiting.waitNormal(650, 40)
+
+        val succeeded = Waiting.waitUntil(15_000) {
             Query.inventory()
                 .nameEquals("Coal bag")
                 .findFirst()
@@ -26,5 +29,11 @@ fun IParentNode.emptyCoalBag(logger: Logger) = sequence {
             // Returns success/fail to the Waiting.
             Inventory.contains("Coal")
         }
+
+        if (succeeded) {
+            managers.repetitiveActionManager.reset("empty-coalbag")
+        }
+
+        succeeded
     }
 }

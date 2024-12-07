@@ -41,7 +41,6 @@ fun IParentNode.fillCoalBag(
             }
 
             logger.warn("Coal bag filled-state: $filled")
-            managers.repetitiveActionManager.reset("fill-coalbag")
             filled
         }
     }
