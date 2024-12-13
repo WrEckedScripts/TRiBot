@@ -1,4 +1,4 @@
-package scripts.wrFoundry.tasks
+package scripts.wrFoundry.tasks.temperature
 
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting

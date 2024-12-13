@@ -1,4 +1,4 @@
-package scripts.wrFoundry.tasks
+package scripts.wrFoundry.tasks.temperature
 
 import scripts.wrFoundry.enums.Heat
 import scripts.wrFoundry.enums.TemperatureDirection

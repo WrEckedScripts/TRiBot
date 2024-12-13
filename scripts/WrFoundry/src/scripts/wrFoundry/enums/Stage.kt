@@ -5,7 +5,19 @@ enum class Stage(
     val heat: Heat,
     val temperatureDirection: TemperatureDirection
 ) {
-    TRIP_HAMMER("Hammer", Heat.HIGH, TemperatureDirection.COOLING),
-    GRINDSTONE("Grind", Heat.MED, TemperatureDirection.HEATING),
-    POLISHING_WHEEL("Polish", Heat.LOW, TemperatureDirection.COOLING);
+    TRIP_HAMMER(
+        "Hammer",
+        Heat.HIGH,
+        TemperatureDirection.COOLING
+    ),
+    GRINDSTONE(
+        "Grind",
+        Heat.MED,
+        TemperatureDirection.HEATING
+    ),
+    POLISHING_WHEEL(
+        "Polish",
+        Heat.LOW,
+        TemperatureDirection.COOLING
+    );
 }

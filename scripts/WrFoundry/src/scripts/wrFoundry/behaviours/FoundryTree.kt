@@ -9,7 +9,8 @@ import scripts.wrFoundry.enums.Stage
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.ActiveState
 import scripts.wrFoundry.states.HeatVarbit
-import scripts.wrFoundry.tasks.HeatUp
+import scripts.wrFoundry.tasks.processing.ProcessingTask
+import scripts.wrFoundry.tasks.temperature.HeatUp
 
 fun getFoundryTree(
     logger: Logger,
@@ -60,13 +61,9 @@ fun getFoundryTree(
                             HeatUp(ActiveState.get()!!.heat).execute()
                         }
                     }
+                    // Move to trip hammering here of after this sequence?
                     condition {
-                        logger.debug("inside trip hammer, we're heated up enough?")
-                        // determine heat value at and to which we aim
-                        // calculate the difference and determine for fast / steady heating option.
-                        Waiting.wait(2_000)
-                        logger.info("[Mimic] - 'Use ${InteractableMachine.HAMMER.objectName}'")
-                        false
+                        ProcessingTask("Trip hammer").execute()
                     }
                 }
                 perform { logger.warn("[TRIP_HAMMER_NODE]") }
