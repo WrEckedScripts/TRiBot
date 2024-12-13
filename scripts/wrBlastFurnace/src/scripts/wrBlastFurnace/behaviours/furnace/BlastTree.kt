@@ -28,9 +28,7 @@ fun getBlastTree(
              */
             selector {
                 condition { Login.isLoggedIn() }
-                condition {
-                    Login.login()
-                }
+                condition { Login.login() }
             }
 
             //World hopping

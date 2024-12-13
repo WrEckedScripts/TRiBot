@@ -2,7 +2,6 @@ package scripts.wrFoundry.states
 
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.Widget
-import scripts.utils.Logger
 import scripts.wrFoundry.enums.Heat
 import scripts.wrFoundry.enums.Stage
 
@@ -18,7 +17,7 @@ object ActiveState {
      * Upon determination of the Stage we're in, this method only, additionally, matches the texture to a Stage Enum
      * - This ensures our Stage is always updated, with the currently, highlighted stage.
      */
-    fun get(logger: Logger): Stage? {
+    fun get(): Stage? {
         // Find our active state highlight widget, and use it to resolve what is highlighted
         val stageIndicator = this.getStageIndicator()
 
@@ -27,7 +26,6 @@ object ActiveState {
 
         // TODO, these calculations are experimental,
         //  but do provide a more dynamic approach than our heat state thresholds
-        logger.debug("TEXTURE MATCHED = ${highlightedBlock.textureId}")
 
         //TODO validate if these correctly match!
         when (highlightedBlock.textureId) {
@@ -35,7 +33,6 @@ object ActiveState {
             this.mediumHeatBlockId -> Stage.GRINDSTONE
             this.lowHeatBlockId -> Stage.POLISHING_WHEEL
             else -> {
-                logger.debug("[ActiveState] - No match for resolving our current stage.")
                 null
             }
         }.also {

@@ -11,9 +11,9 @@ object HeatVarbit {
     fun get(): Heat? {
         val heatValue = GameState.getVarbit(heatBit)
         when (heatValue) {
-            in 730..935 -> Heat.HIGH
-            in 400..600 -> Heat.MED
-            in 65..260 -> Heat.LOW
+            in Heat.HIGH.min..Heat.HIGH.max -> Heat.HIGH
+            in Heat.MED.min..Heat.MED.max -> Heat.MED
+            in Heat.LOW.min..Heat.LOW.max -> Heat.LOW
             else -> null
         }.also {
             this.current = it

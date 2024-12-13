@@ -64,6 +64,7 @@ class CannonBallsScript : TribotScript {
             handleExceptions(logger, ex)
         } finally {
             safelyLogout(logger)
+            throw Exception("Forceful logout exception to prevent TRiBot X from re-logging")
         }
     }
 

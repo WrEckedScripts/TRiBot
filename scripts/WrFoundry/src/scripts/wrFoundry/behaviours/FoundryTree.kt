@@ -9,6 +9,7 @@ import scripts.wrFoundry.enums.Stage
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.ActiveState
 import scripts.wrFoundry.states.HeatVarbit
+import scripts.wrFoundry.tasks.HeatUp
 
 fun getFoundryTree(
     logger: Logger,
@@ -29,7 +30,7 @@ fun getFoundryTree(
             //TODO simply for debugging looping
 //            selector {
 //                condition {
-//                    ActiveState.get(logger)?.displayName.orEmpty()
+//                    ActiveState.get()?.displayName.orEmpty()
 //                    logger.info("Waiting for a sec")
 //                    Waiting.wait(3_000)
 //
@@ -41,17 +42,22 @@ fun getFoundryTree(
              * The actual mechanics
              */
             selector {
-                condition { !(ActiveState.get(logger) == Stage.TRIP_HAMMER) }
+                condition { !(ActiveState.get() == Stage.TRIP_HAMMER) }
                 sequence {
+                    condition {
+                        logger.debug("Checking currents ${ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName}")
+                        // Check if the current heat state we need is the active heat level from the varbit
+                        ActiveState.get()?.heat?.displayName != HeatVarbit.get()?.displayName
+                    }
+                    // Check if we should heat or cool
                     selector {
                         condition {
-                            // Check if the current heat state we need is the active heat level from the varbit
-                            ActiveState.get(logger)?.heat?.displayName == HeatVarbit.get()?.displayName
+                            logger.debug("Should exec? !${HeatUp(ActiveState.get()!!.heat).shouldExecute()}")
+                            !HeatUp(ActiveState.get()!!.heat).shouldExecute()
                         }
                         condition {
-                            logger.error("We need to either cool down or heat up")
-                            //heat up or cool down calculation + execution
-                            true
+                            logger.debug("Executing")
+                            HeatUp(ActiveState.get()!!.heat).execute()
                         }
                     }
                     condition {
@@ -67,12 +73,12 @@ fun getFoundryTree(
             }
 
             selector {
-                condition { !(ActiveState.get(logger) == Stage.GRINDSTONE) }
+                condition { !(ActiveState.get() == Stage.GRINDSTONE) }
                 sequence {
                     selector {
                         condition {
                             // Check if the current heat state we need is the active heat level from the varbit
-                            ActiveState.get(logger)?.heat?.displayName == HeatVarbit.get()?.displayName
+                            ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName
                         }
                         condition {
                             logger.error("We need to either cool down or heat up")
@@ -93,12 +99,12 @@ fun getFoundryTree(
             }
 
             selector {
-                condition { !(ActiveState.get(logger) == Stage.POLISHING_WHEEL) }
+                condition { !(ActiveState.get() == Stage.POLISHING_WHEEL) }
                 sequence {
                     selector {
                         condition {
                             // Check if the current heat state we need is the active heat level from the varbit
-                            ActiveState.get(logger)?.heat?.displayName == HeatVarbit.get()?.displayName
+                            ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName
                         }
                         condition {
                             logger.error("We need to either cool down or heat up")
