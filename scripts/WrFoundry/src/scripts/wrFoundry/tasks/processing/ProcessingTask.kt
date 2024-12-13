@@ -4,11 +4,12 @@ import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import scripts.wrFoundry.enums.Stage
+import scripts.wrFoundry.states.ActiveState
 import scripts.wrFoundry.states.HeatVarbit
 
-class ProcessingTask(val toOperateName: String) {
-    fun shouldExecute(): Boolean {
-        return HeatVarbit.get() == Stage.TRIP_HAMMER.heat
+class ProcessingTask(private val gameObjectName: String, private val stage: Stage) {
+    private fun shouldExecute(): Boolean {
+        return HeatVarbit.get() == stage.heat && ActiveState.get() == stage
     }
 
     fun execute(): Boolean {
@@ -16,7 +17,7 @@ class ProcessingTask(val toOperateName: String) {
             return false
         }
 
-        val interactableName = this.toOperateName
+        val interactableName = this.gameObjectName
         val action = "Use"
 
         val interacted = Query.gameObjects()

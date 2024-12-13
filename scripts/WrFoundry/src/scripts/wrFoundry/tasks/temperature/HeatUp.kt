@@ -3,6 +3,7 @@ package scripts.wrFoundry.tasks.temperature
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
+import scripts.utils.Logger
 import scripts.wrFoundry.enums.Heat
 import scripts.wrFoundry.enums.TemperatureDirection
 import scripts.wrFoundry.states.ActiveState
@@ -15,12 +16,14 @@ class HeatUp(val heat: Heat) {
         return when (ActiveState.current?.temperatureDirection) {
             TemperatureDirection.HEATING -> this.heat.min // Target the start of the bar
             TemperatureDirection.COOLING -> this.heat.max - 50 // Target near the end of the bar
-            else -> 1000 // Fully heat-up as a fallback?
+            else -> 0
         }
     }
 
     fun shouldExecute(): Boolean {
-        return HeatVarbit.getRawValue() < this.getTargetHeat()
+        Logger("[HeatUp@shouldExecute::raw]").warn("${HeatVarbit.getRawValue()}")
+        Logger("[HeatUp@shouldExecute::target]").warn("${this.getTargetHeat()}")
+        return HeatVarbit.getRawValue() < this.getTargetHeat() && HeatVarbit.get() != ActiveState.currentHeat
     }
 
     fun execute(): Boolean {
@@ -39,12 +42,17 @@ class HeatUp(val heat: Heat) {
             return false
         }
 
-        Waiting.waitUntil(20_000) {
-            // keep checking every second, if we've heated enough.
-            HeatVarbit.getRawValue() > this.getTargetHeat()
+        val finished = Waiting.waitUntil(20_000, 200) {
+            // Cancel heating if the varbit is higher than target
+            if (HeatVarbit.getRawValue() >= this.getTargetHeat()) {
+                MyPlayer.getTile().click()
+                return@waitUntil true
+            }
+
+            return@waitUntil false
         }
 
         // Step out of operating the object
-        return MyPlayer.getTile().click() && interacted
+        return finished
     }
 }

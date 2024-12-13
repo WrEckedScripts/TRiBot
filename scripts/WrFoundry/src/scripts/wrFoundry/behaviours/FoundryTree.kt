@@ -1,15 +1,13 @@
 package scripts.wrFoundry.behaviours
 
 import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
-import scripts.wrFoundry.enums.InteractableMachine
 import scripts.wrFoundry.enums.Stage
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.ActiveState
-import scripts.wrFoundry.states.HeatVarbit
 import scripts.wrFoundry.tasks.processing.ProcessingTask
+import scripts.wrFoundry.tasks.temperature.CoolDown
 import scripts.wrFoundry.tasks.temperature.HeatUp
 
 fun getFoundryTree(
@@ -45,80 +43,111 @@ fun getFoundryTree(
             selector {
                 condition { !(ActiveState.get() == Stage.TRIP_HAMMER) }
                 sequence {
-                    condition {
-                        logger.debug("Checking currents ${ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName}")
-                        // Check if the current heat state we need is the active heat level from the varbit
-                        ActiveState.get()?.heat?.displayName != HeatVarbit.get()?.displayName
-                    }
+//                    condition {
+//                        logger.debug("Checking currents ${ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName}")
+//                        // Check if the current heat state we need is the active heat level from the varbit
+//                        ActiveState.get()?.heat?.displayName != HeatVarbit.get()?.displayName
+//                    }
                     // Check if we should heat or cool
                     selector {
                         condition {
-                            logger.debug("Should exec? !${HeatUp(ActiveState.get()!!.heat).shouldExecute()}")
+                            logger.debug("Should exec heatup")
                             !HeatUp(ActiveState.get()!!.heat).shouldExecute()
                         }
+                        sequence {
+                            condition {
+                                logger.debug("Executing heatup")
+                                HeatUp(ActiveState.get()!!.heat).execute()
+                            }
+                        }
+                    }
+                    selector {
                         condition {
-                            logger.debug("Executing")
-                            HeatUp(ActiveState.get()!!.heat).execute()
+                            logger.debug("Should exec coolDown")
+                            !CoolDown(ActiveState.get()!!.heat).shouldExecute()
+                        }
+                        sequence {
+                            condition {
+                                logger.debug("Executing coolDown")
+                                CoolDown(ActiveState.get()!!.heat).execute()
+                            }
                         }
                     }
                     // Move to trip hammering here of after this sequence?
                     condition {
-                        ProcessingTask("Trip hammer").execute()
+                        ProcessingTask("Trip hammer", Stage.TRIP_HAMMER).execute()
                     }
                 }
-                perform { logger.warn("[TRIP_HAMMER_NODE]") }
             }
 
             selector {
                 condition { !(ActiveState.get() == Stage.GRINDSTONE) }
                 sequence {
+                    // Check if we should heat or cool
                     selector {
                         condition {
-                            // Check if the current heat state we need is the active heat level from the varbit
-                            ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName
+                            logger.debug("Should exec heatup")
+                            !HeatUp(ActiveState.get()!!.heat).shouldExecute()
                         }
+                        sequence {
+                            condition {
+                                logger.debug("Executing heatup")
+                                HeatUp(ActiveState.get()!!.heat).execute()
+                            }
+                        }
+                    }
+                    selector {
                         condition {
-                            logger.error("We need to either cool down or heat up")
-                            //heat up or cool down calculation + execution
-                            true
+                            logger.debug("Should exec coolDown")
+                            !CoolDown(ActiveState.get()!!.heat).shouldExecute()
+                        }
+                        sequence {
+                            condition {
+                                logger.debug("Executing coolDown")
+                                CoolDown(ActiveState.get()!!.heat).execute()
+                            }
                         }
                     }
                     condition {
-                        logger.debug("inside trip hammer, we're heated up enough?")
-                        // determine heat value at and to which we aim
-                        // calculate the difference and determine for fast / steady heating option.
-                        Waiting.wait(2_000)
-                        logger.info("[Mimic] - 'Use ${InteractableMachine.GRINDSTONE.objectName}'")
-                        false
+                        ProcessingTask("Grindstone", Stage.GRINDSTONE).execute()
                     }
                 }
-                perform { logger.warn("[GRINDSTONE_NODE]") }
             }
 
             selector {
                 condition { !(ActiveState.get() == Stage.POLISHING_WHEEL) }
                 sequence {
+                    // Check if we should heat or cool
                     selector {
                         condition {
-                            // Check if the current heat state we need is the active heat level from the varbit
-                            ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName
+                            logger.debug("Should exec heatup")
+                            logger.error("RESULT: ${!HeatUp(ActiveState.get()!!.heat).shouldExecute()}")
+                            !HeatUp(ActiveState.get()!!.heat).shouldExecute()
                         }
+                        sequence {
+                            condition {
+                                logger.debug("Executing heatup")
+                                logger.error("SUBRESULT: ")
+                                HeatUp(ActiveState.get()!!.heat).execute()
+                            }
+                        }
+                    }
+                    selector {
                         condition {
-                            logger.error("We need to either cool down or heat up")
-                            //heat up or cool down calculation + execution
-                            true
+                            logger.debug("Should exec coolDown")
+                            !CoolDown(ActiveState.get()!!.heat).shouldExecute()
+                        }
+                        sequence {
+                            condition {
+                                logger.debug("Executing coolDown")
+                                CoolDown(ActiveState.get()!!.heat).execute()
+                            }
                         }
                     }
                     condition {
-                        logger.debug("inside trip hammer, we're heated up enough?")
-                        // determine heat value at and to which we aim
-                        // calculate the difference and determine for fast / steady heating option.
-                        Waiting.wait(2_000)
-                        logger.info("[Mimic] - 'Use ${InteractableMachine.POLISHING_WHEEL.objectName}'")
-                        false
+                        ProcessingTask("Polishing wheel", Stage.POLISHING_WHEEL).execute()
                     }
                 }
-                perform { logger.warn("[POLISHING_WHEEL]") }
             }
 
             //TODO selector for fetching a task
