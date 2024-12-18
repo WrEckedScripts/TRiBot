@@ -3,7 +3,7 @@ package scripts.wrFoundry.states
 import org.tribot.script.sdk.GameState
 import scripts.wrFoundry.enums.Heat
 
-object HeatVarbit {
+object HeatLevel {
     private val heatBit = 13948
 
     var current: Heat? = null

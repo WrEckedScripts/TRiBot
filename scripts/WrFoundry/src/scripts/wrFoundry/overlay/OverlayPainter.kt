@@ -6,8 +6,8 @@ import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.Logger
 import scripts.wrFoundry.managers.Container
-import scripts.wrFoundry.states.ActiveState
-import scripts.wrFoundry.states.HeatVarbit
+import scripts.wrFoundry.states.CurrentProcessingTask
+import scripts.wrFoundry.states.HeatLevel
 import java.awt.Color
 import java.awt.Font
 
@@ -29,7 +29,7 @@ class OverlayPainter(
             paintTemplate.toBuilder()
                 .label("Active State")
                 .value {
-                    ActiveState.current?.displayName
+                    CurrentProcessingTask.current?.displayName
                 }
                 .build()
         )
@@ -37,21 +37,21 @@ class OverlayPainter(
                 paintTemplate.toBuilder()
                     .label("Active Heat")
                     .value {
-                        ActiveState.currentHeat?.displayName
+                        CurrentProcessingTask.currentHeat?.displayName
                     }
                     .build()
             ).row(
                 paintTemplate.toBuilder()
                     .label("Varbit match")
                     .value {
-                        HeatVarbit.get()?.displayName
+                        HeatLevel.get()?.displayName
                     }
                     .build()
             ).row(
                 paintTemplate.toBuilder()
                     .label("Varbit value")
                     .value {
-                        HeatVarbit.getRawValue().toString()
+                        HeatLevel.getRawValue().toString()
                     }
                     .build()
             )

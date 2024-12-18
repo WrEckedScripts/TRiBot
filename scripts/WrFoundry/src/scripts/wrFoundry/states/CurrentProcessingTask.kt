@@ -2,13 +2,16 @@ package scripts.wrFoundry.states
 
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.Widget
+import scripts.utils.Logger
 import scripts.wrFoundry.enums.Heat
 import scripts.wrFoundry.enums.Stage
+import kotlin.jvm.optionals.getOrNull
 
-object ActiveState {
-    private const val highHeatBlockId: Int = 4454
-    private const val mediumHeatBlockId: Int = 4472
-    private const val lowHeatBlockId: Int = 4490
+object CurrentProcessingTask {
+    // Heat blocks
+    private const val highId: Int = 4454
+    private const val mediumId: Int = 4472
+    private const val lowId: Int = 4490
 
     var current: Stage? = null
     var currentHeat: Heat? = null
@@ -22,17 +25,18 @@ object ActiveState {
         val stageIndicator = this.getStageIndicator()
 
         // Resolve the highlighted stage block, from the UI
-        val highlightedBlock = this.resolveHighlightedStage(stageIndicator)
+        val currentStage = this.resolveHighlightedStage(stageIndicator)
 
-        // TODO, these calculations are experimental,
-        //  but do provide a more dynamic approach than our heat state thresholds
+        if (currentStage == null) {
+            return null
+        }
 
-        //TODO validate if these correctly match!
-        when (highlightedBlock.textureId) {
-            this.highHeatBlockId -> Stage.TRIP_HAMMER
-            this.mediumHeatBlockId -> Stage.GRINDSTONE
-            this.lowHeatBlockId -> Stage.POLISHING_WHEEL
+        when (currentStage.textureId) {
+            this.highId -> Stage.TRIP_HAMMER
+            this.mediumId -> Stage.GRINDSTONE
+            this.lowId -> Stage.POLISHING_WHEEL
             else -> {
+                Logger("[ActiveState]").error("We finished/have no task.")
                 null
             }
         }.also {
@@ -62,7 +66,7 @@ object ActiveState {
      * We can determine the current active stage and resolve its texture.
      * By resolving the texture, we can match the proper stage.
      */
-    private fun resolveHighlightedStage(stageIndicator: Widget): Widget {
+    private fun resolveHighlightedStage(stageIndicator: Widget): Widget? {
         return Query.widgets()
             .inRoots(754) // Find within 754 tree
             .inIndexPath(75) // subquery on 75 child and subchilds
@@ -76,6 +80,6 @@ object ActiveState {
                 filtered.bounds.x == (stageIndicator.bounds.x + 4)
             }
             .findFirst()
-            .get()
+            .getOrNull()
     }
 }

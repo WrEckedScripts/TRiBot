@@ -1,11 +1,14 @@
 package scripts.wrFoundry.behaviours
 
 import org.tribot.script.sdk.Login
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
+import scripts.wrFoundry.enums.InteractableMachine
 import scripts.wrFoundry.enums.Stage
 import scripts.wrFoundry.managers.Container
-import scripts.wrFoundry.states.ActiveState
+import scripts.wrFoundry.states.Commission
+import scripts.wrFoundry.states.CurrentProcessingTask
 import scripts.wrFoundry.tasks.processing.ProcessingTask
 import scripts.wrFoundry.tasks.temperature.CoolDown
 import scripts.wrFoundry.tasks.temperature.HeatUp
@@ -41,7 +44,18 @@ fun getFoundryTree(
              * The actual mechanics
              */
             selector {
-                condition { !(ActiveState.get() == Stage.TRIP_HAMMER) }
+                condition { !Commission().needsTask() }
+                sequence {
+                    condition {
+                        Waiting.wait(2_500)
+                        logger.error("Waiting on new task")
+                        false
+                    }
+                }
+            }
+
+            selector {
+                condition { !(CurrentProcessingTask.get() == Stage.TRIP_HAMMER) }
                 sequence {
 //                    condition {
 //                        logger.debug("Checking currents ${ActiveState.get()?.heat?.displayName == HeatVarbit.get()?.displayName}")
@@ -52,100 +66,100 @@ fun getFoundryTree(
                     selector {
                         condition {
                             logger.debug("Should exec heatup")
-                            !HeatUp(ActiveState.get()!!.heat).shouldExecute()
+                            !HeatUp(CurrentProcessingTask.get()!!.heat).shouldExecute()
                         }
                         sequence {
                             condition {
                                 logger.debug("Executing heatup")
-                                HeatUp(ActiveState.get()!!.heat).execute()
+                                HeatUp(CurrentProcessingTask.get()!!.heat).execute()
                             }
                         }
                     }
                     selector {
                         condition {
                             logger.debug("Should exec coolDown")
-                            !CoolDown(ActiveState.get()!!.heat).shouldExecute()
+                            !CoolDown(CurrentProcessingTask.get()!!.heat).shouldExecute()
                         }
                         sequence {
                             condition {
                                 logger.debug("Executing coolDown")
-                                CoolDown(ActiveState.get()!!.heat).execute()
+                                CoolDown(CurrentProcessingTask.get()!!.heat).execute()
                             }
                         }
                     }
                     // Move to trip hammering here of after this sequence?
                     condition {
-                        ProcessingTask("Trip hammer", Stage.TRIP_HAMMER).execute()
+                        ProcessingTask(InteractableMachine.HAMMER, Stage.TRIP_HAMMER).execute()
                     }
                 }
             }
 
             selector {
-                condition { !(ActiveState.get() == Stage.GRINDSTONE) }
+                condition { !(CurrentProcessingTask.get() == Stage.GRINDSTONE) }
                 sequence {
                     // Check if we should heat or cool
                     selector {
                         condition {
                             logger.debug("Should exec heatup")
-                            !HeatUp(ActiveState.get()!!.heat).shouldExecute()
+                            !HeatUp(CurrentProcessingTask.get()!!.heat).shouldExecute()
                         }
                         sequence {
                             condition {
                                 logger.debug("Executing heatup")
-                                HeatUp(ActiveState.get()!!.heat).execute()
+                                HeatUp(CurrentProcessingTask.get()!!.heat).execute()
                             }
                         }
                     }
                     selector {
                         condition {
                             logger.debug("Should exec coolDown")
-                            !CoolDown(ActiveState.get()!!.heat).shouldExecute()
+                            !CoolDown(CurrentProcessingTask.get()!!.heat).shouldExecute()
                         }
                         sequence {
                             condition {
                                 logger.debug("Executing coolDown")
-                                CoolDown(ActiveState.get()!!.heat).execute()
+                                CoolDown(CurrentProcessingTask.get()!!.heat).execute()
                             }
                         }
                     }
                     condition {
-                        ProcessingTask("Grindstone", Stage.GRINDSTONE).execute()
+                        ProcessingTask(InteractableMachine.GRINDSTONE, Stage.GRINDSTONE).execute()
                     }
                 }
             }
 
             selector {
-                condition { !(ActiveState.get() == Stage.POLISHING_WHEEL) }
+                condition { !(CurrentProcessingTask.get() == Stage.POLISHING_WHEEL) }
                 sequence {
                     // Check if we should heat or cool
                     selector {
                         condition {
                             logger.debug("Should exec heatup")
-                            logger.error("RESULT: ${!HeatUp(ActiveState.get()!!.heat).shouldExecute()}")
-                            !HeatUp(ActiveState.get()!!.heat).shouldExecute()
+                            logger.error("RESULT: ${!HeatUp(CurrentProcessingTask.get()!!.heat).shouldExecute()}")
+                            !HeatUp(CurrentProcessingTask.get()!!.heat).shouldExecute()
                         }
                         sequence {
                             condition {
                                 logger.debug("Executing heatup")
                                 logger.error("SUBRESULT: ")
-                                HeatUp(ActiveState.get()!!.heat).execute()
+                                HeatUp(CurrentProcessingTask.get()!!.heat).execute()
                             }
                         }
                     }
                     selector {
                         condition {
                             logger.debug("Should exec coolDown")
-                            !CoolDown(ActiveState.get()!!.heat).shouldExecute()
+                            !CoolDown(CurrentProcessingTask.get()!!.heat).shouldExecute()
                         }
                         sequence {
                             condition {
                                 logger.debug("Executing coolDown")
-                                CoolDown(ActiveState.get()!!.heat).execute()
+                                CoolDown(CurrentProcessingTask.get()!!.heat).execute()
                             }
                         }
                     }
                     condition {
-                        ProcessingTask("Polishing wheel", Stage.POLISHING_WHEEL).execute()
+                        ProcessingTask(InteractableMachine.POLISHING_WHEEL, Stage.POLISHING_WHEEL).execute()
                     }
                 }
             }

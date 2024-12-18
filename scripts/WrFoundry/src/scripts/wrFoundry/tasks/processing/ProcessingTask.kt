@@ -3,13 +3,14 @@ package scripts.wrFoundry.tasks.processing
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
+import scripts.wrFoundry.enums.InteractableMachine
 import scripts.wrFoundry.enums.Stage
-import scripts.wrFoundry.states.ActiveState
-import scripts.wrFoundry.states.HeatVarbit
+import scripts.wrFoundry.states.CurrentProcessingTask
+import scripts.wrFoundry.states.HeatLevel
 
-class ProcessingTask(private val gameObjectName: String, private val stage: Stage) {
+class ProcessingTask(private val interactableMachine: InteractableMachine, private val stage: Stage) {
     private fun shouldExecute(): Boolean {
-        return HeatVarbit.get() == stage.heat && ActiveState.get() == stage
+        return HeatLevel.get() == stage.heat && CurrentProcessingTask.get() == stage
     }
 
     fun execute(): Boolean {
@@ -17,7 +18,7 @@ class ProcessingTask(private val gameObjectName: String, private val stage: Stag
             return false
         }
 
-        val interactableName = this.gameObjectName
+        val interactableName = this.interactableMachine.objectName
         val action = "Use"
 
         val interacted = Query.gameObjects()

@@ -6,24 +6,24 @@ import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.wrFoundry.enums.Heat
 import scripts.wrFoundry.enums.TemperatureDirection
-import scripts.wrFoundry.states.ActiveState
-import scripts.wrFoundry.states.HeatVarbit
+import scripts.wrFoundry.states.CurrentProcessingTask
+import scripts.wrFoundry.states.HeatLevel
 
-//TODO
+//TODO combine with heat task / abstract where only conditionals differ in execution.
 class CoolDown(val heat: Heat) {
 
     private fun getTargetHeat(): Int {
-        return when (ActiveState.current?.temperatureDirection) {
-            TemperatureDirection.HEATING -> this.heat.max - 50 // Target the end of the bar
-            TemperatureDirection.COOLING -> this.heat.min // Target near the start of the bar
+        return when (CurrentProcessingTask.current?.temperatureDirection) {
+            TemperatureDirection.HEATING -> this.heat.min + 30 // Target the start of the bar
+            TemperatureDirection.COOLING -> this.heat.max // Target near the end of the bar
             else -> 0
         }
     }
 
     fun shouldExecute(): Boolean {
-        Logger("[CoolDown@shouldExecute::raw]").warn("${HeatVarbit.getRawValue()}")
+        Logger("[CoolDown@shouldExecute::raw]").warn("${HeatLevel.getRawValue()}")
         Logger("[CoolDown@shouldExecute::target]").warn("${this.getTargetHeat()}")
-        return HeatVarbit.getRawValue() > this.getTargetHeat() && HeatVarbit.get() != ActiveState.currentHeat
+        return HeatLevel.getRawValue() > this.getTargetHeat() && HeatLevel.get() != CurrentProcessingTask.currentHeat
     }
 
     fun execute(): Boolean {
@@ -44,7 +44,7 @@ class CoolDown(val heat: Heat) {
 
         val finished = Waiting.waitUntil(20_000, 200) {
             // Cancel cooling if the varbit is below our target
-            if (HeatVarbit.getRawValue() <= this.getTargetHeat()) {
+            if (HeatLevel.getRawValue() <= this.getTargetHeat()) {
                 MyPlayer.getTile().click()
                 return@waitUntil true
             }
