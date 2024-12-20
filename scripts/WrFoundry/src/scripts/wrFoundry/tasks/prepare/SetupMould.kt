@@ -89,6 +89,8 @@ class SetupMould(val commission: Commission) {
             .get()
             .click()
 
+        Waiting.wait(FatigueResolver.getMilliseconds())
+
         return setMould
     }
 

@@ -72,7 +72,7 @@ class ReceiveCommissionTask {
         Logger("[Setup]").debug("Done setting up... ${res}")
 
         // time to bank and fill the crucible
-        FillCrucible().execute()
+        OperateCrucible().execute()
 
 
         // create object out of the extracted value.
@@ -96,9 +96,8 @@ class ReceiveCommissionTask {
         return true
     }
 
-    fun extractCommission(input: String): String {
-        // Regex to capture text inside <col=...> and </col>, allowing <br> between words
-        val regex = """<col=[^>]+>(.*?)(?:<br>\s*<col=[^>]+>)?(.*?)</col>""".toRegex()
+    private fun extractCommission(input: String): String {
+        val regex = """<col=[^>]+>([^<]*)(?:<br>\s*<col=[^>]+>)?([^<]*)</col>""".toRegex()
         val match = regex.find(input)
         Logger("Matcher").debug(match?.groups.toString())
 
@@ -109,5 +108,4 @@ class ReceiveCommissionTask {
             ""
         }
     }
-
 }

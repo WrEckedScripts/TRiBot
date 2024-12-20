@@ -8,17 +8,16 @@ import org.tribot.script.sdk.tasks.Amount
 import org.tribot.script.sdk.tasks.BankTask
 import scripts.utils.antiban.FatigueResolver
 
-class FillCrucible {
+class OperateCrucible {
 
     fun execute() {
         // Grab 14 mithril and 14 addy from bank
-        if (this.ready() == false) {
+        if (!this.ready()) {
             this.builder().execute()
         }
 
         this.fillCrucible()
         this.fill("Mithril bar")
-
 
         this.fillCrucible()
         this.fill("Adamantite bar")
