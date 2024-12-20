@@ -97,13 +97,17 @@ class ReceiveCommissionTask {
     }
 
     fun extractCommission(input: String): String {
-        val regex = """<col=ef1020>(.*?)<br>\s*<col=ef1020>(.*?)</col>""".toRegex()
+        // Regex to capture text inside <col=...> and </col>, allowing <br> between words
+        val regex = """<col=[^>]+>(.*?)(?:<br>\s*<col=[^>]+>)?(.*?)</col>""".toRegex()
         val match = regex.find(input)
+        Logger("Matcher").debug(match?.groups.toString())
+
+        // Combine both groups to form the full name
         return if (match != null) {
-            val (part1, part2) = match.destructured
-            "$part1 $part2"
+            "${match.groups[1]?.value} ${match.groups[2]?.value}".trim()
         } else {
             ""
         }
     }
+
 }
