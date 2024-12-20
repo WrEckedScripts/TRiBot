@@ -95,9 +95,22 @@ class SetupMould(val commission: Commission) {
     fun findAndScroll(findName: String): Boolean {
         return Waiting.waitUntil {
             var result = false
-            val widget = this.findWidgetByName(findName)
+            val scrollBar = Query.widgets()
+                .inRoots(718)
+                .inIndexPath(718, 11, 1)
+                .isDepth(3)
+                .findFirst()
+                .get()
 
-            if (widget != null && !widget.isVisible) {
+            val widget = this.findMouldByName(findName)
+            Logger("[findAndScroll]").warn("Visible: ${widget?.isVisible}")
+            Logger("[findAndScroll]").warn("Visible: ${widget?.name}")
+
+
+            if (widget != null) {
+                Logger("[findAndScroll]").warn("dragging!")
+                scrollBar.dragTo(widget)
+
                 Waiting.waitUntil(5_000) {
                     widget.scrollTo()
                     widget.isVisible
@@ -115,16 +128,27 @@ class SetupMould(val commission: Commission) {
         // Other-wise we need to adjust.
         val result = Query.widgets()
             .inRoots(718)
-            .inIndexPath(718, 12)
+            .inIndexPath(718, 12) // for moulds, we should dig into 718, 9..?
             .isDepth(3)
-            .filter { widget ->
-                val widgetName = widget.name.toString()
-                val extractedName = extractComponentName(widgetName)
-                extractedName == findName
-            }
+            .nameContains(findName)
             .findFirst()
             .getOrNull()
 
+        return result
+    }
+
+    fun findMouldByName(findName: String): Widget? {
+        // When logging this, it was very slow. Perhaps now without it isn't?
+        // Other-wise we need to adjust.
+        val result = Query.widgets()
+            .inRoots(718)
+            .inIndexPath(718, 9) // for moulds, we should dig into 718, 9..?
+            .isDepth(3)
+            .textContains(findName)
+            .findFirst()
+            .getOrNull()
+
+        Logger("[FindByMouldName]").warn("Res: $result")
         return result
     }
 

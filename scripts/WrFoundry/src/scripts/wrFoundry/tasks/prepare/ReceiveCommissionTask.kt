@@ -25,6 +25,7 @@ class ReceiveCommissionTask {
             .findFirst()
             .get()
 
+        //TODO re-enable
         kovacNpc.interact("Hand-in")
         Waiting.waitUntil { ChatScreen.isClickContinueOpen() }
         ChatScreen.clickContinue()

@@ -7,6 +7,7 @@ class CanSmeltBalls {
     fun builder(): BankTask {
         val task = BankTask.builder()
             .addInvItem(4, Amount.of(1)) // Ammo mould
+//            .addInvItem(27012, Amount.of(1)) // (Double) Ammo mould
             .addInvItem(2, Amount.fill(0)) // Cannonball
             .addInvItem(2353, Amount.range(1, 26)) // Steel bars
             .build()
