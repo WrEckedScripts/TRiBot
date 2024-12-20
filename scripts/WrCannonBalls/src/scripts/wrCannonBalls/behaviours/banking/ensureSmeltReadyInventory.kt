@@ -7,6 +7,7 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
+import scripts.utils.behaviours.banking.validation.ItemPresence
 import scripts.utils.debug.LastActionTracker
 import scripts.wrCannonBalls.managers.Container
 import scripts.wrCannonBalls.overlay.ResourceCounter
@@ -23,6 +24,8 @@ fun IParentNode.ensureSmeltReadyInventory(
             logger.warn("Inventory isn't satisfied, executing task.")
             LastActionTracker.track("state")
             LastActionTracker.track("click")
+
+            ItemPresence.throwExceptionIfBankMissesItem("Steel bar")
 
             CanSmeltBalls().builder().execute()
 

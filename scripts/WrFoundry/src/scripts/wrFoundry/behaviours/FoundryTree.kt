@@ -9,6 +9,7 @@ import scripts.wrFoundry.enums.Stage
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.Commission
 import scripts.wrFoundry.states.CurrentProcessingTask
+import scripts.wrFoundry.tasks.prepare.ReceiveCommissionTask
 import scripts.wrFoundry.tasks.processing.ProcessingTask
 import scripts.wrFoundry.tasks.temperature.CoolDown
 import scripts.wrFoundry.tasks.temperature.HeatUp
@@ -49,6 +50,7 @@ fun getFoundryTree(
                     condition {
                         Waiting.wait(2_500)
                         logger.error("Waiting on new task")
+                        ReceiveCommissionTask().execute()
                         false
                     }
                 }
