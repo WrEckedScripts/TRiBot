@@ -5,9 +5,9 @@ import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.Logger
+import scripts.utils.formatters.Notator
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.CurrentProcessingTask
-import scripts.wrFoundry.states.HeatLevel
 import java.awt.Color
 import java.awt.Font
 
@@ -27,7 +27,7 @@ class OverlayPainter(
 
         mainPaint.row(
             paintTemplate.toBuilder()
-                .label("Active State")
+                .label("Stage")
                 .value {
                     CurrentProcessingTask.current?.displayName
                 }
@@ -35,45 +35,33 @@ class OverlayPainter(
         )
             .row(
                 paintTemplate.toBuilder()
-                    .label("Active Heat")
+                    .label("Heat")
                     .value {
                         CurrentProcessingTask.currentHeat?.displayName
                     }
                     .build()
             ).row(
                 paintTemplate.toBuilder()
-                    .label("Varbit match")
+                    .label("Mithril bar")
                     .value {
-                        HeatLevel.get()?.displayName
+                        ResourceCounter.getPaintLabelFor("Mithril bar")
                     }
                     .build()
             ).row(
                 paintTemplate.toBuilder()
-                    .label("Varbit value")
+                    .label("Adamantite bar")
                     .value {
-                        HeatLevel.getRawValue().toString()
+                        ResourceCounter.getPaintLabelFor("Adamantite bar")
+                    }
+                    .build()
+            ).row(
+                paintTemplate.toBuilder()
+                    .label("Preforms")
+                    .value {
+                        Notator.format(ResourceCounter.getResourceCount("Preforms"))
                     }
                     .build()
             )
-//            .row(
-//                paintTemplate.toBuilder()
-//                    .label("Last Clicked")
-//                    .value {
-//                        Countdown().fromMillis(
-//                            LastActionTracker.show("click")
-//                        ).plus(" ago ")
-//                    }
-//                    .build()
-//            ).row(
-//                paintTemplate.toBuilder()
-//                    .label("State since")
-//                    .value {
-//                        Countdown().fromMillis(
-//                            LastActionTracker.show("state")
-//                        )
-//                    }
-//                    .build()
-//            )
 
         Painting.addPaint { mainPaint.build().render(it) }
     }

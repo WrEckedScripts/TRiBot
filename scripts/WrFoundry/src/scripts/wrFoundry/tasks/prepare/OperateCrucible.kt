@@ -8,6 +8,8 @@ import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
+import scripts.wrFoundry.overlay.ResourceCounter
+import kotlin.jvm.optionals.getOrNull
 
 class OperateCrucible {
 
@@ -82,6 +84,10 @@ class OperateCrucible {
                 Inventory.getCount(name) == 0
             }
 
+            if (isFilled) {
+                ResourceCounter.increment(name, 14)
+            }
+
             if (!isFilled) {
                 Waiting.wait(FatigueResolver.getMilliseconds() / 2)
             }
@@ -116,29 +122,41 @@ class OperateCrucible {
                 MiniBreak.leave()
             }
 
-            Waiting.waitUntil(15_000) {
-                Waiting.wait(FatigueResolver.getMilliseconds())
+            Waiting.waitUntil(30_000) {
+                Waiting.wait(FatigueResolver.getMilliseconds() / 2)
 
                 Query.gameObjects()
                     .nameEquals("Mould jig (Poured metal)")
                     .findFirst()
-                    .isPresent()
+                    .isPresent
             }
 
-            Waiting.wait(FatigueResolver.getMilliseconds() / 2)
+            Waiting.waitUntil(60_000) {
+                val isWearingPerform = Query.equipment()
+                    .nameContains("Preform")
+                    .findFirst()
+                    .isPresent
 
-            Query.gameObjects()
-                .nameEquals("Mould jig (Poured metal)")
-                .findFirst()
-                .get()
-                .interact("Pick-up")
+                if (!isWearingPerform) {
+                    Waiting.wait(FatigueResolver.getMilliseconds() / 2)
 
-            Waiting.wait(FatigueResolver.getMilliseconds() * 2)
+                    Query.gameObjects()
+                        .nameEquals("Mould jig (Poured metal)")
+                        .findFirst()
+                        .getOrNull()
+                        ?.interact("Pick-up")
 
-            Query.equipment()
-                .nameContains("Preform")
-                .findFirst()
-                .isPresent
+                    Waiting.wait(FatigueResolver.getMilliseconds() * 3)
+                }
+
+                // Re-query for final response
+                Query.equipment()
+                    .nameContains("Preform")
+                    .findFirst()
+                    .isPresent
+            }
         }
+
+        ResourceCounter.increment("Preforms")
     }
 }
