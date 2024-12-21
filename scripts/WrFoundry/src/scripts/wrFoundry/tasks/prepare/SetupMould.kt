@@ -54,33 +54,14 @@ class SetupMould(val commission: Commission) {
 
     fun pickCombination(): Boolean {
         Logger("[PickCombo's]").warn("Let's pick some!")
-        this.findWidgetByName("Tips")?.click()
-
-        Waiting.wait(FatigueResolver.getMilliseconds())
-        this.findAndScroll(this.commission.combination.tip)
-
-        Waiting.wait(FatigueResolver.getMilliseconds())
-        this.findWidgetByName(this.commission.combination.tip)?.click()
+        this.pickBestTip()
 
         Waiting.wait(FatigueResolver.getMilliseconds())
 
-        this.findWidgetByName("Blades")?.click()
+        this.pickBestBlade()
         Waiting.wait(FatigueResolver.getMilliseconds())
 
-        this.findAndScroll(this.commission.combination.blade)
-        Waiting.wait(FatigueResolver.getMilliseconds())
-
-        this.findWidgetByName(this.commission.combination.blade)?.click()
-        Waiting.wait(FatigueResolver.getMilliseconds())
-
-        this.findWidgetByName("Forte")?.click()
-        Waiting.wait(FatigueResolver.getMilliseconds())
-
-        this.findAndScroll(this.commission.combination.forte)
-        Waiting.wait(FatigueResolver.getMilliseconds())
-
-        this.findWidgetByName(this.commission.combination.forte)?.click()
-        Waiting.wait(FatigueResolver.getMilliseconds())
+        this.pickBestForte()
 
         val setMould = Query.widgets().inRoots(718)
             .isDepth(2)
@@ -94,6 +75,40 @@ class SetupMould(val commission: Commission) {
         return setMould
     }
 
+    private fun pickBestForte(): Boolean? {
+        this.findWidgetByName("Forte")?.click()
+
+        Waiting.wait(FatigueResolver.getMilliseconds())
+
+        this.findAndScroll(this.commission.combination.forte)
+        Waiting.wait(FatigueResolver.getMilliseconds())
+
+        this.findWidgetByName(this.commission.combination.forte)?.click()
+        Waiting.wait(FatigueResolver.getMilliseconds())
+
+        return this.findWidgetByName(this.commission.combination.forte)?.click()
+    }
+
+    private fun pickBestBlade(): Boolean {
+        this.findWidgetByName("Blades")?.click()
+
+        Waiting.wait(FatigueResolver.getMilliseconds())
+
+        this.findAndScroll(this.commission.combination.blade)
+        Waiting.wait(FatigueResolver.getMilliseconds())
+
+        return this.findWidgetByName(this.commission.combination.blade)?.click() == true
+    }
+
+    private fun pickBestTip(): Boolean {
+        this.findWidgetByName("Tips")?.click()
+
+        Waiting.wait(FatigueResolver.getMilliseconds())
+        this.findAndScroll(this.commission.combination.tip)
+
+        return this.findWidgetByName(this.commission.combination.tip)?.click() == true
+    }
+
     fun findAndScroll(findName: String): Boolean {
         return Waiting.waitUntil {
             var result = false
@@ -105,14 +120,12 @@ class SetupMould(val commission: Commission) {
                 .get()
 
             val widget = this.findMouldByName(findName)
-            Logger("[findAndScroll]").warn("Visible: ${widget?.isVisible}")
-            Logger("[findAndScroll]").warn("Visible: ${widget?.name}")
-
 
             if (widget != null) {
                 Logger("[findAndScroll]").warn("dragging!")
                 scrollBar.dragTo(widget)
 
+                //TODO this doesn't do anything anymore, afaik..
                 Waiting.waitUntil(5_000) {
                     widget.scrollTo()
                     widget.isVisible

@@ -3,15 +3,26 @@ package scripts.wrFoundry.tasks.prepare
 import org.tribot.script.sdk.ChatScreen
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
+import org.tribot.script.sdk.types.Npc
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.wrFoundry.enums.Commission
+import scripts.wrFoundry.managers.Container
 import kotlin.jvm.optionals.getOrNull
 
-class ReceiveCommissionTask {
+class ReceiveCommissionTask(val managers: Container) {
+    private var extractedCommission: String = ""
+
 
     private fun shouldExecute(): Boolean {
         return true//todo
+    }
+
+    private fun getKovacNpc(): Npc {
+        return Query.npcs()
+            .nameEquals("Kovac")
+            .findFirst()
+            .get()
     }
 
     fun execute(): Boolean {
@@ -19,24 +30,48 @@ class ReceiveCommissionTask {
             return false
         }
 
-        // NPC = Kovac
-        val kovacNpc = Query.npcs()
-            .nameEquals("Kovac")
-            .findFirst()
-            .get()
+        this.handIn()
 
-        //TODO re-enable
-        kovacNpc.interact("Hand-in")
+        this.extractedCommission = this.getCommissionTask()
+
+        if (this.extractedCommission == "") {
+            managers.repetitiveActionManager.increment("receive-commission", 5)
+            this.execute()
+
+            return false
+        }
+
+        val commission = Commission.fromString(
+            this.extractedCommission
+        )
+
+        if (null == commission) {
+            managers.repetitiveActionManager.increment("resolve-commission", 3)
+            this.execute()
+
+            return false
+        }
+
+        managers.repetitiveActionManager.reset("receive-commission")
+        managers.repetitiveActionManager.reset("resolve-commission")
+
+        SetupMould(commission).execute()
+
+        // time to bank and fill the crucible
+        OperateCrucible().execute()
+
+        return true
+    }
+
+    private fun getCommissionTask(): String {
+        var commission = ""
+
+        this.getKovacNpc().interact("Commission")
+
         Waiting.waitUntil { ChatScreen.isClickContinueOpen() }
-        ChatScreen.clickContinue()
-        Waiting.wait(FatigueResolver.getMilliseconds())
 
-        kovacNpc.interact("Commission")
-        Waiting.waitUntil { ChatScreen.isClickContinueOpen() }
-
-        var currentTask = ""
         Waiting.waitUntil(15_000) {
-            if (currentTask == "") {
+            if (commission == "") {
                 val widget = Query.widgets()
                     .inIndexPath(231, 6)
                     .findFirst()
@@ -47,56 +82,29 @@ class ReceiveCommissionTask {
                 }
 
                 Logger("[ReceiveCommissionTask]").debug(widget.text)
-                currentTask = this.extractCommission(widget.text.toString())
+                commission = this.extractCommissionFrom(widget.text.toString())
             }
 
-            Waiting.waitUntil(2_000) { currentTask != "" }
+            Waiting.waitUntil(2_000) { commission != "" }
             ChatScreen.clickContinue()
             Waiting.wait(FatigueResolver.getMilliseconds() * 2)
             !ChatScreen.isClickContinueOpen()
         }
 
-        Logger("[ReceiveCommissionTask]")
-            .info("Got task for: ${currentTask}")
-
-        val commission = Commission.fromString(currentTask)
-
-        if (null == commission) {
-            Logger("[CommissionCheck]")
-                .info("is null..?")
-            return false
-        }
-
-        val res = SetupMould(commission).execute()
-
-        Logger("[Setup]").debug("Done setting up... ${res}")
-
-        // time to bank and fill the crucible
-        OperateCrucible().execute()
-
-
-        // create object out of the extracted value.
-
-        // Time to set-up the mould
-
-        // If option "Hand-in" exists && Wearing a preform
-        // We need to hand-in and collect a new task (option "yes")
-
-        // Then we need to Setup the mould based on the received task
-        // - needs to extract from the string
-        // - map to the correct combinations
-        // - handle the UI
-
-        // Then we need to fill the crucible
-        // - 14 adamantite bars
-        // - 14 mithril bars
-
-        // If crucible is full, pour and collect the sword from mould
-
-        return true
+        return commission
     }
 
-    private fun extractCommission(input: String): String {
+    private fun handIn() {
+        this.getKovacNpc().interact("Hand-in")
+
+        Waiting.waitUntil { ChatScreen.isClickContinueOpen() }
+
+        ChatScreen.clickContinue()
+
+        Waiting.wait(FatigueResolver.getMilliseconds())
+    }
+
+    private fun extractCommissionFrom(input: String): String {
         val regex = """<col=[^>]+>([^<]*)(?:<br>\s*<col=[^>]+>)?([^<]*)</col>""".toRegex()
         val match = regex.find(input)
         Logger("Matcher").debug(match?.groups.toString())

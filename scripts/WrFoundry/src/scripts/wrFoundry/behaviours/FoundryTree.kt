@@ -50,7 +50,7 @@ fun getFoundryTree(
                     condition {
                         Waiting.wait(2_500)
                         logger.error("Waiting on new task")
-                        ReceiveCommissionTask().execute()
+                        ReceiveCommissionTask(managers).execute()
                         false
                     }
                 }

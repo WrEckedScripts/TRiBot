@@ -8,7 +8,7 @@ class Commission {
     private val progressVarbitId = 13949
 
     fun getVarbitValue(): Int {
-        return GameState.getVarbit(13949)
+        return GameState.getVarbit(progressVarbitId)
     }
 
     // if the varbit is 0, we either don't have a commision
