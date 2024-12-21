@@ -10,7 +10,7 @@ import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.overlay.OverlayPainter
 
 @TribotScriptManifest(
-    name = "WrFoundry 1.1.0",
+    name = "WrFoundry 1.2.0",
     author = "WrEcked",
     category = "Smithing",
     description = "Handles the Foundry"
