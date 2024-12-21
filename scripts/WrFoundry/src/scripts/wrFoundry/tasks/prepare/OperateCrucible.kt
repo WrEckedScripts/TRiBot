@@ -62,6 +62,8 @@ class OperateCrucible {
         Waiting.waitUntil {
             ChatScreen.isClickContinueOpen()
         }
+
+        Waiting.wait(FatigueResolver.getMilliseconds())
     }
 
     fun pour() {
