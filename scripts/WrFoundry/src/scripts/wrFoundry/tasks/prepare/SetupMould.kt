@@ -25,19 +25,27 @@ class SetupMould(val commission: Commission) {
         return true
     }
 
-    fun openMouldInterface(): Boolean {
+    private fun openMouldInterface(): Boolean {
         // Setup
-        val mouldObject = Query.gameObjects()
-            .nameContains("Mould jig")
-            .findFirst()
-            .get()
+        return Waiting.waitUntil(60_000) {
+            val mouldObject = Query.gameObjects()
+                .nameContains("Mould jig")
+                .findFirst()
+                .getOrNull()
 
-        val interacted = mouldObject.interact("Setup")
-        if (interacted == false) {
-            mouldObject.interact("Check")
-        }
+            Waiting.wait(FatigueResolver.getMilliseconds())
 
-        Waiting.waitUntil {
+            if (null == mouldObject) {
+                return@waitUntil false
+            }
+
+            val interacted = mouldObject.interact("Setup")
+            if (!interacted) {
+                mouldObject.interact("Check")
+            }
+
+            Waiting.wait(FatigueResolver.getMilliseconds())
+
             val mouldInterface = Query.widgets()
                 .inIndexPath(718)
                 .findFirst()
@@ -45,11 +53,6 @@ class SetupMould(val commission: Commission) {
 
             mouldInterface?.isVisible() == true
         }
-
-        Waiting.wait(FatigueResolver.getMilliseconds())
-
-        Logger("[MouldJig]").warn("Mould is visible")
-        return true
     }
 
     fun pickCombination(): Boolean {
