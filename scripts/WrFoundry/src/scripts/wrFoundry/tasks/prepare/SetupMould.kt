@@ -113,26 +113,25 @@ class SetupMould(val commission: Commission) {
     }
 
     fun findAndScroll(findName: String): Boolean {
-        return Waiting.waitUntil {
+        return Waiting.waitUntil(30_000) {
             var result = false
             val scrollBar = Query.widgets()
                 .inRoots(718)
                 .inIndexPath(718, 11, 1)
                 .isDepth(3)
                 .findFirst()
-                .get()
+                .getOrNull()
+
+            if (null == scrollBar) {
+                Waiting.wait(FatigueResolver.getMilliseconds())
+                return@waitUntil false
+            }
 
             val widget = this.findMouldByName(findName)
 
             if (widget != null) {
                 Logger("[findAndScroll]").warn("dragging!")
                 scrollBar.dragTo(widget)
-
-                //TODO this doesn't do anything anymore, afaik..
-                Waiting.waitUntil(5_000) {
-                    widget.scrollTo()
-                    widget.isVisible
-                }
 
                 result = widget.isVisible
             }
