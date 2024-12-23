@@ -16,33 +16,46 @@ class SetupMould(val commission: Commission) {
         Logger("[Commission]").warn("Blade: ${this.commission.combination.blade}")
         Logger("[Commission]").warn("Tip: ${this.commission.combination.tip}")
 
+        Logger("[SetupMould]").warn("Opening Mould Interface")
         openMouldInterface()
-        Logger("[Commission]").warn("opened...")
 
+        Logger("[SetupMould]").warn("Pick Combination")
         pickCombination()
+
         Logger("[Commission]").warn("picked..")
+
+        setMouldChoices()
 
         return true
     }
 
+    // TODO, whenever WrFoundry is handling a new commission, we seem to open/close the mould interface
+    // - Most likely due to a too quick checkup? But let's log some stuff and debug what's happening.
     private fun openMouldInterface(): Boolean {
         // Setup
         return Waiting.waitUntil(60_000) {
+            Logger("[SetupMould]").warn("OpenMouldInterface:: Waiting loop inside")
             val mouldObject = Query.gameObjects()
                 .nameContains("Mould jig")
                 .findFirst()
                 .getOrNull()
 
+            Logger("[SetupMould]").warn("OpenMouldInterface:: MouldObj ${mouldObject}")
+
             Waiting.wait(FatigueResolver.getMilliseconds())
 
             if (null == mouldObject) {
+                Logger("[SetupMould]").warn("Returning:: false, no mould object")
                 return@waitUntil false
             }
 
-            val interacted = mouldObject.interact("Setup")
+            var interacted = mouldObject.interact("Setup")
+            Logger("[SetupMould]").warn("OpenMouldInterface:: Interacted: ${interacted}")
             if (!interacted) {
-                mouldObject.interact("Check")
+                interacted = mouldObject.interact("Check")
             }
+
+            Logger("[SetupMould]").warn("Did we interact? = ${interacted}")
 
             Waiting.wait(FatigueResolver.getMilliseconds())
 
@@ -51,31 +64,42 @@ class SetupMould(val commission: Commission) {
                 .findFirst()
                 .getOrNull()
 
-            mouldInterface?.isVisible() == true
+            Logger("[SetupMould]").warn("OpenMouldInterface:: mouldInterface: ${mouldInterface}")
+
+            interacted && mouldInterface?.isVisible() == true
         }
     }
 
-    fun pickCombination(): Boolean {
-        Logger("[PickCombo's]").warn("Let's pick some!")
+    private fun pickCombination() {
+        Logger("[SetupMould@pickCombination]").warn("Pick Combinations!")
         this.pickBestTip()
-
         Waiting.wait(FatigueResolver.getMilliseconds())
+        Logger("[SetupMould]").warn("Best Tip selected")
 
         this.pickBestBlade()
         Waiting.wait(FatigueResolver.getMilliseconds())
+        Logger("[SetupMould]").warn("Best Blade selected")
 
         this.pickBestForte()
+        Logger("[SetupMould]").warn("Best Forte selected")
+    }
 
-        val setMould = Query.widgets().inRoots(718)
-            .isDepth(2)
-            .inIndexPath(718, 34)
-            .findFirst()
-            .get()
-            .click()
+    private fun setMouldChoices(): Boolean {
+        return Waiting.waitUntil(20_000) {
+            val setMould = Query.widgets().inRoots(718)
+                .isDepth(2)
+                .inIndexPath(718, 34)
+                .findFirst()
+                .getOrNull()
 
-        Waiting.wait(FatigueResolver.getMilliseconds())
+            Waiting.wait(FatigueResolver.getMilliseconds())
 
-        return setMould
+            if (null == setMould) {
+                return@waitUntil false
+            }
+
+            return@waitUntil setMould.click()
+        }
     }
 
     private fun pickBestForte(): Boolean? {

@@ -55,7 +55,9 @@ class ReceiveCommissionTask(val managers: Container) {
         managers.repetitiveActionManager.reset("receive-commission")
         managers.repetitiveActionManager.reset("resolve-commission")
 
+        Logger("[ReceiveCommissionTask]").warn("START - SetupMould.exec")
         SetupMould(commission).execute()
+        Logger("[ReceiveCommissionTask]").warn("END - SetupMould.exec")
 
         // time to bank and fill the crucible
         OperateCrucible().execute()
