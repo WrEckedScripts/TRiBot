@@ -14,8 +14,7 @@ fun IParentNode.emptyCoalBag(logger: Logger, managers: Container) = sequence {
     condition {
         managers.repetitiveActionManager.increment("empty-coalbag", 6)
 
-        // In between world hops etc, this prevents early exit-ing the script
-        Waiting.waitNormal(650, 40)
+        Waiting.wait(FatigueResolver.getMilliseconds())
 
         val succeeded = Waiting.waitUntil(15_000) {
             Query.inventory()

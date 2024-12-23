@@ -80,7 +80,7 @@ object DiscordNotifier {
             )
             .setTimestamp(OffsetDateTime.now())
             .setColor(color ?: 0x1E90FF)
-            .setImageUrl("attachment://wrBlastFurnaceUpdate.png")
+            .setImageUrl("attachment://progressUpdate.png")
             .build()
     }
 
@@ -93,7 +93,7 @@ object DiscordNotifier {
             .addEmbeds(embed)
 
         if (file != null) {
-            builder = builder.addFile("wrBlastFurnaceUpdate.png", file)
+            builder = builder.addFile("progressUpdate.png", file)
         }
 
         return builder.build()

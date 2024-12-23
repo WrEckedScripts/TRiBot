@@ -15,12 +15,12 @@ fun IParentNode.fillCoalBag(
     managers: Container
 ) = sequence {
     condition {
-        Waiting.wait(200) // Give the game a slight break to ensure we're not too fast.
+        Waiting.wait(FatigueResolver.getMilliseconds() / 2) // Give the game a slight break to ensure we're not too fast.
 
         ItemPresence.throwExceptionIfBankMissesItem("Coal", 27)
         managers.repetitiveActionManager.increment("fill-coalbag", 6)
 
-        Waiting.waitUntil(4_000) {
+        Waiting.waitUntil(15_000) {
             val filled = Query.inventory()
                 .nameEquals("Coal bag")
                 .findFirst()
