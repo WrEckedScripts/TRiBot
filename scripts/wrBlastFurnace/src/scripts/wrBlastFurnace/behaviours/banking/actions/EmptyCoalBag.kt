@@ -8,6 +8,8 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
+import scripts.utils.antiban.Lottery
+import scripts.utils.antiban.MiniBreak
 import scripts.wrBlastFurnace.managers.Container
 
 fun IParentNode.emptyCoalBag(logger: Logger, managers: Container) = sequence {
@@ -17,6 +19,10 @@ fun IParentNode.emptyCoalBag(logger: Logger, managers: Container) = sequence {
         }
 
         managers.repetitiveActionManager.increment("empty-coalbag", 6)
+
+        Lottery.execute(0.05) {
+            MiniBreak.fatigueLeave()
+        }
 
         Waiting.wait(FatigueResolver.getMilliseconds())
 
