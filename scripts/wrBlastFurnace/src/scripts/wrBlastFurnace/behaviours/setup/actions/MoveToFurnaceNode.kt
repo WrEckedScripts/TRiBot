@@ -18,6 +18,21 @@ import scripts.wrBlastFurnace.behaviours.setup.validation.MoveToFurnaceValidatio
  * await until we're at the Keldagrim location and from there move towards the furnace.
  */
 fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
+
+    selector {
+        condition { !MoveToFurnaceValidation(logger).isNearBlastFurnaceEntrance() }
+        condition {
+            Waiting.waitUntil {
+                Query.gameObjects()
+                    .idEquals(9084) // Stairs
+                    .isReachable()
+                    .findBestInteractable()
+                    .map { it.interact("Climb-down") }
+                    .orElse(false)
+            }
+        }
+    }
+
     selector {
         condition { !MoveToFurnaceValidation(logger).isNearTrapdoor() || !MoveToFurnaceValidation(logger).isWithinKeldagrim() }
         condition {
@@ -59,19 +74,4 @@ fun IParentNode.moveToFurnaceNode(logger: Logger) = sequence {
             }
         }
     }
-
-    selector {
-        condition { !MoveToFurnaceValidation(logger).isNearBlastFurnaceEntrance()}
-        condition {
-            Waiting.waitUntil {
-                Query.gameObjects()
-                    .idEquals(9084)
-                    .isReachable()
-                    .findBestInteractable()
-                    .map { it.interact("Climb-down") }
-                    .orElse(false)
-            }
-        }
-    }
-
 }
