@@ -14,6 +14,7 @@ data class Container(
     val staminaManager: StaminaManager,
     val cameraManager: CameraManager,
     val progressionManager: ProgressionManager,
-    val repetitiveActionManager: RepetitiveActionManager
+    val repetitiveActionManager: RepetitiveActionManager,
+    val coalBagManager: CoalBagManager
 )
 

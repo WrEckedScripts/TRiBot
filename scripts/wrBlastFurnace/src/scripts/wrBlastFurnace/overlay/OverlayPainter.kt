@@ -100,6 +100,11 @@ class OverlayPainter(
                     .label("Coal bag")
                     .value { if (Settings.coalBagChecked) "Enabled" else "Disabled" }
                     .build()
+            ).row(
+                paintTemplate.toBuilder()
+                    .label("Bag state")
+                    .value { managers.coalBagManager.getStateAsString() }
+                    .build()
             )
             .row(
                 paintTemplate.toBuilder()

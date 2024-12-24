@@ -82,6 +82,7 @@ class BlastFurnaceScript : TribotScript {
 
             if (Settings.coalBagChecked) {
                 logger.debug("using coal bag")
+                this.managers.coalBagManager.registerListeners()
             }
 
             if (Settings.coalBagChecked && !Settings.barType.equals(SteelBar)) {
@@ -107,6 +108,7 @@ class BlastFurnaceScript : TribotScript {
         val cameraManager = CameraManager(logger)
         val progressionManager = ProgressionManager(logger, System.currentTimeMillis(), tripStateManager)
         val repetitiveActionManager = RepetitiveActionManager(logger)
+        val coalBagManager = CoalBagManager(logger)
 
         return Container(
             upkeepManager,
@@ -117,7 +119,8 @@ class BlastFurnaceScript : TribotScript {
             staminaManager,
             cameraManager,
             progressionManager,
-            repetitiveActionManager
+            repetitiveActionManager,
+            coalBagManager
         )
     }
 

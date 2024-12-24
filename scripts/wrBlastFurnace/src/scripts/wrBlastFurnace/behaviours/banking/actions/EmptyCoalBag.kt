@@ -12,6 +12,10 @@ import scripts.wrBlastFurnace.managers.Container
 
 fun IParentNode.emptyCoalBag(logger: Logger, managers: Container) = sequence {
     condition {
+        if (managers.coalBagManager.getStateAsString() == "empty") {
+            return@condition true
+        }
+
         managers.repetitiveActionManager.increment("empty-coalbag", 6)
 
         Waiting.wait(FatigueResolver.getMilliseconds())
