@@ -8,18 +8,11 @@ import scripts.utils.Logger
 object MiniBreak {
     private var active: Boolean = false
 
-    fun stateForPaint(): String {
-        return when (this.active) {
-            true -> "Active"
-            false -> "Not Active"
-        }
-    }
-
     /**
-     * A sometimes quick, sometimes longer leave
+     * Leave based on mean/sd optional parameters
      */
-    fun leave() {
-        val milliseconds = TribotRandom.normal(15_000, 2340)
+    fun leave(mean: Int = 15_000, sd: Int = 2_000) {
+        val milliseconds = TribotRandom.normal(mean, sd)
         this.active = true
 
         Logger("[MiniBreak]").info("Leaving screen for ${milliseconds}ms")
@@ -33,8 +26,8 @@ object MiniBreak {
     /**
      * A fatigue based leave of the screen, influenced by runtime / time of day
      */
-    fun fatigueLeave() {
-        val milliseconds = FatigueResolver.getMilliseconds()
+    fun fatigueLeave(multiplier: Int = 1) {
+        val milliseconds = FatigueResolver.getMilliseconds() * multiplier
         this.active = true
 
         Logger("[MiniBreak]").info("Leaving screen for ${milliseconds}ms")
@@ -45,10 +38,25 @@ object MiniBreak {
         this.active = false
     }
 
-    fun pause() {
+    /**
+     * On screen pause, the mouse does NOT leave the screen, but simply wait until our next move
+     */
+    fun pause(mean: Int = 1_500, sd: Int = 4_300) {
         this.active = true
 
-        val milliseconds = TribotRandom.normal(1524, 4302)
+        val milliseconds = TribotRandom.normal(mean, sd)
+        Waiting.wait(milliseconds)
+
+        this.active = false
+    }
+
+    /**
+     * A fatigue based pausing time, we do NOT leave the screen, but simply wait until our next move
+     */
+    fun fatiguePause(multiplier: Int = 1) {
+        this.active = true
+
+        val milliseconds = FatigueResolver.getMilliseconds() * multiplier
         Waiting.wait(milliseconds)
 
         this.active = false
