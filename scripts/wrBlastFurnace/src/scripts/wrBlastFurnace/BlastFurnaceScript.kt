@@ -13,6 +13,7 @@ import org.tribot.script.sdk.ScriptListening
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
+import org.tribot.script.sdk.util.ScriptSettings
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.failsafes.RepetitiveActionManager
@@ -67,9 +68,26 @@ class BlastFurnaceScript : TribotScript {
 
         OverlayPainter(this.managers).init()
 
+        var loadedProfile = false
+        if (args != "") {
+            ScriptSettings.getDefault()
+                .load(
+                    args, Settings.toSerializable().javaClass
+                ).ifPresent { s ->
+                    this.logger.warn("Loaded settings ${args}")
+                    Settings.fromSerializable(s)
+                    loadedProfile = true
+                }
+        }
+
         val closed = CompletableFuture<Unit>()
         val started = CompletableFuture<Unit>()
-        startGui(started, closed)
+
+        if (loadedProfile) {
+            started.complete(Unit)
+        } else {
+            startGui(started, closed)
+        }
 
         started.thenAccept {
             setupNotifications()
