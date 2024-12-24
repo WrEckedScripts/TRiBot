@@ -9,11 +9,19 @@ import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
 import scripts.wrFoundry.overlay.ResourceCounter
+import scripts.wrFoundry.tasks.ExecutableTask
 import kotlin.jvm.optionals.getOrNull
 
-class OperateCrucible {
+class OperateCrucible : ExecutableTask {
+    override fun shouldExecute(): Boolean {
+        return true
+    }
 
-    fun execute() {
+    override fun execute(): Boolean {
+        if (!this.shouldExecute()) {
+            return false
+        }
+
         Camera.setRotation(TribotRandom.normal(250, 6))
         Camera.setAngle(TribotRandom.normal(90, 3))
 
@@ -33,6 +41,8 @@ class OperateCrucible {
         this.pour()
 
         this.pickup()
+
+        return true
     }
 
     private fun builder(): BankTask {

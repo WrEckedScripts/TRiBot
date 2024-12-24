@@ -6,11 +6,19 @@ import org.tribot.script.sdk.types.Widget
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.wrFoundry.enums.Commission
+import scripts.wrFoundry.tasks.ExecutableTask
 import kotlin.jvm.optionals.getOrNull
 
-class SetupMould(val commission: Commission) {
+class SetupMould(val commission: Commission) : ExecutableTask {
+    override fun shouldExecute(): Boolean {
+        return true
+    }
 
-    fun execute(): Boolean {
+    override fun execute(): Boolean {
+        if (!this.shouldExecute()) {
+            return false
+        }
+        
         Logger("[Commission]").warn("Commission: ${this.commission.commission}")
         Logger("[Commission]").warn("Forte: ${this.commission.combination.forte}")
         Logger("[Commission]").warn("Blade: ${this.commission.combination.blade}")

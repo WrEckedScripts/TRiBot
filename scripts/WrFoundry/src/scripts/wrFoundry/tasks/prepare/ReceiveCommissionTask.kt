@@ -8,24 +8,17 @@ import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.wrFoundry.enums.Commission
 import scripts.wrFoundry.managers.Container
+import scripts.wrFoundry.tasks.ExecutableTask
 import kotlin.jvm.optionals.getOrNull
 
-class ReceiveCommissionTask(val managers: Container) {
+class ReceiveCommissionTask(val managers: Container) : ExecutableTask {
     private var extractedCommission: String = ""
 
-
-    private fun shouldExecute(): Boolean {
-        return true//todo
+    override fun shouldExecute(): Boolean {
+        return true
     }
 
-    private fun getKovacNpc(): Npc {
-        return Query.npcs()
-            .nameEquals("Kovac")
-            .findFirst()
-            .get()
-    }
-
-    fun execute(): Boolean {
+    override fun execute(): Boolean {
         if (!this.shouldExecute()) {
             return false
         }
@@ -63,6 +56,13 @@ class ReceiveCommissionTask(val managers: Container) {
         OperateCrucible().execute()
 
         return true
+    }
+
+    private fun getKovacNpc(): Npc {
+        return Query.npcs()
+            .nameEquals("Kovac")
+            .findFirst()
+            .get()
     }
 
     private fun getCommissionTask(): String {

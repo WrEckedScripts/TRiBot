@@ -13,7 +13,9 @@ import scripts.wrFoundry.overlay.OverlayPainter
     name = "WrFoundry 1.2.1",
     author = "WrEcked",
     category = "Smithing",
-    description = "Handles the Foundry"
+    description = "Handles the Foundry on Medium Difficulty (14 Mithril/ 14 Adamantite bar) combo" +
+            " Does only work with the default moulds, no GUI just run within the Foundry" +
+            ", wearing a Preform or with a unfilled crucible."
 )
 class FoundryScript : TribotScript {
     private val logger: Logger

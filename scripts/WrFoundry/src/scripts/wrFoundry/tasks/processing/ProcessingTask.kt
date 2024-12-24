@@ -7,13 +7,17 @@ import scripts.wrFoundry.enums.InteractableMachine
 import scripts.wrFoundry.enums.Stage
 import scripts.wrFoundry.states.CurrentProcessingTask
 import scripts.wrFoundry.states.HeatLevel
+import scripts.wrFoundry.tasks.ExecutableTask
 
-class ProcessingTask(private val interactableMachine: InteractableMachine, private val stage: Stage) {
-    private fun shouldExecute(): Boolean {
+class ProcessingTask(
+    private val interactableMachine: InteractableMachine,
+    private val stage: Stage
+) : ExecutableTask {
+    override fun shouldExecute(): Boolean {
         return HeatLevel.get() == stage.heat && CurrentProcessingTask.get() == stage
     }
 
-    fun execute(): Boolean {
+    override fun execute(): Boolean {
         if (!this.shouldExecute()) {
             return false
         }
