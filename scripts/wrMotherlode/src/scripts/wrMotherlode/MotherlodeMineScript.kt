@@ -69,13 +69,10 @@ class MotherlodeMineScript : TribotScript {
     private fun executeMineTree(logger: Logger, managers: Container) {
         try {
             if (!Login.isLoggedIn()) {
-                Waiting.waitUntil(5_000) {
+                Waiting.waitUntil(15_000) {
                     Login.login()
                 }
             }
-
-            // From BF script
-            // ensurePlayerHasRequirements(logger)
 
             val mineTree = getMineTree(
                 logger,

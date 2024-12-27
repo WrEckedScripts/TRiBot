@@ -36,7 +36,6 @@ fun getMineTree(
             selector {
                 condition { Login.isLoggedIn() }
                 condition {
-                    logger.debug("login condition")
                     Login.login()
                 }
             }
@@ -84,7 +83,6 @@ fun getMineTree(
                         }
                     }
                     condition {
-                        logger.debug("moving to next state after repairing....");
                         managers.stateManager.moveToNextState()
                     }
                 }
@@ -169,7 +167,6 @@ fun getMineTree(
                 condition { managers.sackManager.canBeFilled() }
                 sequence {
                     condition {
-                        logger.info("resetting state to collect")
                         managers.stateManager.resetCycle("COLLECTING")
                     }
                 }
@@ -182,7 +179,6 @@ fun getMineTree(
                     selector {
                         condition { !managers.sackManager.canBeFilled() }
                         condition {
-                            logger.debug("Emptying inventory of any pay-dirt")
                             Waiting.waitUntil {
                                 Query.inventory()
                                     .nameEquals("Pay-dirt")
@@ -213,7 +209,6 @@ fun getMineTree(
                     walkToVeinsNode(logger)
                     mineVeinsNode(logger, managers)
                     condition {
-                        logger.debug("Moving ${managers.stateManager.getCurrentKey()} to the next.")
                         ResourceCounter.increment("Pay-dirt", Inventory.getCount("Pay-dirt"))
                         managers.stateManager.moveToNextState()
                     }

@@ -65,7 +65,7 @@ class SetupMould(val commission: Commission) : ExecutableTask {
 
             Logger("[SetupMould]").warn("Did we interact? = ${interacted}")
 
-            Waiting.wait(FatigueResolver.getMilliseconds())
+            Waiting.wait(FatigueResolver.getMilliseconds() * 4)
 
             val mouldInterface = Query.widgets()
                 .inIndexPath(718)
