@@ -6,6 +6,7 @@ import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
+import scripts.utils.calculators.ResourceCounter
 import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.formatters.CompactNotator

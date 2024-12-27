@@ -8,6 +8,7 @@ import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.RuntimeTracker
+import scripts.utils.calculators.ResourceCounter
 import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.failsafes.RepetitiveActionManager
@@ -51,6 +52,18 @@ class MotherlodeMineScript : TribotScript {
 
     private fun setupCalculators() {
         TrackerCollection.add(Skill.MINING)
+
+        ResourceCounter.init(
+            mapOf(
+                "Coal" to 453,
+                "Gold ore" to 444,
+                "Mithril ore" to 447,
+                "Adamantite ore" to 449,
+                "Runite ore" to 451,
+                "Golden nugget" to null,
+                "Pay-dirt" to null
+            )
+        )
     }
 
     private fun executeMineTree(logger: Logger, managers: Container) {

@@ -4,6 +4,7 @@ import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
+import scripts.utils.calculators.ResourceCounter
 import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
@@ -35,6 +36,14 @@ class FoundryScript : TribotScript {
 
     private fun registerTrackers() {
         TrackerCollection.add(Skill.SMITHING)
+
+        ResourceCounter.init(
+            mapOf(
+                "Mithril bar" to 2359,
+                "Adamantite bar" to 2361,
+                "Preforms" to null
+            )
+        )
     }
 
     override fun execute(args: String) {

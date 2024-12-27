@@ -7,6 +7,7 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
 import scripts.utils.antiban.RuntimeTracker
+import scripts.utils.calculators.ResourceCounter
 import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.failsafes.RepetitiveActionManager
@@ -73,6 +74,14 @@ class CannonBallsScript : TribotScript {
 
     private fun setupCalculators() {
         TrackerCollection.add(Skill.SMITHING)
+
+        ResourceCounter.init(
+            mapOf(
+                "Cannonball" to 2,
+                "Steel bar" to 2353,
+                "Trips" to null
+            )
+        )
     }
 
     private fun handleExceptions(logger: Logger, ex: Throwable) {

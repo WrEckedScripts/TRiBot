@@ -2,13 +2,12 @@ package scripts.wrMotherlode.managers
 
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
-import scripts.wrMotherlode.overlay.ResourceCounter
+import scripts.utils.calculators.ResourceCounter
 
 class ProgressionManager(
     private val logger: Logger,
     private val startedAt: Long
 ) {
-
     fun registerLoot() {
         Query.inventory()
             .forEach {

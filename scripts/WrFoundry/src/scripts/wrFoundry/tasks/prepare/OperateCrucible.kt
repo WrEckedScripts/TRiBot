@@ -8,7 +8,7 @@ import org.tribot.script.sdk.util.TribotRandom
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
-import scripts.wrFoundry.overlay.ResourceCounter
+import scripts.utils.calculators.ResourceCounter
 import scripts.wrFoundry.tasks.ExecutableTask
 import kotlin.jvm.optionals.getOrNull
 

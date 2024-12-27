@@ -1,22 +1,32 @@
-package scripts.wrCannonBalls.overlay
+package scripts.utils.calculators
 
 import org.tribot.script.sdk.pricing.Pricing
 import scripts.utils.formatters.CompactNotator
 
 object ResourceCounter {
-    // Initialize ore counts in a MutableMap
-    private val resourceCounters = mutableMapOf(
-        "Cannonball" to 0,
-        "Steel bar" to 0,
-        "Trips" to 0,
-    )
+    /**
+     * Contains a map of resources with their corresponding count
+     * For example:
+     * - Resources used
+     * - Trips completed
+     * - Non trade-able items received
+     * Or anything else we do not allow id based price lookups on for example.
+     */
+    private val resourceCounters: MutableMap<String, Int?> = mutableMapOf()
 
-    private val resourceIdMap = mapOf(
-        "Cannonball" to 2,
-        "Steel bar" to 2353
-    )
+    /**
+     * Contains a map of resources which have an in-game ItemId
+     */
+    private val resourceIdMap: MutableMap<String, Int?> = mutableMapOf()
 
-    // Increment the count for a specific ore
+    fun init(resources: Map<String, Int?>) {
+        resources.forEach {
+            resourceCounters[it.key] = 0
+
+            it.value?.let { value -> resourceIdMap[it.key] = value }
+        }
+    }
+
     fun increment(resourceName: String, increment: Int = 1) {
         if (resourceCounters.containsKey(resourceName)) {
             resourceCounters[resourceName] = resourceCounters[resourceName]!! + increment
@@ -35,36 +45,31 @@ object ResourceCounter {
         }
     }
 
-    // Retrieve the count for a specific ore
     fun getResourceCount(resourceName: String): Int {
         return resourceCounters[resourceName] ?: 0
     }
 
-    // Retrieve all resources and their counts
-    fun getAllResourceCounts(): Map<String, Int> {
-        return resourceCounters.toMap()
-    }
-
     private fun getResourcePrice(name: String): Int {
         val itemId = resourceIdMap[name]!!
-        val collected = this.getResourceCount(name)
+        val collected = getResourceCount(name)
 
         return Pricing.lookupPrice(itemId).orElse(0).times(collected)
     }
 
     fun getPaintLabelFor(name: String): String {
-        return CompactNotator.format(this.getResourceCount(name))
+        return getResourceCount(name)
+            .toString()
             .plus(" +(")
             .plus(
                 CompactNotator.format(
-                    this.getResourcePrice(name)
+                    getResourcePrice(name)
                 )
             )
             .plus(")")
     }
 
-    // Helper method to reset all counts back to 0
     fun reset() {
         resourceCounters.keys.forEach { resourceCounters[it] = 0 }
     }
 }
+

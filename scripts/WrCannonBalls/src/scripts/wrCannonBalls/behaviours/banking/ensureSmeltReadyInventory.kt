@@ -8,9 +8,9 @@ import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.behaviours.banking.validation.ItemPresence
+import scripts.utils.calculators.ResourceCounter
 import scripts.utils.failsafes.LastActionTracker
 import scripts.wrCannonBalls.managers.Container
-import scripts.wrCannonBalls.overlay.ResourceCounter
 
 fun IParentNode.ensureSmeltReadyInventory(
     logger: Logger,
