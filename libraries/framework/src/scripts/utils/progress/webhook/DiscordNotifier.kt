@@ -16,12 +16,18 @@ import java.time.OffsetDateTime
 import javax.imageio.ImageIO
 
 object DiscordNotifier {
+    /**
+     * Configuration
+     */
     private var url: String? = null
     private var interval: Int = 15
-    private var enabled: Boolean = false
-
-    private var lastSent: Long? = null
     private var logger: Logger? = null
+
+    /**
+     * State
+     */
+    private var enabled: Boolean = false
+    private var lastSent: Long? = null
 
     fun initLogger(log: Logger) {
         this.logger = log
@@ -32,9 +38,9 @@ object DiscordNotifier {
         this.interval = interval
 
         if (this.url == "") {
-            this.logger?.error("[Discord] - Failed to parse webhook url from GUI, we're not going to send screenshots")
+            this.logger?.error("[Discord] - Failed to parse webhook url from GUI, we're not going to send updates")
         } else {
-            this.logger?.info("[Discord] - Enabled Discord notifications, we will be sending screenshots")
+            this.logger?.info("[Discord] - Enabled Discord notifications, we will be sending updates")
             this.enabled = true
         }
     }
@@ -68,9 +74,9 @@ object DiscordNotifier {
         return (currentTime - this.lastSent!!) >= nextTime
     }
 
-    private fun embed(message: String?, color: Int?): WebhookEmbed {
+    private fun messageEmbedWithScreenshot(message: String?, color: Int?): WebhookEmbed {
         return WebhookEmbedBuilder()
-            .setDescription(message ?: "Your account (${MyPlayer.getUsername()}) is grinding at the Blast Furnace!")
+            .setDescription(message ?: "Progress update on (${MyPlayer.getUsername()})")
             .setAuthor(
                 EmbedAuthor(
                     ScriptRuntimeInfo.getScriptName(),
@@ -85,12 +91,12 @@ object DiscordNotifier {
     }
 
     private fun message(file: File?, message: String?, color: Int?): WebhookMessage {
-        val embed = this.embed(message, color)
+        val messageEmbed = this.messageEmbedWithScreenshot(message, color)
 
         var builder = WebhookMessageBuilder()
             .setUsername(MyPlayer.getUsername())
             .setAvatarUrl("https://avatars.githubusercontent.com/u/173479807?s=96&v=4")
-            .addEmbeds(embed)
+            .addEmbeds(messageEmbed)
 
         if (file != null) {
             builder = builder.addFile("progressUpdate.png", file)
