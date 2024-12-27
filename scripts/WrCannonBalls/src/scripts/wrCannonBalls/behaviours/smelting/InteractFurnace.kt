@@ -5,20 +5,20 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
+import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
 import scripts.utils.debug.LastActionTracker
 import scripts.wrCannonBalls.managers.Container
+import kotlin.random.Random
 
 class InteractFurnace(
     val logger: Logger,
     val managers: Container
 ) {
     fun execute(): Boolean {
-        logger.warn("INTERACTFURNACETASK")
         LastActionTracker.track("state")
 
         if (MakeScreen.isOpen()) {
-            logger.warn("MakeScreen is already open")
             MakeScreen.makeAll("Cannonball")
 
             return true
@@ -29,12 +29,15 @@ class InteractFurnace(
             .findBestInteractable()
 
         if (furnace.isPresent) {
-            this.logger.warn("Found furnace, using 'Ammo mould' on it.")
             furnace.get().interact("Smelt")
             LastActionTracker.track("click")
 
             val result = Waiting.waitUntil {
                 MakeScreen.isOpen()
+
+                Lottery.execute(Random.nextDouble(0.05, 0.09)) {
+                    MiniBreak.fatigueLeave()
+                }
 
                 Waiting.wait(FatigueResolver.getMilliseconds())
 
@@ -42,8 +45,6 @@ class InteractFurnace(
             }
 
             MiniBreak.leave()
-
-            this.logger.debug("Interacted resulted in ${result}")
 
             return result
         }

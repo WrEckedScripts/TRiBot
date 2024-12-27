@@ -19,15 +19,13 @@ fun IParentNode.ensureSmeltReadyInventory(
     condition {
         ResourceCounter.set("Cannonball", Inventory.getCount("Cannonball"))
 
-        logger.warn(CanSmeltBalls().builder().isSatisfied())
-        if (!CanSmeltBalls().ready()) {
-            logger.warn("Inventory isn't satisfied, executing task.")
+        if (!CannonballInventory().ready()) {
             LastActionTracker.track("state")
             LastActionTracker.track("click")
 
             ItemPresence.throwExceptionIfBankMissesItem("Steel bar")
 
-            CanSmeltBalls().builder().execute()
+            CannonballInventory().builder().execute()
 
             ResourceCounter.increment("Trips")
             ResourceCounter.increment(
@@ -37,7 +35,7 @@ fun IParentNode.ensureSmeltReadyInventory(
         }
 
         Waiting.waitUntil(FatigueResolver.getMilliseconds()) {
-            CanSmeltBalls().ready()
+            CannonballInventory().ready()
         }
     }
 }

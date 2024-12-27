@@ -7,7 +7,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
-import scripts.wrCannonBalls.behaviours.banking.CanSmeltBalls
+import scripts.wrCannonBalls.behaviours.banking.CannonballInventory
 import scripts.wrCannonBalls.behaviours.banking.ensureSmeltReadyInventory
 import scripts.wrCannonBalls.behaviours.smelting.InteractFurnace
 import scripts.wrCannonBalls.behaviours.smelting.isSmeltingBalls
@@ -41,7 +41,7 @@ fun getSmeltTree(
 
             selector {
                 condition { isSmeltingBalls(logger, managers) }
-                condition { CanSmeltBalls().ready() }
+                condition { CannonballInventory().ready() }
                 sequence {
                     // Walk to bank.
                     condition {

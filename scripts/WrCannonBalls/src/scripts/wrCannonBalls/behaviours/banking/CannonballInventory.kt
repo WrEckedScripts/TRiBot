@@ -3,7 +3,7 @@ package scripts.wrCannonBalls.behaviours.banking
 import org.tribot.script.sdk.tasks.Amount
 import org.tribot.script.sdk.tasks.BankTask
 
-class CanSmeltBalls {
+class CannonballInventory {
     fun builder(): BankTask {
         val task = BankTask.builder()
 //            .addInvItem(4, Amount.of(1)) // Ammo mould

@@ -6,7 +6,7 @@ import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.debug.LastActionTracker
-import scripts.wrCannonBalls.behaviours.banking.CanSmeltBalls
+import scripts.wrCannonBalls.behaviours.banking.CannonballInventory
 import scripts.wrCannonBalls.managers.Container
 
 
@@ -35,7 +35,6 @@ fun isSmeltingBalls(logger: Logger, managers: Container): Boolean {
     }
 
     if (LastActionTracker.getElapsedMinutes("state") >= 8) {
-        logger.error("Killing script to safeguard your account.")
         throw Exception("State tracker elapsed 8 minutes, whilst we're failing to smith..")
     }
 
@@ -45,8 +44,7 @@ fun isSmeltingBalls(logger: Logger, managers: Container): Boolean {
     // Check if we still hold bars, if so, we can smelt.
     // Then we simply need to re-interact.
     // This is for example when we dismiss a random or whatever, we do failsafe for just standing still.
-    if (CanSmeltBalls().ready()) {
-        logger.info("Re-initing interact")
+    if (CannonballInventory().ready()) {
         InteractFurnace(logger, managers).execute()
     }
 
