@@ -1,7 +1,7 @@
 package scripts.wrCannonBalls.overlay
 
 import org.tribot.script.sdk.pricing.Pricing
-import scripts.utils.formatters.Notator
+import scripts.utils.formatters.CompactNotator
 
 object ResourceCounter {
     // Initialize ore counts in a MutableMap
@@ -45,7 +45,7 @@ object ResourceCounter {
         return resourceCounters.toMap()
     }
 
-    private fun getResourcePrice(name: String, amount: Int = 0): Int {
+    private fun getResourcePrice(name: String): Int {
         val itemId = resourceIdMap[name]!!
         val collected = this.getResourceCount(name)
 
@@ -53,10 +53,10 @@ object ResourceCounter {
     }
 
     fun getPaintLabelFor(name: String): String {
-        return Notator.format(this.getResourceCount(name))
+        return CompactNotator.format(this.getResourceCount(name))
             .plus(" +(")
             .plus(
-                Notator.format(
+                CompactNotator.format(
                     this.getResourcePrice(name)
                 )
             )

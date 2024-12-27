@@ -1,4 +1,4 @@
-package scripts.utils.debug
+package scripts.utils.failsafes
 
 import kotlin.math.ceil
 
@@ -21,5 +21,11 @@ object LastActionTracker {
         return ceil(
             elapsedMilliseconds / 60000.0
         ).toInt()
+    }
+
+    fun throwExceptionIfNoActionSince(tracker: String, minutesAgo: Int = 10) {
+        if (getElapsedMinutes(tracker) >= minutesAgo) {
+            throw Exception("No action since $minutesAgo minutes")
+        }
     }
 }

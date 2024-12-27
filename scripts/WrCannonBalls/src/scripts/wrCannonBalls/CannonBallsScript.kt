@@ -1,12 +1,14 @@
 package scripts.wrCannonBalls
 
 import org.tribot.script.sdk.Login
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
 import scripts.utils.antiban.RuntimeTracker
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.calculators.skills.TrackerCollection
+import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.wrCannonBalls.behaviours.getSmeltTree
@@ -47,6 +49,7 @@ class CannonBallsScript : TribotScript {
 
     override fun execute(arg: String) {
         setupHelpers()
+        setupCalculators()
 
         try {
             if (!Login.isLoggedIn()) {
@@ -66,6 +69,10 @@ class CannonBallsScript : TribotScript {
             safelyLogout(logger)
             throw Exception("Forceful logout exception to prevent TRiBot X from re-logging")
         }
+    }
+
+    private fun setupCalculators() {
+        TrackerCollection.add(Skill.SMITHING)
     }
 
     private fun handleExceptions(logger: Logger, ex: Throwable) {

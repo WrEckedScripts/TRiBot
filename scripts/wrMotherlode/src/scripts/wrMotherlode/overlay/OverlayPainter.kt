@@ -1,13 +1,15 @@
 package scripts.wrMotherlode.overlay
 
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.calculators.skills.TrackerCollection
+import scripts.utils.failsafes.LastActionTracker
+import scripts.utils.formatters.CompactNotator
 import scripts.utils.formatters.Countdown
-import scripts.utils.formatters.Notator
 import scripts.wrMotherlode.managers.Container
 import java.awt.Color
 import java.awt.Font
@@ -51,6 +53,24 @@ class OverlayPainter(
                 }
                 .build()
         )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("EXP")
+                    .value { TrackerCollection.get(Skill.MINING.name)!!.expLabel() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Lvl")
+                    .value { TrackerCollection.get(Skill.MINING.name)!!.levelLabel() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("TTL")
+                    .value { TrackerCollection.get(Skill.MINING.name)!!.timeToNextLevelLabel() }
+                    .build()
+            )
 
         Painting.addPaint { mainPaint.build().render(it) }
 
@@ -101,7 +121,7 @@ class OverlayPainter(
             ).row(
                 paintTemplate.toBuilder()
                     .label("Pay-dirt")
-                    .value { Notator.format(ResourceCounter.getResourceCount("Pay-dirt")) }
+                    .value { CompactNotator.format(ResourceCounter.getResourceCount("Pay-dirt")) }
                     .build()
             )
 

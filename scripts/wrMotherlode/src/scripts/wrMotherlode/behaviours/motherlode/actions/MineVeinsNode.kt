@@ -12,7 +12,7 @@ import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.failsafes.LastActionTracker
 import scripts.wrMotherlode.managers.Container
 import scripts.wrMotherlode.overlay.ResourceCounter
 import java.awt.Color

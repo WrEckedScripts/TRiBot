@@ -5,7 +5,7 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.failsafes.LastActionTracker
 import scripts.wrCannonBalls.behaviours.banking.CannonballInventory
 import scripts.wrCannonBalls.managers.Container
 
@@ -37,9 +37,6 @@ fun isSmeltingBalls(logger: Logger, managers: Container): Boolean {
     if (LastActionTracker.getElapsedMinutes("state") >= 8) {
         throw Exception("State tracker elapsed 8 minutes, whilst we're failing to smith..")
     }
-
-    logger.error("isSmeltingBalls returns 'FALSE'")
-    logger.error("In same state for ${LastActionTracker.getElapsedMinutes("state")} minutes")
 
     // Check if we still hold bars, if so, we can smelt.
     // Then we simply need to re-interact.

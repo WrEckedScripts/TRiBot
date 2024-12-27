@@ -7,15 +7,13 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import org.jetbrains.skia.Color
-import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.MyPlayer
-import org.tribot.script.sdk.ScriptListening
-import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.*
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import org.tribot.script.sdk.util.ScriptSettings
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
+import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.utils.progress.webhook.DiscordNotifier
@@ -63,8 +61,13 @@ class BlastFurnaceScript : TribotScript {
         logger.info("Initialized repetition prevention")
     }
 
+    private fun setupTrackers() {
+        TrackerCollection.add(Skill.SMITHING)
+    }
+
     override fun execute(args: String) {
         MousePainter().init()
+        this.setupTrackers()
 
         OverlayPainter(this.managers).init()
 

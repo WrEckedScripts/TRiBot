@@ -3,17 +3,17 @@ package scripts.utils.calculators
 import kotlin.math.roundToInt
 
 class CachedPerHourCalculator(val startedAt: Long) {
-    private var lastComputedValue: String? = null
+    private var lastComputedValue: Int? = null
     private var lastComputedTime: Long = 0
     private val computationIntervalMillis: Long = 60 * 500 // 0.5 minute
 
-    fun perHour(start: Int, current: Int): String {
+    fun perHour(start: Int, current: Int): Int {
         val currentAt = System.currentTimeMillis()
         val elapsedTimeMillis = currentAt - this.startedAt
 
         // Return cached value if it's still valid
         if (elapsedTimeMillis < 1) {
-            return "Calculating..."
+            return 0
         }
 
         if (lastComputedValue != null
@@ -28,7 +28,7 @@ class CachedPerHourCalculator(val startedAt: Long) {
         val perHour = gained / elapsedTimeHours
 
         // Cache the computed value
-        lastComputedValue = perHour.roundToInt().toString()
+        lastComputedValue = perHour.roundToInt()
         lastComputedTime = currentAt
 
         return lastComputedValue!!

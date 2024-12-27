@@ -1,14 +1,15 @@
 package scripts.wrMotherlode
 
-import org.tribot.api.input.Mouse
 import org.tribot.script.sdk.Login
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.RuntimeTracker
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.calculators.skills.TrackerCollection
+import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.utils.progress.webhook.DiscordNotifier
@@ -46,6 +47,10 @@ class MotherlodeMineScript : TribotScript {
             stateManager,
             sackManager
         )
+    }
+
+    private fun setupCalculators() {
+        TrackerCollection.add(Skill.MINING)
     }
 
     private fun executeMineTree(logger: Logger, managers: Container) {
@@ -93,9 +98,9 @@ class MotherlodeMineScript : TribotScript {
         RuntimeTracker.init()
         RuntimeTracker.initLogger(this.logger)
 
-        Mouse.setSpeed(110)
-
         FatigueResolver.initLogger(this.logger)
+
+        this.setupCalculators()
 
         //TODO do not commit.
         DiscordNotifier.initConfig(

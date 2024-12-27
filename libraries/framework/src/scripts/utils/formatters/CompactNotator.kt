@@ -2,7 +2,7 @@ package scripts.utils.formatters
 
 import java.util.*
 
-object Notator {
+object CompactNotator {
     fun format(value: Int): String {
         return when {
             value < 1000 -> value.toString()

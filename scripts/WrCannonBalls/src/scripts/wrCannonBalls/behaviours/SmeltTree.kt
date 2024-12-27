@@ -25,15 +25,14 @@ fun getSmeltTree(
             selector {
                 condition { Login.isLoggedIn() }
                 condition {
-                    logger.debug("login condition")
                     Login.login()
                 }
             }
 
-            // Failsafe to anytime a makeScreen is open, we simply click makeAll
             selector {
                 condition { !MakeScreen.isOpen() }
                 condition {
+                    logger.warn("Found open makeScreen, time to re-init cannonballs smelting")
                     Waiting.wait(FatigueResolver.getMilliseconds())
                     MakeScreen.makeAll("Cannonball")
                 }

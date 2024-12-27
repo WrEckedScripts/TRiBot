@@ -1,7 +1,7 @@
 package scripts.wrMotherlode.overlay
 
 import org.tribot.script.sdk.pricing.Pricing
-import scripts.utils.formatters.Notator
+import scripts.utils.formatters.CompactNotator
 
 object ResourceCounter {
     // Initialize ore counts in a MutableMap
@@ -43,7 +43,7 @@ object ResourceCounter {
         return resourceCounters.toMap()
     }
 
-    private fun getResourcePrice(name: String, amount: Int = 0): Int {
+    private fun getResourcePrice(name: String): Int {
         val itemId = resourceIdMap[name]!!
         val collected = this.getResourceCount(name)
 
@@ -55,7 +55,7 @@ object ResourceCounter {
             .toString()
             .plus(" +(")
             .plus(
-                Notator.format(
+                CompactNotator.format(
                     this.getResourcePrice(name)
                 )
             )

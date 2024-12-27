@@ -7,7 +7,7 @@ import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.utils.antiban.Lottery
 import scripts.utils.antiban.MiniBreak
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.failsafes.LastActionTracker
 import scripts.wrCannonBalls.managers.Container
 import kotlin.random.Random
 

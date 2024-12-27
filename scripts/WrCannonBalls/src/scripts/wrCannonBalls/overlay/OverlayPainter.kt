@@ -1,13 +1,15 @@
 package scripts.wrCannonBalls.overlay
 
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintLocation
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.calculators.skills.TrackerCollection
+import scripts.utils.failsafes.LastActionTracker
+import scripts.utils.formatters.CompactNotator
 import scripts.utils.formatters.Countdown
-import scripts.utils.formatters.Notator
 import scripts.wrCannonBalls.managers.Container
 import java.awt.Color
 import java.awt.Font
@@ -70,7 +72,25 @@ class OverlayPainter(
             .row(
                 paintTemplate.toBuilder()
                     .label("Trips")
-                    .value { Notator.format(ResourceCounter.getResourceCount("Trips")) }
+                    .value { CompactNotator.format(ResourceCounter.getResourceCount("Trips")) }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("EXP")
+                    .value { TrackerCollection.get(Skill.SMITHING.name)!!.expLabel() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Lvl")
+                    .value { TrackerCollection.get(Skill.SMITHING.name)!!.levelLabel() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("TTL")
+                    .value { TrackerCollection.get(Skill.SMITHING.name)!!.timeToNextLevelLabel() }
                     .build()
             )
 

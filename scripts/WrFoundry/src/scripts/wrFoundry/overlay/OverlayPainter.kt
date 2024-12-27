@@ -5,7 +5,7 @@ import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.Logger
-import scripts.utils.formatters.Notator
+import scripts.utils.formatters.CompactNotator
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.CurrentProcessingTask
 import java.awt.Color
@@ -58,7 +58,7 @@ class OverlayPainter(
                 paintTemplate.toBuilder()
                     .label("Preforms")
                     .value {
-                        Notator.format(ResourceCounter.getResourceCount("Preforms"))
+                        CompactNotator.format(ResourceCounter.getResourceCount("Preforms"))
                     }
                     .build()
             )

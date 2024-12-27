@@ -1,7 +1,7 @@
 package scripts.wrMotherlode.managers
 
 import scripts.utils.Logger
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.failsafes.LastActionTracker
 
 class StateManager(val logger: Logger) {
     private val states: MutableMap<String, Boolean> = mutableMapOf(

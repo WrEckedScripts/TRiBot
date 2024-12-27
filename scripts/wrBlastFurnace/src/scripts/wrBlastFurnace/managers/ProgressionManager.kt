@@ -2,7 +2,7 @@ package scripts.wrBlastFurnace.managers
 
 import scripts.utils.Logger
 import scripts.utils.calculators.CachedPerHourCalculator
-import scripts.utils.formatters.Notator
+import scripts.utils.formatters.CompactNotator
 
 /**
  * Manager class that keeps track of various progression related aspects
@@ -21,7 +21,7 @@ class ProgressionManager(
 
     fun barsLabel(): String {
         val current = tripStateManager.tripCount.times(tripStateManager.barsPerTrip)
-        val formatted = Notator.format(current)
+        val formatted = CompactNotator.format(current)
         val perHour = this.barCalculator.perHour(0, current)
 
         return formatted
@@ -32,7 +32,7 @@ class ProgressionManager(
 
     fun tripsLabel(): String {
         val current = tripStateManager.tripCount
-        val formatted = Notator.format(current)
+        val formatted = CompactNotator.format(current)
         val perHour = this.tripCalculator.perHour(0, current)
 
         return formatted
@@ -56,7 +56,7 @@ class ProgressionManager(
     fun currentSpent(): String {
         val raw = this.currentSpentValue()
 
-        return "-".plus(Notator.format(raw))
+        return "-".plus(CompactNotator.format(raw))
     }
 
     private fun grossProfitValue(): Int {
@@ -65,13 +65,13 @@ class ProgressionManager(
     }
 
     fun grossProfit(): String {
-        return Notator.format(
+        return CompactNotator.format(
             this.grossProfitValue()
         )
     }
 
     fun netProfit(): String {
         val rawSum = this.grossProfitValue() - this.currentSpentValue()
-        return Notator.format(rawSum)
+        return CompactNotator.format(rawSum)
     }
 }

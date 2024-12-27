@@ -12,7 +12,7 @@ import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
-import scripts.utils.debug.LastActionTracker
+import scripts.utils.failsafes.LastActionTracker
 import scripts.wrMotherlode.managers.Container
 import kotlin.jvm.optionals.getOrNull
 import kotlin.random.Random
