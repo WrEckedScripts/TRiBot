@@ -1,10 +1,12 @@
 package scripts.wrFoundry.overlay
 
+import org.tribot.script.sdk.Skill
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.painting.template.basic.BasicPaintTemplate
 import org.tribot.script.sdk.painting.template.basic.PaintRows
 import org.tribot.script.sdk.painting.template.basic.PaintTextRow
 import scripts.utils.Logger
+import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.formatters.CompactNotator
 import scripts.wrFoundry.managers.Container
 import scripts.wrFoundry.states.CurrentProcessingTask
@@ -60,6 +62,23 @@ class OverlayPainter(
                     .value {
                         CompactNotator.format(ResourceCounter.getResourceCount("Preforms"))
                     }
+                    .build()
+            ).row(
+                paintTemplate.toBuilder()
+                    .label("EXP")
+                    .value { TrackerCollection.get(Skill.SMITHING.name)!!.expLabel() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("Lvl")
+                    .value { TrackerCollection.get(Skill.SMITHING.name)!!.levelLabel() }
+                    .build()
+            )
+            .row(
+                paintTemplate.toBuilder()
+                    .label("TTL")
+                    .value { TrackerCollection.get(Skill.SMITHING.name)!!.timeToNextLevelLabel() }
                     .build()
             )
 
