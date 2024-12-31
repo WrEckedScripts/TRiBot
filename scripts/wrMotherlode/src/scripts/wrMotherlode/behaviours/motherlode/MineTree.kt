@@ -41,6 +41,13 @@ fun getMineTree(
             }
 
             selector {
+                condition { MyPlayer.isMember() }
+                condition {
+                    throw Exception("Ran out of membership..")
+                }
+            }
+
+            selector {
                 perform {
                     DiscordNotifier.notify(message = "${MyPlayer.getUsername()} is going strong at the Motherlode")
                 }

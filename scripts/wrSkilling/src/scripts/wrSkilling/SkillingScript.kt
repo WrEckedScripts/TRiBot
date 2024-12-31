@@ -81,12 +81,9 @@ class SkillingScript : TribotScript {
             }
         }
 
-        val leatherTree = LeatherTree(
+        LeatherTree(
             logger = logger,
             managers = managers
-        )
-
-        val tick = leatherTree.tick()
-        logger.error("[Ending] - Reason: $tick")
+        ).tick()
     }
 }

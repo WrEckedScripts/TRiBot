@@ -17,6 +17,9 @@ include("scripts:wrSkilling")
 // Processing
 include("scripts:WrCannonBalls")
 
+// Combat
+include("scripts:WrBarrows")
+
 // Utility & Testing
 include("scripts:WrMule")
 include("scripts:WrWorker")

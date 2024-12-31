@@ -1,9 +1,6 @@
 package scripts.wrCannonBalls.behaviours
 
-import org.tribot.script.sdk.Bank
-import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.MakeScreen
-import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.*
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
@@ -26,6 +23,13 @@ fun getSmeltTree(
                 condition { Login.isLoggedIn() }
                 condition {
                     Login.login()
+                }
+            }
+
+            selector {
+                condition { MyPlayer.isMember() }
+                condition {
+                    throw Exception("Ran out of membership..")
                 }
             }
 

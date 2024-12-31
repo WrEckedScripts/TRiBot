@@ -22,6 +22,13 @@ fun BonfireTree(
                 condition { Login.login() }
             }
 
+            selector {
+                condition { MyPlayer.isMember() }
+                condition {
+                    throw Exception("Ran out of membership..")
+                }
+            }
+
             //TODO move to G.E. / skilling location
 
             selector {
