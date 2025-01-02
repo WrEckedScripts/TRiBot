@@ -6,6 +6,7 @@ import org.tribot.script.sdk.Waiting
 class EnablePrayer(val prayer: Prayer) {
 
     fun should(): Boolean {
+        // TODO only on certain brothers
         return true
     }
 
@@ -15,12 +16,12 @@ class EnablePrayer(val prayer: Prayer) {
             this.potUp()
         }
 
-        Waiting.waitUntil {
+        Waiting.waitUntil(15_000) {
             this.prayer.enable()
         }
 
         // Slight "tick" wait, until we query enabled state.
-        Waiting.wait(600)
+        Waiting.wait(700)
 
         return this.prayer.isEnabled()
     }

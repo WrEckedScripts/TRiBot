@@ -5,7 +5,8 @@ import scripts.utils.failsafes.LastActionTracker
 
 class StateManager(val logger: Logger) {
     private val states: MutableMap<String, Boolean> = mutableMapOf(
-        State.PREPARE.name to false,
+//        State.PREPARE.name to false, TODO implement sequence
+        State.ROOM.name to false,
         State.FIGHT.name to true,
         State.TUNNEL.name to true,
         State.LOOT.name to true,
@@ -18,8 +19,6 @@ class StateManager(val logger: Logger) {
     }
 
     fun isCurrentState(state: String): Boolean? {
-        logger.debug("Checking if we're in ${state} | Result: ${this.states[state]}")
-
         return this.states[state]
     }
 
@@ -53,6 +52,7 @@ class StateManager(val logger: Logger) {
     }
 
     fun set(to: String): Boolean {
+        this.logger.error("Changing state to: ${to}")
         for (key in this.states.keys) {
             this.states[key] = true
         }

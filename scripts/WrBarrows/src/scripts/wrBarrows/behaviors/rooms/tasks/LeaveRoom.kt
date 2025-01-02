@@ -3,6 +3,9 @@ package scripts.wrBarrows.behaviors.rooms.tasks
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.GameObject
+import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
+import scripts.wrBarrows.behaviors.combat.tasks.DisablePrayer
 import scripts.wrBarrows.managers.Container
 
 class LeaveRoom(val managers: Container) {
@@ -18,9 +21,15 @@ class LeaveRoom(val managers: Container) {
     }
 
     fun execute(): Boolean {
-        val exited = Waiting.waitUntil(15_000) {
+        DisablePrayer().execute()
+
+        val exited = Waiting.waitUntil(25_000) {
             this.getStairs().interact(this.action)
         }
+
+        Waiting.wait(FatigueResolver.getMilliseconds() * 2)
+
+        Logger("LeaveRoom").debug("execute() - did we exit -> $exited")
 
         return exited
     }

@@ -1,4 +1,4 @@
-package scripts.wrBarrows.behaviors.tunnel.tasks
+package scripts.wrBarrows.behaviors.tunnel.tasks.pathing
 
 import org.tribot.script.sdk.types.GameObject
 

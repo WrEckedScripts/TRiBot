@@ -6,6 +6,8 @@ import scripts.utils.Logger
  * Utility class to keep track of the crypts we've handled.
  */
 class RoomManager(val logger: Logger) {
+    var initialized: Boolean = false
+
     private var cryptCollection: MutableMap<String, RoomState> = mutableMapOf()
 
     fun init() {
@@ -15,6 +17,19 @@ class RoomManager(val logger: Logger) {
         Room.values().forEach {
             this.cryptCollection[it.name] = RoomState(it, false, false)
         }
+
+        Room.values().forEach {
+            val room = this.cryptCollection[it.name]?.room
+            if (null == room) {
+                return@forEach
+            }
+
+            if (room.brother.varbit.get() == 1) {
+                this.markAsCompleted(room)
+            }
+        }
+
+        this.initialized = true
     }
 
     fun refresh() {
@@ -25,10 +40,12 @@ class RoomManager(val logger: Logger) {
     }
 
     fun markAsCompleted(room: Room) {
+        Logger("RoomManager").debug("Marking ${room.name} as completed")
         this.cryptCollection[room.name]!!.isCompleted = true
     }
 
     fun markAsTunnel(room: Room) {
+        Logger("RoomManager").debug("Marking ${room.name} as tunnel")
         this.cryptCollection[room.name]!!.isTunnel = true
         this.markAsCompleted(room)
     }
@@ -63,6 +80,11 @@ class RoomManager(val logger: Logger) {
     }
 
     fun shouldEnterTunnel(): Boolean {
-        return this.getRemainingCryptsCount() <= 1
+        //Only execute when inside a crypt
+        val areInsideTunnelCrypt = this.getCurrentCrypt()?.value?.isTunnel ?: false
+        val trueRemainingCount = this.cryptCollection.values.count { !it.isTunnel && !it.isCompleted }
+
+        Logger("RoomManager").error(trueRemainingCount)
+        return trueRemainingCount <= 1 && areInsideTunnelCrypt
     }
 }

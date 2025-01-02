@@ -5,8 +5,10 @@ import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
+import scripts.utils.Logger
 import scripts.wrBarrows.behaviors.rooms.tasks.DigToRoom
 import scripts.wrBarrows.behaviors.rooms.tasks.InteractSarcophagus
+import scripts.wrBarrows.behaviors.rooms.tasks.LeaveRoom
 import scripts.wrBarrows.behaviors.rooms.tasks.WalkToDigsite
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.player.BarrowsArea
@@ -14,10 +16,32 @@ import scripts.wrBarrows.player.BarrowsArea
 fun IParentNode.roomSequence(managers: Container) = sequence {
     //TODO implement selectors for each scenario to act accordingly
 
+    // TODO add selector that if we're being attacked, we move to the FIGHT state
+
+    // If we're inside the wrong room, time to leave and head to the next.
     selector {
-        condition { WalkToDigsite(managers).satisfied() }
+        condition { BarrowsArea.BARROWS.surface.containsMyPlayer() }
         condition {
-            WalkToDigsite(managers).execute()
+            Logger("CompareCrypts").error("current: ${managers.roomManager.getCurrentCrypt()?.value?.room?.name}")
+            Logger("CompareCrypts").error("target: ${managers.roomManager.getTargetCrypt().room.name}")
+            managers.roomManager.getCurrentCrypt()?.value == managers.roomManager.getTargetCrypt()
+        }
+        condition {
+            Logger("LeaveRoomCondition").debug("Executing leaveRoom.")
+            LeaveRoom(managers).execute()
+        }
+    }
+
+    selector {
+        condition { BarrowsArea.BARROWS.surface.containsMyPlayer() }
+        condition { InteractSarcophagus(managers).satisfied() }
+        condition {
+            Logger("roomSequence").warn("MyPlayer: ${MyPlayer.get().get().isHealthBarVisible}")
+            MyPlayer.get().get().isHealthBarVisible
+        }
+        condition {
+            Logger("roomSequence").warn("Exec Interact")
+            InteractSarcophagus(managers).execute()
         }
     }
 
@@ -31,11 +55,9 @@ fun IParentNode.roomSequence(managers: Container) = sequence {
     }
 
     selector {
-        condition { InteractSarcophagus(managers).satisfied() }
-        condition { BarrowsArea.BARROWS.surface.containsMyPlayer() }
-        condition { MyPlayer.get().get().isInteracting }
+        condition { WalkToDigsite(managers).satisfied() }
         condition {
-            InteractSarcophagus(managers).execute()
+            WalkToDigsite(managers).execute()
         }
     }
 }

@@ -1,6 +1,7 @@
 package scripts.wrBarrows.player
 
 import org.tribot.script.sdk.GameState
+import scripts.utils.Logger
 
 enum class BarrowsGameData(val bitId: Int) {
     //TODO guessing 0/1 values
@@ -15,6 +16,7 @@ enum class BarrowsGameData(val bitId: Int) {
     BARROWS_NPCS_SLAIN(464); // TODO should be a count?
 
     fun get(): Int {
+        Logger("Varbits").error("${this.bitId} = ${GameState.getVarbit(this.bitId)}")
         return GameState.getVarbit(this.bitId)
     }
 }

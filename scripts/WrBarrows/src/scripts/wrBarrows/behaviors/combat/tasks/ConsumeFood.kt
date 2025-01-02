@@ -3,16 +3,19 @@ package scripts.wrBarrows.behaviors.combat.tasks
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.InventoryItem
+import scripts.utils.Logger
 import kotlin.jvm.optionals.getOrNull
 
 class ConsumeFood {
     fun should(): Boolean {
-        return !this.satisfiesHitpoints()
+        val satisfies = this.satisfiesHitpoints()
+
+        return satisfies
     }
 
     fun execute(): Boolean {
         if (null == this.getFood()) {
-            // TODO we're out of food!
+            // TODO we're out of food
             return false
         }
 
@@ -20,6 +23,7 @@ class ConsumeFood {
     }
 
     private fun satisfiesHitpoints(): Boolean {
+        Logger("ConsumeFood").debug("satisfiesHitpoints() -> ${MyPlayer.getCurrentHealthPercent() >= 70}")
         return MyPlayer.getCurrentHealthPercent() >= 70
     }
 

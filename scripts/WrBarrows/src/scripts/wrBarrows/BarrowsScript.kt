@@ -7,7 +7,6 @@ import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 import org.tribot.script.sdk.types.Area
 import scripts.utils.Logger
-import scripts.utils.antiban.Lottery
 import scripts.utils.calculators.ResourceCounter
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
@@ -31,7 +30,7 @@ class BarrowsScript : TribotScript {
 
     private val logger: Logger
         get() {
-            return Logger("WrBlastFurnace Lite")
+            return Logger("WrBarrows")
         }
 
     private val managers: Container = registerManagers(this.logger)
@@ -46,12 +45,12 @@ class BarrowsScript : TribotScript {
     }
 
     private fun setupHelpers() {
-        Lottery.initLogger(this.logger)
+//        Lottery.initLogger(this.logger)
 
         ResourceCounter.init(
             mapOf(
                 "Trips" to null,
-                "Barrow Items" to null,
+                "Barrows Items" to null,
             )
         )
     }
@@ -81,6 +80,10 @@ class BarrowsScript : TribotScript {
                 }
             }
 
+            //TODO move to preparation sequence
+            this.managers.roomManager.init()
+            this.registerListeners()
+
             barrowsTree(
                 logger = this.logger,
                 managers = this.managers
@@ -90,7 +93,7 @@ class BarrowsScript : TribotScript {
         } catch (ex: Throwable) {
             handleExecutionError(logger, ex)
         } finally {
-            safelyLogout(logger)
+//            safelyLogout(logger)
         }
     }
 
@@ -126,8 +129,18 @@ class BarrowsScript : TribotScript {
 
             g.drawPolygon(boundsToDraw)
 
-            g.color = Color.BLUE.brighter()
-            g.fillPolygon(boundsToDraw)
+//            g.color = Color.LIGHT_GRAY.brighter()
+//            g.fillPolygon(boundsToDraw)
         }
+    }
+
+    private fun registerListeners() {
+//        MessageListening.addServerMessageListener { message: String ->
+//            when (message) {
+//                // TODO this is also triggered when a NPC spawns..
+//                "You don't find anything." ->
+//                    this.managers.roomManager.markAsCompleted(this.managers.roomManager.getCurrentCrypt()!!.value.room)
+//            }
+//        }
     }
 }

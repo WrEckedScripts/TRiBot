@@ -9,7 +9,7 @@ import scripts.wrBarrows.managers.Container
 import java.awt.Color
 import java.awt.Font
 
-class OverlayPainter(private val managers: Container) {
+class OverlayPainter(val managers: Container) {
     fun init() {
         val paintTemplate = PaintTextRow.builder()
             .background(Color(62, 62, 62))
@@ -41,6 +41,27 @@ class OverlayPainter(private val managers: Container) {
                 .build()
         )
 
+        if (this.managers.roomManager.initialized) {
+            mainPaint.row(
+                paintTemplate.toBuilder()
+                    .label("Target Crypt")
+                    .value { this.managers.roomManager.getTargetCrypt().room.name }
+                    .build()
+            )
+            mainPaint.row(
+                paintTemplate.toBuilder()
+                    .label("- completed")
+                    .value { this.managers.roomManager.getCurrentCrypt()?.value?.isCompleted }
+                    .build()
+            )
+
+            mainPaint.row(
+                paintTemplate.toBuilder()
+                    .label("- tunnel")
+                    .value { this.managers.roomManager.getCurrentCrypt()?.value?.isTunnel }
+                    .build()
+            )
+        }
 
         Painting.addPaint { mainPaint.build().render(it) }
     }

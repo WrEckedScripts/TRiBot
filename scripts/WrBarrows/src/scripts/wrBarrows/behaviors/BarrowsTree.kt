@@ -3,7 +3,6 @@ package scripts.wrBarrows.behaviors
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.wrBarrows.behaviors.combat.combatSequence
-import scripts.wrBarrows.behaviors.preparation.preparationSequence
 import scripts.wrBarrows.behaviors.requirements.ensureIsMember
 import scripts.wrBarrows.behaviors.requirements.ensureLoggedIn
 import scripts.wrBarrows.behaviors.rooms.roomSequence
@@ -22,11 +21,11 @@ fun barrowsTree(
             //TODO ensure safely handling exceptions!
             ensureIsMember()
 
-            selector {
-                condition { managers.stateManager.isCurrentState(State.PREPARE.name) }
-                //TODO prepare sequence
-                preparationSequence(managers)
-            }
+//            selector {
+//                condition { managers.stateManager.isCurrentState(State.PREPARE.name) }
+//                //TODO prepare sequence
+//                preparationSequence(managers)
+//            }
 
             selector {
                 condition { managers.stateManager.isCurrentState(State.ROOM.name) }
