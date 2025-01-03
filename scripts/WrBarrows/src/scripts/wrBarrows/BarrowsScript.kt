@@ -112,6 +112,7 @@ class BarrowsScript : TribotScript {
 
     private fun handleExecutionError(logger: Logger, ex: Throwable) {
         logger.error("Error occurred! Message: ${ex.message}")
+        logger.warn("[State] -> ${this.managers.stateManager.getCurrentKey()}")
         ex.printStackTrace()
     }
 

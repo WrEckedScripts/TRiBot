@@ -5,11 +5,14 @@ import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
+import scripts.utils.antiban.FatigueResolver
 import scripts.wrBarrows.behaviors.combat.tasks.AttackBrother
 import scripts.wrBarrows.behaviors.combat.tasks.ConsumeFood
 import scripts.wrBarrows.behaviors.combat.tasks.ConsumePotion
+import scripts.wrBarrows.behaviors.tunnel.tasks.looting.LootChest
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.State
+import scripts.wrBarrows.player.BarrowsArea
 
 fun IParentNode.combatSequence(managers: Container) = sequence {
     //TODO implement selectors for each scenario to act accordingly
@@ -25,6 +28,7 @@ fun IParentNode.combatSequence(managers: Container) = sequence {
     // - We should teleport out or exit the room..
 
     selector {
+        //TODO only when a prayer brother is attacking us / we're attacking.
         condition { ConsumePotion("Prayer potion").satisfied() }
         condition { ConsumePotion("Prayer potion").execute() }
     }
@@ -36,23 +40,32 @@ fun IParentNode.combatSequence(managers: Container) = sequence {
 
     selector {
         condition { AttackBrother(managers).satisfied() }
-        condition { AttackBrother(managers).isInCombat() }
         condition { AttackBrother(managers).execute() }
+    }
+
+    selector {
+        condition { !LootChest(managers).isInsideLootChamber() }
+        condition { managers.stateManager.set(State.LOOT.name) }
+    }
+
+    selector {
+        condition { !BarrowsArea.BARROWS.crypt.containsMyPlayer() }
+        condition { managers.stateManager.set(State.TUNNEL.name) }
     }
 
     selector {
         condition {
             // If not in combat and am in the wrong room, mark this room as complete and move along
             // like we do within the AttackBrother class.
-            Waiting.waitUntil(5_000, 750) {
-                Waiting.wait(3_000)
-                AttackBrother(managers).isInCombat()
-            }
+            Waiting.wait(FatigueResolver.getMilliseconds())
+
+            AttackBrother(managers).isInCombat()
         }
         condition {
             managers.roomManager.markAsCompleted(
                 managers.roomManager.getCurrentCrypt()!!.value.room
             )
+            managers.roomManager.updateHandledRooms()
             managers.stateManager.set(State.ROOM.name)
         }
     }

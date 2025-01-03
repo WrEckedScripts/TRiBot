@@ -22,14 +22,18 @@ class WalkToDigsite(val managers: Container) {
 
         Logger("WalkToDigsite").debug("Walking towards digsite")
 
+        // Default wait
+        var wait = FatigueResolver.getMilliseconds()
+
         if (tile.isVisible && tile.isRendered) {
             tile.click()
+            wait *= 4 // Slower on-screen clicking when tile is in range
         } else {
             LocalWalking.walkTo(targetLocation.surface.randomTile)
         }
 
-        Waiting.wait(FatigueResolver.getMilliseconds() * 5)
-
-        return targetLocation.surface.containsMyPlayer()
+        return Waiting.waitUntil(wait, wait / 2) {
+            targetLocation.surface.containsMyPlayer()
+        }
     }
 }

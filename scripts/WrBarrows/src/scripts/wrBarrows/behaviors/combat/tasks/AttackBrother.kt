@@ -8,6 +8,7 @@ import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.State
+import scripts.wrBarrows.player.BarrowsArea
 import kotlin.jvm.optionals.getOrNull
 
 class AttackBrother(val managers: Container) {
@@ -30,7 +31,8 @@ class AttackBrother(val managers: Container) {
             return true
         }
 
-        if (this.managers.roomManager.getTargetCrypt() != this.managers.roomManager.getCurrentCrypt()!!.value) {
+        val isInsideTunnels = BarrowsArea.BARROWS.crypt.containsMyPlayer()
+        if (!isInsideTunnels && this.managers.roomManager.getTargetCrypt() != this.managers.roomManager.getCurrentCrypt()!!.value) {
             this.managers.stateManager.set(State.ROOM.name)
 
             return true
@@ -38,10 +40,10 @@ class AttackBrother(val managers: Container) {
 
         // Wait until brother is spawned
         Waiting.waitUntil(3_000, 750) {
-            this.getBrotherQuery().isAny
+            this.getBrotherQuery()?.isAny ?: false
         }
 
-        val target = this.getBrotherQuery().findBestInteractable().getOrNull()
+        val target = this.getBrotherQuery()?.findBestInteractable()?.getOrNull()
 
         if (null == target) {
             Logger("AttackBrother").debug("No target found...?")
@@ -69,7 +71,7 @@ class AttackBrother(val managers: Container) {
     }
 
     fun isInCombat(): Boolean {
-        val target = this.getBrotherQuery().findBestInteractable().getOrNull()
+        val target = this.getBrotherQuery()?.findBestInteractable()?.getOrNull()
 
         if (null == target) {
             Logger("isInCombat()").warn("No valid target..")
@@ -88,9 +90,20 @@ class AttackBrother(val managers: Container) {
         return myPlayerIsAttacking
     }
 
-    private fun getBrotherQuery(): NpcQuery {
-        //TODO what if we're within the tunnels?
-        val brother = this.managers.roomManager.getCurrentCrypt()!!.value.room.brother
+    private fun getBrotherQuery(): NpcQuery? {
+        var brother = this.managers.roomManager.getCurrentCrypt()?.value?.room?.brother
+
+        //TODO TEST what if we're within the tunnels
+        if (null == brother) {
+            brother = this.managers.roomManager.getRemainingBrother()
+            if (brother == null) {
+                Logger("NoMoreBrothers").warn("Can't find any more brothers we should kill.")
+                return null
+            }
+
+            Logger("BrotherQuery").error("getRemainingBrother: ${brother.brotherName}")
+        }
+
         Logger("BrotherQuery").error("NPCName: ${brother.brotherName}")
 
         val npc = Query.npcs()

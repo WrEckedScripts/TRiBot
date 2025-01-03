@@ -9,7 +9,7 @@ import org.tribot.script.sdk.types.WorldTile
 enum class BarrowsArea(val surface: Area, val crypt: Area) {
     BARROWS(
         Area.fromPolygon(
-            WorldTile(3547, 3314, 0), WorldTile(3584, 3314, 0),
+            WorldTile(3547, 3316, 0), WorldTile(3584, 3316, 0),
             WorldTile(3584, 3267, 0), WorldTile(3546, 3267, 0)
         ),
         Area.fromPolygon(

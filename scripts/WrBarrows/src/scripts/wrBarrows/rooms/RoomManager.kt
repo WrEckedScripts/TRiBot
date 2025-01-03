@@ -1,6 +1,8 @@
 package scripts.wrBarrows.rooms
 
 import scripts.utils.Logger
+import scripts.wrBarrows.player.BarrowsArea
+import scripts.wrBarrows.player.BarrowsBrother
 
 /**
  * Utility class to keep track of the crypts we've handled.
@@ -23,19 +25,24 @@ class RoomManager(val logger: Logger) {
             if (null == room) {
                 return@forEach
             }
-
-            if (room.brother.varbit.get() == 1) {
-                this.markAsCompleted(room)
-            }
         }
 
         this.initialized = true
+    }
+
+    fun updateHandledRooms() {
+        this.cryptCollection.forEach {
+            if (it.value.room.brother.varbit.get() == 1) {
+                this.markAsCompleted(it.value.room)
+            }
+        }
     }
 
     fun refresh() {
         this.cryptCollection.forEach {
             it.value.isCompleted = false
             it.value.isTunnel = false
+            Logger("RoomManager - Refreshed").warn("${it.key} has been refresh!")
         }
     }
 
@@ -81,10 +88,27 @@ class RoomManager(val logger: Logger) {
 
     fun shouldEnterTunnel(): Boolean {
         //Only execute when inside a crypt
-        val areInsideTunnelCrypt = this.getCurrentCrypt()?.value?.isTunnel ?: false
-        val trueRemainingCount = this.cryptCollection.values.count { !it.isTunnel && !it.isCompleted }
+        val areInsideTunnelCrypt = BarrowsArea.BARROWS.crypt.containsMyPlayer()
+        val trueRemainingCount = this.cryptCollection.values.count {
+            Logger("Counting").warn("${it.room.brother.name} | !T:${!it.isTunnel} && !C:${!it.isCompleted}")
+            !it.isTunnel && !it.isCompleted
+        }
 
         Logger("RoomManager").error(trueRemainingCount)
-        return trueRemainingCount <= 1 && areInsideTunnelCrypt
+        return trueRemainingCount == 0 && !areInsideTunnelCrypt
+    }
+
+    fun getRemainingBrother(): BarrowsBrother? {
+        val tracked = this.cryptCollection.entries.filter {
+            it.value.isTunnel
+        }.firstOrNull()
+
+        if (null != tracked) {
+            return tracked.value.room.brother
+        }
+
+        return BarrowsBrother.values().firstOrNull {
+            it.varbit.get() == 0
+        }
     }
 }

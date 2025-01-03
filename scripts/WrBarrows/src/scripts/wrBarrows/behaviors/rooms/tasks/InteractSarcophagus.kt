@@ -2,6 +2,7 @@ package scripts.wrBarrows.behaviors.rooms.tasks
 
 import org.tribot.script.sdk.ChatScreen
 import org.tribot.script.sdk.Waiting
+import org.tribot.script.sdk.query.GameObjectQuery
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.GameObject
 import scripts.utils.Logger
@@ -100,9 +101,12 @@ class InteractSarcophagus(val managers: Container) {
     }
 
     fun findSarcophagus(): GameObject? {
-        return Query.gameObjects()
-            .nameEquals(objectName)
+        return this.getSarcophagusQuery()
             .findBestInteractable()
             .getOrNull()
+    }
+
+    fun getSarcophagusQuery(): GameObjectQuery {
+        return Query.gameObjects().nameEquals(objectName)
     }
 }

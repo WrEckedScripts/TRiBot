@@ -6,9 +6,9 @@ import scripts.utils.failsafes.LastActionTracker
 class StateManager(val logger: Logger) {
     private val states: MutableMap<String, Boolean> = mutableMapOf(
 //        State.PREPARE.name to false, TODO implement sequence
-        State.ROOM.name to false,
+        State.ROOM.name to true,
         State.FIGHT.name to true,
-        State.TUNNEL.name to true,
+        State.TUNNEL.name to false,
         State.LOOT.name to true,
     )
 
@@ -18,8 +18,8 @@ class StateManager(val logger: Logger) {
         )
     }
 
-    fun isCurrentState(state: String): Boolean? {
-        return this.states[state]
+    fun isCurrentState(state: String): Boolean {
+        return this.states[state] ?: true
     }
 
     fun getCurrentKey(): String {
