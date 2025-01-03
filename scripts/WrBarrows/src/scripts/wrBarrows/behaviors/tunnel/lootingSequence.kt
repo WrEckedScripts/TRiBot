@@ -5,16 +5,15 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.wrBarrows.behaviors.combat.tasks.CheckIAmUnderAttack
-import scripts.wrBarrows.behaviors.tunnel.tasks.looting.LootChest
+import scripts.wrBarrows.behaviors.tunnel.tasks.looting.OpenChest
+import scripts.wrBarrows.behaviors.tunnel.tasks.looting.SearchChest
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.State
 
 fun IParentNode.lootingSequence(managers: Container) = sequence {
-    //TODO implement selectors for each scenario to act accordingly
-
     selector {
-        condition { LootChest(managers).satisfied() }
-        condition { LootChest(managers).execute() }
+        condition { OpenChest(managers).satisfied() }
+        condition { OpenChest(managers).execute() }
     }
 
     selector {
@@ -22,8 +21,10 @@ fun IParentNode.lootingSequence(managers: Container) = sequence {
         condition { managers.stateManager.set(State.FIGHT.name) }
     }
 
-    // Get extra potential if necessary
-    // handle the looting screen - trigger profit calculations
-    // If we haven't seen the last brother yet, make sure we handle it correctly
-    // teleport back to barrows or bank for preparing.
+    selector {
+        condition { SearchChest(managers).satisfied() }
+        condition { SearchChest(managers).execute() }
+    }
+
+    //TODO leave room selector (teleport)
 }

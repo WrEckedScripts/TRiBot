@@ -8,7 +8,7 @@ class StateManager(val logger: Logger) {
 //        State.PREPARE.name to false, TODO implement sequence
         State.ROOM.name to true,
         State.FIGHT.name to true,
-        State.TUNNEL.name to false,
+        State.TUNNEL.name to false, //TODO due to start in tunnel missing some stuff.
         State.LOOT.name to true,
     )
 

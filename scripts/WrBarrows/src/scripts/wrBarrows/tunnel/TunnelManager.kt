@@ -2,7 +2,9 @@ package scripts.wrBarrows.tunnel
 
 import org.tribot.script.sdk.painting.Painting
 import org.tribot.script.sdk.query.Query
+import org.tribot.script.sdk.types.Area
 import org.tribot.script.sdk.types.GameObject
+import org.tribot.script.sdk.types.WorldTile
 import scripts.utils.Logger
 import java.awt.Color
 import java.awt.Graphics
@@ -61,5 +63,16 @@ class TunnelManager(val logger: Logger) {
 
     fun missesSpawn(): Boolean {
         return this.spawnedAt == null
+    }
+
+    fun insideChestRoom(): Boolean {
+        val area = Area.fromPolygon(
+            WorldTile(3546, 9702, 0),
+            WorldTile(3545, 9689, 0),
+            WorldTile(3558, 9689, 0),
+            WorldTile(3558, 9700, 0)
+        )
+
+        return area.containsMyPlayer()
     }
 }

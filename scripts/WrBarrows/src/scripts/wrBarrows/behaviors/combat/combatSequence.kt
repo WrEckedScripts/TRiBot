@@ -9,7 +9,6 @@ import scripts.utils.antiban.FatigueResolver
 import scripts.wrBarrows.behaviors.combat.tasks.AttackBrother
 import scripts.wrBarrows.behaviors.combat.tasks.ConsumeFood
 import scripts.wrBarrows.behaviors.combat.tasks.ConsumePotion
-import scripts.wrBarrows.behaviors.tunnel.tasks.looting.LootChest
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.State
 import scripts.wrBarrows.player.BarrowsArea
@@ -44,7 +43,7 @@ fun IParentNode.combatSequence(managers: Container) = sequence {
     }
 
     selector {
-        condition { !LootChest(managers).isInsideLootChamber() }
+        condition { !managers.tunnelManager.insideChestRoom() }
         condition { managers.stateManager.set(State.LOOT.name) }
     }
 

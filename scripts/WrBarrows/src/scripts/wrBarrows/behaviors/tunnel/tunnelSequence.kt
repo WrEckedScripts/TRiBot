@@ -4,10 +4,8 @@ import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
-import scripts.wrBarrows.behaviors.combat.tasks.CheckIAmUnderAttack
 import scripts.wrBarrows.behaviors.tunnel.tasks.pathing.LockPickDoors
 import scripts.wrBarrows.managers.Container
-import scripts.wrBarrows.managers.State
 
 fun IParentNode.tunnelSequence(managers: Container) = sequence {
 
@@ -19,15 +17,15 @@ fun IParentNode.tunnelSequence(managers: Container) = sequence {
             !managers.tunnelManager.missesSpawn()
         }
     }
-    selector {
-        condition { CheckIAmUnderAttack(managers).execute() }
-        condition { managers.stateManager.set(State.FIGHT.name) }
-    }
-
-    selector {
-        condition { !CheckIAmUnderAttack(managers).execute() }
-        condition { managers.stateManager.set(State.TUNNEL.name) }
-    }
+//    selector {
+//        condition { CheckIAmUnderAttack(managers).execute() }
+//        condition { managers.stateManager.set(State.FIGHT.name) }
+//    }
+//
+//    selector {
+//        condition { !CheckIAmUnderAttack(managers).execute() }
+//        condition { managers.stateManager.set(State.TUNNEL.name) }
+//    }
 
     selector {
         condition { LockPickDoors(managers).satisfied() }

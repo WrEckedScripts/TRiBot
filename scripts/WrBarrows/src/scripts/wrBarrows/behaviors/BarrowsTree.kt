@@ -7,7 +7,6 @@ import scripts.wrBarrows.behaviors.requirements.ensureIsMember
 import scripts.wrBarrows.behaviors.requirements.ensureLoggedIn
 import scripts.wrBarrows.behaviors.rooms.roomSequence
 import scripts.wrBarrows.behaviors.tunnel.lootingSequence
-import scripts.wrBarrows.behaviors.tunnel.tasks.looting.LootChest
 import scripts.wrBarrows.behaviors.tunnel.tunnelSequence
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.State
@@ -49,7 +48,7 @@ fun barrowsTree(
 
             selector {
                 condition {
-                    !LootChest(managers).isInsideLootChamber() && managers.stateManager.isCurrentState(State.LOOT.name)
+                    !managers.tunnelManager.insideChestRoom() && managers.stateManager.isCurrentState(State.LOOT.name)
                 }
                 condition {
                     managers.stateManager.set(State.LOOT.name)
