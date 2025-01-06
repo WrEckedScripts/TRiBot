@@ -19,6 +19,7 @@ import scripts.wrMotherlode.banking.actions.MineReadyInventoryBuilder
 import scripts.wrMotherlode.banking.actions.ensureMineReadyInventory
 import scripts.wrMotherlode.behaviours.motherlode.actions.fillHopperNode
 import scripts.wrMotherlode.behaviours.motherlode.actions.mineVeinsNode
+import scripts.wrMotherlode.behaviours.motherlode.actions.repairBrokenStrutNode
 import scripts.wrMotherlode.behaviours.motherlode.actions.walkToVeinsNode
 import scripts.wrMotherlode.managers.Container
 import kotlin.jvm.optionals.getOrNull
@@ -55,39 +56,7 @@ fun getMineTree(
             selector {
                 condition { managers.stateManager.isCurrentState("REPAIRING") }
                 sequence {
-                    condition {
-                        val brokenStrut = Query.gameObjects()
-                            .actionContains("Hammer")
-                            .findBestInteractable()
-                            .getOrNull()
-
-                        if (null == brokenStrut) {
-                            logger.info("No broken struts, continue-ing!")
-
-                            return@condition true
-                        }
-
-                        if (brokenStrut.tile.isOnMinimap || brokenStrut.tile.isVisible) {
-                            Waiting.waitUntil(20_000, 5_000 + FatigueResolver.getMilliseconds()) {
-                                brokenStrut.interact("Hammer")
-
-                                LastActionTracker.track("click")
-
-                                Waiting.wait(FatigueResolver.getMilliseconds())
-
-                                Query.gameObjects()
-                                    .actionContains("Hammer")
-                                    .findBestInteractable()
-                                    .isEmpty
-                            }
-                        } else {
-                            Waiting.waitUntil(15_000, 2_000 + FatigueResolver.getMilliseconds()) {
-                                LocalWalking.walkTo(brokenStrut.tile)
-
-                                MyPlayer.getTile() != brokenStrut.tile
-                            }
-                        }
-                    }
+                    repairBrokenStrutNode(logger)
                     condition {
                         managers.stateManager.moveToNextState()
                     }
@@ -174,6 +143,20 @@ fun getMineTree(
                         managers.stateManager.resetCycle("COLLECTING")
                     }
                 }
+            }
+
+            selector {
+                selector {
+                    condition { managers.stateManager.isCurrentState("FILLING") }
+                    condition { managers.stateManager.isCurrentState("COLLECTING") }
+                }
+                condition {
+                    null == Query.gameObjects()
+                        .actionContains("Hammer")
+                        .findBestInteractable()
+                        .getOrNull()
+                }
+                repairBrokenStrutNode(logger)
             }
 
             selector {

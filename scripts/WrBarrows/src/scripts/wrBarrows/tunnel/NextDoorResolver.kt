@@ -9,7 +9,28 @@ import java.awt.Color
 import java.awt.Graphics
 
 class NextDoorResolver(val doors: MutableList<GameObject>) {
-    fun paint(tile: WorldTile, color: Color) {
+
+    /**
+     * Paints and returns the next reachable door.
+     */
+    fun nextReachableDoor(): GameObject {
+        this.orderByDistanceDecending()
+
+        // Grab the closest door to us.
+        return this.doors.last {
+            this.paint(it.tile, Color.MAGENTA)
+            this.paintPathTowards(it.tile)
+        }
+    }
+
+    private fun orderByDistanceDecending() {
+        // Sort the map based on it's distance to MyPlayer.
+        this.doors.sortByDescending {
+            it.distance()
+        }
+    }
+
+    private fun paint(tile: WorldTile, color: Color) {
         if (!tile.isRendered) {
             return
         }
@@ -21,23 +42,12 @@ class NextDoorResolver(val doors: MutableList<GameObject>) {
         }
     }
 
-    fun furthestReachableDoor(): GameObject {
-        this.doors.sortByDescending {
-            it.distance()
-        }
-
-        return this.doors.last {
-            this.paint(it.tile, Color.MAGENTA)
-            this.getPath(it.tile)
-        }
-    }
-
-    fun getPath(tile: WorldTile): Boolean {
+    private fun paintPathTowards(tile: WorldTile): Boolean {
         val path = LocalWalking.Map.builder().source(MyPlayer.getTile())
             .build()
 
         Painting.addPaint { g: Graphics ->
-            g.color = Color.PINK
+            g.color = Color.GREEN
 
             path.getPath(tile).forEach {
                 g.drawPolygon(it.tile.bounds.get())

@@ -136,8 +136,8 @@ object FatigueResolver {
      * instead of
      * - Waiting.wait(FatigueResolver.getMilliseconds())
      */
-    fun await() {
-        Waiting.wait(this.getMilliseconds())
+    fun await(multiplier: Int = 1) {
+        Waiting.wait(this.getMilliseconds() * multiplier)
     }
 
     /**

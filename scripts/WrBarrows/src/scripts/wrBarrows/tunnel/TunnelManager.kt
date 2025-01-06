@@ -66,6 +66,10 @@ class TunnelManager(val logger: Logger) {
         return this.spawnedAt == null
     }
 
+    fun hasSpawn(): Boolean {
+        return this.spawnedAt != null
+    }
+
     fun insideChestRoom(): Boolean {
         val area = Area.fromPolygon(
             WorldTile(3546, 9702, 0),

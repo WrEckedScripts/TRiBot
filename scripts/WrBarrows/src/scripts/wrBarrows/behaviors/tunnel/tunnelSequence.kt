@@ -12,11 +12,11 @@ import scripts.wrBarrows.managers.State
 fun IParentNode.tunnelSequence(managers: Container) = sequence {
 
     selector {
-        condition { !managers.tunnelManager.missesSpawn() }
+        condition { managers.tunnelManager.hasSpawn() }
         condition {
             managers.tunnelManager.init()
 
-            !managers.tunnelManager.missesSpawn()
+            managers.tunnelManager.hasSpawn()
         }
     }
 

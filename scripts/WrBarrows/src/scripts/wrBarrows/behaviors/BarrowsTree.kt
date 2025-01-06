@@ -22,6 +22,9 @@ fun barrowsTree(
             //TODO ensure safely handling exceptions!
             ensureIsMember()
 
+            // TODO failsafes
+            // - logout upon sent to lumbridge / listen for oh dear you died message etc.
+
 //            selector {
 //                condition { managers.stateManager.isCurrentState(State.PREPARE.name) }
 //                //TODO prepare sequence

@@ -22,13 +22,28 @@ fun IParentNode.lootingSequence(managers: Container) = sequence {
                 !managers.combatManager.targetBrotherIsSpawned()
             }
         }
-        condition { managers.stateManager.set(State.FIGHT.name) }
+        condition {
+            managers.combatManager.satisfiesAttack()
+            managers.stateManager.set(State.FIGHT.name)
+        }
     }
 
     selector {
+        condition {
+            Waiting.waitUntil(5_000) {
+                !managers.combatManager.targetBrotherIsSpawned()
+            }
+        }
+        condition { managers.combatManager.targetBrotherIsSpawned() }
         condition { SearchChest(managers).satisfied() }
         condition { SearchChest(managers).execute() }
     }
 
     //TODO leave room selector (teleport)
+
+    // If we spot the widget directly grab a screenshot
+    // and teleport out to either the bank or for next trip.
+    // - Let's have a manager/resolver dictate if we've got enough for a new trip.
+    // - - Keep in mind, this has quite some different factors
+    // - - - Prayer pots, food, lockpick charges, teleports, runes for casts.
 }
