@@ -25,43 +25,39 @@ class OverlayPainter(val managers: Container) {
                 .label("Trips")
                 .value { ResourceCounter.getResourceCount("Trips") }
                 .build()
-        )
-
-        mainPaint.row(
+        ).row(
             paintTemplate.toBuilder()
                 .label("Barrow Items")
                 .value { ResourceCounter.getResourceCount("Barrow Items") }
                 .build()
-        )
-
-        mainPaint.row(
+        ).row(
             paintTemplate.toBuilder()
                 .label("State")
                 .value { this.managers.stateManager.getCurrentKey() }
                 .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Combat State")
+                .value { this.managers.combatManager.satisfiesInCombatState() }
+                .build()
+        ).row(
+            paintTemplate.toBuilder()
+                .label("Attack state")
+                .value { this.managers.combatManager.satisfiesAttack() }
+                .build()
         )
-
-        if (this.managers.roomManager.initialized) {
-            mainPaint.row(
+            .row(
                 paintTemplate.toBuilder()
-                    .label("Target Crypt")
-                    .value { this.managers.roomManager.getTargetCrypt().room.name }
+                    .label("Attacking")
+                    .value { this.managers.combatManager.playerIsAttacking() }
                     .build()
             )
-            mainPaint.row(
+            .row(
                 paintTemplate.toBuilder()
-                    .label("- completed")
-                    .value { this.managers.roomManager.getCurrentCrypt()?.value?.isCompleted }
+                    .label("Spawned brother")
+                    .value { this.managers.combatManager.getTargetBrother()?.brotherName }
                     .build()
             )
-
-            mainPaint.row(
-                paintTemplate.toBuilder()
-                    .label("- tunnel")
-                    .value { this.managers.roomManager.getCurrentCrypt()?.value?.isTunnel }
-                    .build()
-            )
-        }
 
         Painting.addPaint { mainPaint.build().render(it) }
     }

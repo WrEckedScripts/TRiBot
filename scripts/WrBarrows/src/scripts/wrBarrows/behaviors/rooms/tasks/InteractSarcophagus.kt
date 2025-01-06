@@ -5,7 +5,6 @@ import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.query.GameObjectQuery
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.GameObject
-import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
 import scripts.wrBarrows.behaviors.combat.tasks.DisablePrayer
 import scripts.wrBarrows.behaviors.combat.tasks.EnablePrayer
@@ -22,9 +21,6 @@ class InteractSarcophagus(val managers: Container) {
     private var currentRoomState: RoomState? = this.managers.roomManager.getCurrentCrypt()?.value
 
     fun satisfied(): Boolean {
-        Logger("InteractSarcophagus").debug("- - Completed: ${this.currentRoomState?.isCompleted}")
-        Logger("InteractSarcophagus").debug("- - Tunnel: ${this.currentRoomState?.isTunnel}")
-
         if (this.currentRoomState?.isTunnel ?: false) {
             return false
         }
@@ -37,42 +33,29 @@ class InteractSarcophagus(val managers: Container) {
             this.currentRoomState = this.managers.roomManager.getCurrentCrypt()!!.value
         }
 
-        val prayer = this.currentRoomState!!.room.brother.prayer
-        Logger("InteractSarcophagus").debug("execute() - Prayer: $prayer")
-        if (prayer != null) {
-            Waiting.waitUntil(20_000) {
-                EnablePrayer(prayer.protectionPrayer).execute()
-            }
+        Waiting.waitUntil(20_000) {
+            EnablePrayer().execute(this.currentRoomState!!.room.brother)
         }
-
-        Logger("InteractSarcophagus").debug("execute() - Prayer: $prayer enabled?")
 
         // Interact sarcophagus
         Waiting.waitUntil(25_000) {
             this.findSarcophagus()?.interact(action) ?: false
         }
 
-        Logger("InteractSarcophagus").debug("execute() - Interacted with the sarcophagus?")
-
         // Slight delay to see if a chatScreen pops-up
         Waiting.waitUntil(4_000) {
             ChatScreen.isOpen()
         }
-
-        Logger("InteractSarcophagus").debug("${ChatScreen.isOpen()}")
-        Logger("InteractSarcophagus").debug("${ChatScreen.containsText("hidden")}")
 
         if (
             ChatScreen.isClickContinueOpen()
             && ChatScreen.containsText("hidden")
         ) {
             this.managers.roomManager.markAsTunnel(this.currentRoomState!!.room)
-            Logger("InteractSarcophagus").debug("execute() - Marking room as tunnel")
 
             if (this.managers.roomManager.shouldEnterTunnel()) {
                 ChatScreen.clickContinue()
 
-                Logger("InteractSarcophagus").debug("execute() - Entering tunnel")
                 Waiting.waitUntil {
                     ChatScreen.isSelectOptionOpen()
                 }

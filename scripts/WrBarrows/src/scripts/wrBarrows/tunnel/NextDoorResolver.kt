@@ -10,6 +10,10 @@ import java.awt.Graphics
 
 class NextDoorResolver(val doors: MutableList<GameObject>) {
     fun paint(tile: WorldTile, color: Color) {
+        if (!tile.isRendered) {
+            return
+        }
+
         Painting.addPaint { g: Graphics ->
             g.color = color
             g.drawPolygon(tile.bounds.get())

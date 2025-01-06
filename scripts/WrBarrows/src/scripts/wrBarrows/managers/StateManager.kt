@@ -6,9 +6,9 @@ import scripts.utils.failsafes.LastActionTracker
 class StateManager(val logger: Logger) {
     private val states: MutableMap<String, Boolean> = mutableMapOf(
 //        State.PREPARE.name to false, TODO implement sequence
-        State.ROOM.name to true,
+        State.ROOM.name to false,
         State.FIGHT.name to true,
-        State.TUNNEL.name to false, //TODO due to start in tunnel missing some stuff.
+        State.TUNNEL.name to true,
         State.LOOT.name to true,
     )
 

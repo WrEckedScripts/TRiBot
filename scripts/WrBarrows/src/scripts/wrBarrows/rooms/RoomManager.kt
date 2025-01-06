@@ -17,7 +17,7 @@ class RoomManager(val logger: Logger) {
 
         // This should directly go according to the order we want to.
         Room.values().forEach {
-            this.cryptCollection[it.name] = RoomState(it, false, false)
+            this.cryptCollection[it.name] = RoomState(it, it.brother.varbit.get() == 1, false)
         }
 
         Room.values().forEach {

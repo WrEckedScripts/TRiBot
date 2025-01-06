@@ -6,9 +6,9 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import scripts.utils.antiban.FatigueResolver
-import scripts.wrBarrows.behaviors.combat.tasks.AttackBrother
 import scripts.wrBarrows.behaviors.combat.tasks.ConsumeFood
 import scripts.wrBarrows.behaviors.combat.tasks.ConsumePotion
+import scripts.wrBarrows.behaviors.combat.tasks.EnablePrayer
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.State
 import scripts.wrBarrows.player.BarrowsArea
@@ -28,6 +28,7 @@ fun IParentNode.combatSequence(managers: Container) = sequence {
 
     selector {
         //TODO only when a prayer brother is attacking us / we're attacking.
+        condition { !managers.combatManager.targetBrotherIsSpawned() }
         condition { ConsumePotion("Prayer potion").satisfied() }
         condition { ConsumePotion("Prayer potion").execute() }
     }
@@ -38,16 +39,29 @@ fun IParentNode.combatSequence(managers: Container) = sequence {
     }
 
     selector {
-        condition { AttackBrother(managers).satisfied() }
-        condition { AttackBrother(managers).execute() }
+        condition { !managers.combatManager.targetBrotherIsSpawned() }
+        condition { EnablePrayer().satisfied(managers.combatManager.getTargetBrother()!!) }
     }
 
     selector {
+        condition {
+            Waiting.waitUntil(5_000) {
+                !managers.combatManager.targetBrotherIsSpawned()
+            }
+        }
+        condition { managers.combatManager.satisfiesInCombatState() }
+        condition { managers.combatManager.playerIsAttacking() }
+        condition { managers.combatManager.satisfiesAttack() }
+    }
+
+    selector {
+        condition { !managers.combatManager.targetBrotherIsKilled() }
         condition { !managers.tunnelManager.insideChestRoom() }
         condition { managers.stateManager.set(State.LOOT.name) }
     }
 
     selector {
+        condition { !managers.combatManager.targetBrotherIsKilled() }
         condition { !BarrowsArea.BARROWS.crypt.containsMyPlayer() }
         condition { managers.stateManager.set(State.TUNNEL.name) }
     }
@@ -58,8 +72,9 @@ fun IParentNode.combatSequence(managers: Container) = sequence {
             // like we do within the AttackBrother class.
             Waiting.wait(FatigueResolver.getMilliseconds())
 
-            AttackBrother(managers).isInCombat()
+            !managers.combatManager.satisfiesInCombatState()
         }
+        condition { !managers.combatManager.targetBrotherIsKilled() }
         condition {
             managers.roomManager.markAsCompleted(
                 managers.roomManager.getCurrentCrypt()!!.value.room

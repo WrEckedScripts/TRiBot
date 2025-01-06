@@ -1,10 +1,10 @@
 package scripts.wrBarrows.behaviors.tunnel
 
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.IParentNode
 import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
-import scripts.wrBarrows.behaviors.combat.tasks.CheckIAmUnderAttack
 import scripts.wrBarrows.behaviors.tunnel.tasks.looting.OpenChest
 import scripts.wrBarrows.behaviors.tunnel.tasks.looting.SearchChest
 import scripts.wrBarrows.managers.Container
@@ -17,7 +17,11 @@ fun IParentNode.lootingSequence(managers: Container) = sequence {
     }
 
     selector {
-        condition { CheckIAmUnderAttack(managers).execute() }
+        condition {
+            Waiting.waitUntil(5_000) {
+                !managers.combatManager.targetBrotherIsSpawned()
+            }
+        }
         condition { managers.stateManager.set(State.FIGHT.name) }
     }
 

@@ -11,6 +11,7 @@ import scripts.utils.calculators.ResourceCounter
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
 import scripts.wrBarrows.behaviors.barrowsTree
+import scripts.wrBarrows.managers.CombatManager
 import scripts.wrBarrows.managers.Container
 import scripts.wrBarrows.managers.StateManager
 import scripts.wrBarrows.overlay.OverlayPainter
@@ -40,7 +41,8 @@ class BarrowsScript : TribotScript {
             RepetitiveActionManager(logger),
             RoomManager(logger),
             StateManager(logger),
-            TunnelManager(logger)
+            TunnelManager(logger),
+            CombatManager(logger)
         )
     }
 

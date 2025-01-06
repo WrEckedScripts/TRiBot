@@ -8,5 +8,6 @@ data class Container(
     val repetitiveActionManager: RepetitiveActionManager,
     val roomManager: RoomManager,
     val stateManager: StateManager,
-    val tunnelManager: TunnelManager
+    val tunnelManager: TunnelManager,
+    val combatManager: CombatManager
 )

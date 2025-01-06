@@ -14,12 +14,13 @@ class TunnelManager(val logger: Logger) {
     private var doors: MutableList<GameObject> = mutableListOf()
 
     fun init() {
-        logger.error("Initialize TunnelManager")
+        logger.debug("Initialize TunnelManager")
+
         this.setSpawn()
-        logger.debug(spawnedAt)
-        logger.debug(doors)
         this.setDoors()
-        logger.debug(doors)
+
+        logger.debug("- -$spawnedAt")
+        logger.debug("- -$doors")
     }
 
     fun setSpawn() {

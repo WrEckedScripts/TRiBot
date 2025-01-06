@@ -3,7 +3,6 @@ package scripts.wrBarrows.behaviors.combat.tasks
 import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.types.InventoryItem
-import scripts.utils.Logger
 import kotlin.jvm.optionals.getOrNull
 
 class ConsumeFood {
@@ -23,7 +22,6 @@ class ConsumeFood {
     }
 
     private fun satisfiesHitpoints(): Boolean {
-        Logger("ConsumeFood").debug("satisfiesHitpoints() -> ${MyPlayer.getCurrentHealthPercent() >= 70}")
         return MyPlayer.getCurrentHealthPercent() >= 70
     }
 
