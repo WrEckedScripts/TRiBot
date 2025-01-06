@@ -32,10 +32,11 @@ class CombatManager(val logger: Logger) {
 
     // if a brother is spawned we should attack and set it as target
     fun targetBrotherIsSpawned(): Boolean {
-        val spawned = this.getNpcQuery().isAny
+        val query = this.getNpcQuery()
+        val spawned = query.isAny
 
         if (spawned) {
-            this.target = this.getNpcQuery().findBestInteractable().get()
+            this.target = query.findBestInteractable().getOrNull()
         }
 
         return spawned
@@ -67,7 +68,7 @@ class CombatManager(val logger: Logger) {
         }
 
         val isInCombat = Waiting.waitUntil(2_500) { !this.satisfiesInCombatState() }
-        val isAttacking = Waiting.waitUntil {
+        val isAttacking = Waiting.waitUntil(2_500) {
             this.target?.hitsplats.isNullOrEmpty()
                     && MyPlayer.getAnimation() != -1
                     && MyPlayer.getAnimation() != snapshotPlayerAnimation
