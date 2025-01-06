@@ -7,9 +7,8 @@ import org.tribot.script.sdk.frameworks.behaviortree.condition
 import org.tribot.script.sdk.frameworks.behaviortree.selector
 import org.tribot.script.sdk.frameworks.behaviortree.sequence
 import org.tribot.script.sdk.query.Query
-import org.tribot.script.sdk.tasks.Amount
-import org.tribot.script.sdk.tasks.BankTask
 import scripts.utils.Logger
+import scripts.utils.antiban.FatigueResolver
 import scripts.wrMotherlode.managers.Container
 
 fun IParentNode.ensureMineReadyInventory(
@@ -29,6 +28,8 @@ fun IParentNode.ensureMineReadyInventory(
                                 it.click("Drop")
                             }
 
+                        Waiting.wait(FatigueResolver.getMilliseconds() * 2)
+
                         if (!Inventory.contains("Pay-dirt")) {
                             managers.stateManager.resetCycle("COLLECTING")
                         }
@@ -37,20 +38,14 @@ fun IParentNode.ensureMineReadyInventory(
                     }
                 }
 
-                val bankTask = BankTask.builder()
-//                    .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
-                    .addInvItem(11920, Amount.of(1)) // Dragon Pickaxe
-                    .addInvItem(2347, Amount.of(1)) // Hammer
-                    // Pay-dirt, although not bankable, we should accept them, this avoids trying to bank them.
-                    .addInvItem(12011, Amount.range(0, 26))
-                    .build()
+                val bankTask = MineReadyInventoryBuilder().task()
 
-                if (!bankTask.isSatisfied()) {
-                    logger.error("Our inventory is not satisfied, executing bankTask")
-                    bankTask.execute()
-                }
+                Waiting.waitUntil(30_000, FatigueResolver.getMilliseconds() * 4) {
+                    if (!bankTask.isSatisfied()) {
+                        logger.error("Our inventory is not satisfied, executing bankTask")
+                        bankTask.execute()
+                    }
 
-                Waiting.waitUntil(30_000) {
                     bankTask.isSatisfied()
                 }
             }

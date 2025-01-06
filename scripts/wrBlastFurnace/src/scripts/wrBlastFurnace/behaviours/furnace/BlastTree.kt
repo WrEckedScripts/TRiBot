@@ -31,13 +31,6 @@ fun getBlastTree(
                 condition { Login.login() }
             }
 
-            selector {
-                condition { MyPlayer.isMember() }
-                condition {
-                    throw Exception("Ran out of membership..")
-                }
-            }
-
             //World hopping
             selector {
                 condition { Settings.getWorld() == WorldHopper.getCurrentWorld() }

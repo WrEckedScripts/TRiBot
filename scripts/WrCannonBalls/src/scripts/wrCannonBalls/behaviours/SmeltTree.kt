@@ -4,6 +4,8 @@ import org.tribot.script.sdk.*
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
 import scripts.utils.antiban.FatigueResolver
+import scripts.utils.calculators.ResourceCounter
+import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrCannonBalls.behaviours.banking.CannonballInventory
 import scripts.wrCannonBalls.behaviours.banking.ensureSmeltReadyInventory
 import scripts.wrCannonBalls.behaviours.smelting.InteractFurnace
@@ -27,18 +29,23 @@ fun getSmeltTree(
             }
 
             selector {
-                condition { MyPlayer.isMember() }
-                condition {
-                    throw Exception("Ran out of membership..")
-                }
-            }
-
-            selector {
                 condition { !MakeScreen.isOpen() }
                 condition {
                     logger.warn("Found open makeScreen, time to re-init cannonballs smelting")
                     Waiting.wait(FatigueResolver.getMilliseconds())
                     MakeScreen.makeAll("Cannonball")
+                }
+            }
+
+            selector {
+                perform {
+                    DiscordNotifier.notify(
+                        message = "${MyPlayer.getUsername()} is currently at: ${
+                            ResourceCounter.getPaintLabelFor(
+                                "Cannonball"
+                            )
+                        }"
+                    )
                 }
             }
 

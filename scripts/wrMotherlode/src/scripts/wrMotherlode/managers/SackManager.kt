@@ -4,7 +4,7 @@ import org.tribot.script.sdk.GameState
 import scripts.utils.Logger
 
 class SackManager(val logger: Logger) {
-    private val maximumSackSpace = 189 // todo calculate if sack upgraded or not
+    private val maximumSackSpace = 104 // todo calculate if sack upgraded or not
     private val sackVarbit = 5558
 
     /**

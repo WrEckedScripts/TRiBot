@@ -12,6 +12,7 @@ import scripts.utils.calculators.skills.TrackerCollection
 import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.failsafes.RepetitiveActionManager
 import scripts.utils.mouse.MousePainter
+import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrCannonBalls.behaviours.getSmeltTree
 import scripts.wrCannonBalls.managers.Container
 import scripts.wrCannonBalls.overlay.OverlayPainter
@@ -58,6 +59,11 @@ class CannonBallsScript : TribotScript {
                     Login.login()
                 }
             }
+
+            DiscordNotifier.initConfig(
+                "https://discord.com/api/webhooks/1279066926953402419/VBj8I3sB4Scj73MoV_p1Ei-uUGOCW-b09swi6gKMNVC_o1MsL_eQDkOuyTH47-3a38w-",
+                60
+            )
 
             LastActionTracker.track("state")
             val smeltTree = getSmeltTree(logger, managers)

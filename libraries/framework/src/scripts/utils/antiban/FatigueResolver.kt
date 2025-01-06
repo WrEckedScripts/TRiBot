@@ -1,6 +1,7 @@
 package scripts.utils.antiban
 
 import org.tribot.api.input.Mouse
+import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.antiban.AntibanProperties
 import org.tribot.script.sdk.antiban.PlayerPreferences
 import scripts.utils.Logger
@@ -122,11 +123,21 @@ object FatigueResolver {
             }}"
         )
 
-        Lottery.execute(probability = Random.nextDouble(0.62, 0.84)) {
+        Lottery.execute(probability = Random.nextDouble(0.05, 0.13)) {
             this.adjustMouseSpeed(runtimeValue, currentHourValue)
         }
 
         return calculateDelay(adjustedMean, adjustedSd).first
+    }
+
+    /**
+     * Slight helper method to call
+     * - FatigueResolver.await()
+     * instead of
+     * - Waiting.wait(FatigueResolver.getMilliseconds())
+     */
+    fun await() {
+        Waiting.wait(this.getMilliseconds())
     }
 
     /**

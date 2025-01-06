@@ -7,8 +7,6 @@ import org.tribot.script.sdk.MyPlayer
 import org.tribot.script.sdk.Waiting
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import org.tribot.script.sdk.query.Query
-import org.tribot.script.sdk.tasks.Amount
-import org.tribot.script.sdk.tasks.BankTask
 import org.tribot.script.sdk.types.WorldTile
 import org.tribot.script.sdk.util.TribotRandom
 import org.tribot.script.sdk.walking.LocalWalking
@@ -17,6 +15,7 @@ import scripts.utils.antiban.FatigueResolver
 import scripts.utils.calculators.ResourceCounter
 import scripts.utils.failsafes.LastActionTracker
 import scripts.utils.progress.webhook.DiscordNotifier
+import scripts.wrMotherlode.banking.actions.MineReadyInventoryBuilder
 import scripts.wrMotherlode.banking.actions.ensureMineReadyInventory
 import scripts.wrMotherlode.behaviours.motherlode.actions.fillHopperNode
 import scripts.wrMotherlode.behaviours.motherlode.actions.mineVeinsNode
@@ -141,11 +140,9 @@ fun getMineTree(
                         //END
 
                         // BEGIN: bankLootNode
-                        val bankTask = BankTask.builder()
-//                            .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
-                            .addInvItem(11920, Amount.of(1)) // Dragon Pickaxe
-                            .addInvItem(2347, Amount.of(1)) // Hammer
-                            .build()
+                        MineReadyInventoryBuilder().clearPayDirt()
+
+                        val bankTask = MineReadyInventoryBuilder().task()
 
                         Waiting.waitUntil {
                             if (!bankTask.isSatisfied() || Inventory.getFilledSlots() > 2) {
