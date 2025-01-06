@@ -36,7 +36,6 @@ fun IParentNode.fillHopperNode(
 
         // Fill the hopper
         val filled = Waiting.waitUntil(15_000) {
-            logger.info("FILL HOPPER")
             Query.gameObjects()
                 .nameEquals("Hopper")
                 .findBestInteractable()

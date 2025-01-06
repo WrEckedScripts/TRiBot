@@ -24,7 +24,6 @@ fun IParentNode.mineVeinsNode(
 ) = sequence {
     condition {
         if (Inventory.getEmptySlots() == 0) {
-            logger.debug("Our inventory is full! moving to next state.")
             ResourceCounter.increment("Pay-dirt", Inventory.getCount("Pay-dirt"))
             managers.stateManager.moveToNextState()
 
@@ -78,7 +77,6 @@ fun IParentNode.mineVeinsNode(
 
         if (Inventory.getCount("Pay-dirt") >= managers.sackManager.getRemainingSpace()) {
             ResourceCounter.increment("Pay-dirt", Inventory.getCount("Pay-dirt"))
-            logger.debug("We mined enough, early stopping mining")
 
             managers.stateManager.moveToNextState()
 

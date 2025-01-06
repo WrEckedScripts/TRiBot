@@ -44,15 +44,12 @@ class StateManager(val logger: Logger) {
 
             LastActionTracker.track("state")
             return true
-        } else {
-            logger.error("[State] - No state found...")
         }
 
         return false
     }
 
     fun set(to: String): Boolean {
-        this.logger.error("Changing state to: ${to}")
         for (key in this.states.keys) {
             this.states[key] = true
         }

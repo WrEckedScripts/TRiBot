@@ -146,11 +146,9 @@ fun getMineTree(
             }
 
             selector {
-                selector {
-                    condition { managers.stateManager.isCurrentState("FILLING") }
-                    condition { managers.stateManager.isCurrentState("COLLECTING") }
-                }
+                condition { managers.stateManager.getCurrentKey() == "MINING" }
                 condition {
+                    logger.warn("Verifying if we need to repair..")
                     null == Query.gameObjects()
                         .actionContains("Hammer")
                         .findBestInteractable()
