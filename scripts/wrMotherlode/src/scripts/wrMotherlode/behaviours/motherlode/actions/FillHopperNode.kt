@@ -13,6 +13,7 @@ import org.tribot.script.sdk.walking.LocalWalking
 import scripts.utils.Logger
 import scripts.utils.antiban.Lottery
 import scripts.utils.failsafes.LastActionTracker
+import scripts.wrMotherlode.banking.actions.MineReadyInventoryBuilder
 import scripts.wrMotherlode.managers.Container
 import kotlin.jvm.optionals.getOrNull
 import kotlin.random.Random
@@ -22,7 +23,7 @@ fun IParentNode.fillHopperNode(
     managers: Container
 ) = sequence {
     condition {
-        managers.repetitiveActionManager.increment("fill-hopper", 15)
+        managers.repetitiveActionManager.increment("fill-hopper", 4)
 
         // Walk towards the hopper, if we should
         val hopperTile = WorldTile(3750, 5673, 0)
@@ -55,14 +56,10 @@ fun IParentNode.fillHopperNode(
             // todo, curious if this is correctly calculated once the wheels aren't spinning..
             //  we could also listen for the chat..
             if (!managers.sackManager.canBeFilled()) {
-                Query.inventory()
-                    .nameEquals("Pay-dirt")
-                    .forEach {
-                        it.click("Drop")
-                    }
+                MineReadyInventoryBuilder().clearPayDirt()
             }
 
-            !Inventory.contains("Pay-dirt")
+            Inventory.getCount(12011) == 0
         }
 
         if (filled) {
