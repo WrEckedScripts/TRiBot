@@ -32,7 +32,7 @@ fun getFoundryTree(
             }
 
             selector {
-                condition { MyPlayer.isMember() }
+                condition { Login.isLoggedIn() && MyPlayer.isMember() }
                 condition {
                     throw Exception("Ran out of membership..")
                 }
