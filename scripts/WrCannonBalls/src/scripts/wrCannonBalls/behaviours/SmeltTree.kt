@@ -29,6 +29,13 @@ fun getSmeltTree(
             }
 
             selector {
+                condition { Login.isLoggedIn() && MyPlayer.isMember() }
+                condition {
+                    throw Exception("Ran out of membership..")
+                }
+            }
+
+            selector {
                 condition { !MakeScreen.isOpen() }
                 condition {
                     logger.warn("Found open makeScreen, time to re-init cannonballs smelting")

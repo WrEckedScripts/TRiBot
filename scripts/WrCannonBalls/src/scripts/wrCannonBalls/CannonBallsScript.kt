@@ -15,6 +15,7 @@ import scripts.utils.mouse.MousePainter
 import scripts.utils.progress.webhook.DiscordNotifier
 import scripts.wrCannonBalls.behaviours.getSmeltTree
 import scripts.wrCannonBalls.managers.Container
+import scripts.wrCannonBalls.managers.Settings
 import scripts.wrCannonBalls.overlay.OverlayPainter
 
 @TribotScriptManifest(
@@ -52,6 +53,18 @@ class CannonBallsScript : TribotScript {
     override fun execute(arg: String) {
         setupHelpers()
         setupCalculators()
+
+        // TODO refactor to use either "best" or a defined mould via args.
+        // - double (best)
+        // - normal (regular)
+        // We'll default to "best" if no args supplied
+        // we'll need to, for the first time open the bank, define which we have and set the setting.
+
+        if (arg == "double") {
+            Settings.setToDoubleMould()
+        }
+
+        Logger("Setup").warn("Using mould: ${Settings.mouldId}")
 
         try {
             if (!Login.isLoggedIn()) {

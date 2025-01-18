@@ -162,6 +162,8 @@ object FatigueResolver {
             else -> Random.nextDouble(1.5, 1.6) // After 10 hours - tired
         }
 
+        //TODO we need to have a full 24-hr cycle (re-initting the RuntimeTracker)
+
         return timeOfDayModifier * runtimeFatigue
     }
 }
