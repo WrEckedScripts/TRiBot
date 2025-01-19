@@ -5,7 +5,7 @@ import kotlinx.coroutines.*
 import java.io.BufferedWriter
 import java.net.Socket
 
-class ClientSocket {
+class ClientSocket(val port: Int) {
     private lateinit var out: BufferedWriter
     private var isRunning = true // Keeps the client alive
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob()) // Custom CoroutineScope
@@ -13,7 +13,7 @@ class ClientSocket {
     fun start() {
         scope.launch {
             val client = try {
-                Socket("127.0.0.1", 22345)
+                Socket("127.0.0.1", port)
             } catch (e: Exception) {
                 println("Could not connect to the server: ${e.message}")
                 return@launch
@@ -52,7 +52,7 @@ class ClientSocket {
         }
     }
 
-    fun sendMessage(action: TestAction) {
+    fun sendMessage(action: Payload) {
         scope.launch {
             if (::out.isInitialized) {
                 val json = Gson().toJson(action)

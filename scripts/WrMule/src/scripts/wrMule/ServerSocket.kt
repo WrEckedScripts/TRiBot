@@ -2,6 +2,7 @@ package scripts.wrMule
 
 import com.google.gson.Gson
 import kotlinx.coroutines.*
+import org.tribot.script.sdk.Log
 import java.net.ServerSocket
 import java.net.Socket
 
@@ -13,8 +14,8 @@ class ServerSocket {
     fun start() {
         scope.launch {
             try {
-                server = ServerSocket(22345)
-                println("Server started on port 12345")
+                server = ServerSocket(0)
+                Log.warn("Server started on ${server.localPort}")
 
                 while (isActive) {
                     val client = server.accept()
@@ -39,15 +40,14 @@ class ServerSocket {
                     while (isActive) {
                         val clientMessage = clientIn.readLine() ?: break
                         println("Client (${client.inetAddress.hostAddress}): $clientMessage")
-                        val test = gson.fromJson(clientMessage, TestAction::class.java)
+                        val payload = gson.fromJson(clientMessage, Payload::class.java)
 
-                        println(test.items.toString())
-                        println(test.action)
-                        println(test.subject)
-                        println(test.coordinates.toString())
+                        println(payload)
+                        WorkerTarget.target(payload.player)
 
+                        clientOut.write(gson.toJson(Payload()))
                         // Send acknowledgment
-                        clientOut.write(gson.toJson("received"))
+                        clientOut.write(gson.toJson("see-you-soon"))
                         clientOut.newLine()
                         clientOut.flush()
                     }

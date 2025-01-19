@@ -1,8 +1,10 @@
 package scripts.wrMule
 
+import org.tribot.script.sdk.Log
 import org.tribot.script.sdk.Login
-import org.tribot.script.sdk.ScriptListening
+import org.tribot.script.sdk.MessageListening
 import org.tribot.script.sdk.frameworks.behaviortree.*
+import org.tribot.script.sdk.query.Query
 import org.tribot.script.sdk.script.TribotScript
 import org.tribot.script.sdk.script.TribotScriptManifest
 
@@ -13,25 +15,34 @@ import org.tribot.script.sdk.script.TribotScriptManifest
     author = "WrEcked"
 )
 class MuleScript : TribotScript {
-
-
     override fun execute(p0: String) {
         val client = ServerSocket()
         client.start()
 
-        // Just to mimic some event that triggers a mule message
-        ScriptListening.addMouseClickListener { point, i, b ->
-            println("Clicked")
+        MessageListening.addTradeRequestListener { name: String ->
+            if (name == WorkerTarget.targetName) {
+                Query.players().nameEquals(WorkerTarget.targetName)
+                    .findBestInteractable()
+                    .get()
+                    .interact("Trade")
+            }
         }
-
 
         val tree = behaviorTree {
             repeatUntil(BehaviorTreeStatus.KILL) {
-                selector {
-                    condition { Login.isLoggedIn() }
-                    perform {
-                        Thread.sleep(10_000)
+                sequence {
+                    //TODO only if a mule request comes in
+                    selector {
+                        condition { Login.isLoggedIn() }
+                        condition { Login.login() }
+                    }
 
+
+                    selector {
+                        condition { WorkerTarget.hasActiveTarget == false }
+                        perform {
+                            Log.debug("Looks like we got a target?")
+                        }
                     }
                 }
             }
