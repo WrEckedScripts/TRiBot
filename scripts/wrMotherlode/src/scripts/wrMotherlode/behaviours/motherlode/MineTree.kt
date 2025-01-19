@@ -41,9 +41,11 @@ fun getMineTree(
             }
 
             selector {
-                condition { MyPlayer.isMember() }
-                condition {
-                    throw Exception("Ran out of membership..")
+                condition { !Login.isLoggedIn() }
+                perform {
+                    if (!MyPlayer.isMember()) {
+                        throw Exception("Ran out of membership..")
+                    }
                 }
             }
 

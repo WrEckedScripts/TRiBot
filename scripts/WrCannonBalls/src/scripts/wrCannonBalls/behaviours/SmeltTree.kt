@@ -29,11 +29,14 @@ fun getSmeltTree(
             }
 
             selector {
-                condition { Login.isLoggedIn() && MyPlayer.isMember() }
-                condition {
-                    throw Exception("Ran out of membership..")
+                condition { !Login.isLoggedIn() }
+                perform {
+                    if (!MyPlayer.isMember()) {
+                        throw Exception("Ran out of membership..")
+                    }
                 }
             }
+
 
             selector {
                 condition { !MakeScreen.isOpen() }

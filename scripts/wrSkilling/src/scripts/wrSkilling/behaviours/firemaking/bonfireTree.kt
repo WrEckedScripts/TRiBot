@@ -19,13 +19,21 @@ fun BonfireTree(
         sequence {
             selector {
                 condition { Login.isLoggedIn() }
-                condition { Login.login() }
+                condition {
+                    val loggedIn = Waiting.waitUntil {
+                        Login.login()
+                    }
+
+                    loggedIn
+                }
             }
 
             selector {
-                condition { MyPlayer.isMember() }
-                condition {
-                    throw Exception("Ran out of membership..")
+                condition { !Login.isLoggedIn() }
+                perform {
+                    if (!MyPlayer.isMember()) {
+                        throw Exception("Ran out of membership..")
+                    }
                 }
             }
 

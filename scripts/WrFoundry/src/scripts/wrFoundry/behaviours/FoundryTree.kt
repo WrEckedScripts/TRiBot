@@ -21,9 +21,6 @@ fun getFoundryTree(
 ) = behaviorTree {
     repeatUntil(BehaviorTreeStatus.KILL) {
         sequence {
-            /**
-             * Ensures that we're logged in, after we get disconnected for example.
-             */
             selector {
                 condition { Login.isLoggedIn() }
                 condition {
@@ -32,9 +29,11 @@ fun getFoundryTree(
             }
 
             selector {
-                condition { Login.isLoggedIn() && MyPlayer.isMember() }
-                condition {
-                    throw Exception("Ran out of membership..")
+                condition { !Login.isLoggedIn() }
+                perform {
+                    if (!MyPlayer.isMember()) {
+                        throw Exception("Ran out of membership..")
+                    }
                 }
             }
 
