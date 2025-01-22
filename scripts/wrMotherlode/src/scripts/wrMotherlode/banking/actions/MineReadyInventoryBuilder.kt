@@ -18,7 +18,8 @@ class MineReadyInventoryBuilder {
 
     fun task(): BankTask {
         val bankTask = BankTask.builder()
-            .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
+            .addInvItem(1271, Amount.of(1)) // Adamant Pickaxe
+//            .addInvItem(1275, Amount.of(1)) // Rune Pickaxe
 //          .addInvItem(11920, Amount.of(1)) // Dragon Pickaxe
             .addInvItem(2347, Amount.of(1)) // Hammer
             // Pay-dirt, although not bankable, we should accept them, this avoids trying to bank them.
