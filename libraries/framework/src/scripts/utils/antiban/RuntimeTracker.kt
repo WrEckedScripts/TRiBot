@@ -14,13 +14,18 @@ object RuntimeTracker {
 
     fun init() {
         this.startedAt = System.currentTimeMillis()
-        this.logger?.debug("[RuntimeTracker] - started now")
     }
 
     // Used to keep track of how long the script has been running
     fun hours(): Int {
         this.logger?.debug("[RuntimeTracker] - hours: ${(this.calculate() / 3600000.0).toInt()}")
-        return (this.calculate() / 3600000.0).toInt()
+        val hours = (this.calculate() / 3600000.0).toInt()
+
+        if (hours >= 24) {
+            this.init()
+        }
+
+        return hours
     }
 
     fun minutes(): Int {

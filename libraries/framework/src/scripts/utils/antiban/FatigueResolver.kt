@@ -148,21 +148,19 @@ object FatigueResolver {
         currentHour: Int
     ): Double {
         val timeOfDayModifier = when {
-            currentHour in 5..10 -> Random.nextDouble(0.6, 0.85) // Early morning - focused
-            currentHour in 11..17 -> Random.nextDouble(0.95, 1.05) // Daytime - standard
+            currentHour in 4..9 -> Random.nextDouble(0.6, 0.85) // Early morning - focused
+            currentHour in 10..17 -> Random.nextDouble(0.95, 1.05) // Daytime - standard
             currentHour in 18..23 -> Random.nextDouble(1.15, 1.3) // Early evening - getting tired
             else -> Random.nextDouble(1.3, 1.45) // Night - tired
         }
 
         val runtimeFatigue = when {
-            runtime < 2.0 -> Random.nextDouble(0.85, 1.05) // First two hours - fully alert
-            runtime < 6.0 -> Random.nextDouble(1.05, 1.25) // 2 tot 6 hours - normal
+            runtime < 3.0 -> Random.nextDouble(0.85, 1.05) // First three hours - fully alert
+            runtime < 6.0 -> Random.nextDouble(1.05, 1.25) // 3 tot 6 hours - normal
             runtime < 10.0 -> Random.nextDouble(1.25, 1.35) // 6 to 10 hours - getting tired
             runtime < 16 -> Random.nextDouble(1.35, 1.5) // 10 to 16 hours - a bit more tired
             else -> Random.nextDouble(1.5, 1.6) // After 10 hours - tired
         }
-
-        //TODO we need to have a full 24-hr cycle (re-initting the RuntimeTracker)
 
         return timeOfDayModifier * runtimeFatigue
     }
