@@ -2,9 +2,9 @@ package scripts.wrBarrows.behaviors
 
 import org.tribot.script.sdk.frameworks.behaviortree.*
 import scripts.utils.Logger
+import scripts.utils.playerstate.nodes.ensureIsMember
+import scripts.utils.playerstate.nodes.ensureLoggedIn
 import scripts.wrBarrows.behaviors.combat.combatSequence
-import scripts.wrBarrows.behaviors.requirements.ensureIsMember
-import scripts.wrBarrows.behaviors.requirements.ensureLoggedIn
 import scripts.wrBarrows.behaviors.rooms.roomSequence
 import scripts.wrBarrows.behaviors.tunnel.lootingSequence
 import scripts.wrBarrows.behaviors.tunnel.tunnelSequence

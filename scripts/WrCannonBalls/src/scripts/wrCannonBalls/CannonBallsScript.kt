@@ -60,7 +60,7 @@ class CannonBallsScript : TribotScript {
         // We'll default to "best" if no args supplied
         // we'll need to, for the first time open the bank, define which we have and set the setting.
 
-        if (arg == "double") {
+        if (arg.contains("double", ignoreCase = true)) {
             Settings.setToDoubleMould()
         }
 

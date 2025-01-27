@@ -1,4 +1,4 @@
-package scripts.wrBarrows.behaviors.requirements
+package scripts.utils.playerstate.nodes
 
 import org.tribot.script.sdk.Login
 import org.tribot.script.sdk.MyPlayer
