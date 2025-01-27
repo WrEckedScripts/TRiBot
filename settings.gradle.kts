@@ -19,6 +19,7 @@ include("scripts:WrCannonBalls")
 
 // Combat
 include("scripts:WrBarrows")
+include("scripts:WrSulphurNagua")
 
 // Utility & Testing
 include("scripts:WrMule")
